@@ -9,3 +9,4 @@ results.json
 *.zip
 data/external/**/raw/
 data/external/**/derived/
+site/dist/
