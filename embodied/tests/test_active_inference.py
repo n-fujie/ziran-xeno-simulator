@@ -54,7 +54,7 @@ def test_neutral_configuration_reproduces_existing_controller():
     import copy; ref = copy.deepcopy(base); w = ConfiguredController(base)
     rng = np.random.default_rng(0)
     for _ in range(5):
-        o = rng.standard_normal(17); assert np.allclose(w.act(o), ref.act(o)), "Mode A / neutral config must equal the existing controller"
+        o = rng.standard_normal(17); assert np.array_equal(w.act(o), ref.act(o)), "neutral configuration must be bit-identical to the existing controller (tolerance 0)"
 
 
 def test_episode_logs_required_fields():

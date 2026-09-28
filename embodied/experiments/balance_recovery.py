@@ -100,8 +100,18 @@ def calibrate(env, ctrl, adapter, seed) -> GenerativeModel:
     return m
 
 
+def param_sha(m) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    for k, v in sorted(m.state_dict().items()): h.update(k.encode()); h.update(v.detach().numpy().tobytes())
+    return h.hexdigest()
+
+
 def run_seed(seed: int) -> dict:
+    """Both modes use this one controller object (loaded once from the seed's checkpoint). Its parameter hash is
+    recorded before any episode and after every condition of each mode; any change invalidates the comparison."""
     torch.set_num_threads(1); env = make_env(); base = fast_controller(seed); ctrl = ConfiguredController(base)
+    h_start = param_sha(base); used = {"A": set(), "B": set()}
     ad = ObservationAdapter(CFG["observation"]["pitch_edges"], CFG["observation"]["rate_edges"])
     t0 = time.time(); model = calibrate(env, ctrl, ad, seed); cal_s = time.time() - t0
     out = {"seed": seed, "calibration": {"transitions": model.calibration_transitions, "seconds": round(cal_s, 1), "episodes": CFG["generative_model"]["calibration_episodes"]}, "conditions": {}}
@@ -111,7 +121,10 @@ def run_seed(seed: int) -> dict:
                 key = f"{direction}|{int(F)}N|noise{sd}"; out["conditions"][key] = {}
                 for mode in ["A", "B"]:
                     eps = [episode(env, ctrl, ad, model if mode == "B" else None, E["eval_seed_base"] + 100 * seed + k, F if direction == "forward" else -F, sd, mode, log=(seed == 1 and k == 0)) for k in range(E["episodes_per_condition"])]
-                    out["conditions"][key][mode] = eps
+                    out["conditions"][key][mode] = eps; used[mode].add(param_sha(base))
+    out["controller_identity"] = {"param_sha256_at_start": h_start, "param_sha256_seen_in_A": sorted(used["A"]), "param_sha256_seen_in_B": sorted(used["B"]),
+                                  "same_controller_in_both_modes": used["A"] == used["B"] == {h_start}}
+    if not out["controller_identity"]["same_controller_in_both_modes"]: raise RuntimeError(f"seed {seed}: controller differs between modes — comparison invalid")
     return out
 
 
@@ -121,7 +134,15 @@ def main():
     for sd in CFG["seeds"]: fast_controller(sd)
     ck = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((OUT / "controllers").glob("*.pt"))}
     with Pool(len(CFG["seeds"])) as p: res = p.map(run_seed, CFG["seeds"])
-    meta = {"milestone": 1, "controller_checkpoints_sha256": ck, "config": CFG, "observability": OBSERVABILITY, "policies": POLICIES, "not_instantiable": {"lateral impulse": "Walker2d-v5 is planar (sagittal plane only)"}, "wall_s": round(time.time() - t0, 1), "versions": {"torch": torch.__version__, "numpy": np.__version__}}
+    import platform, subprocess, mujoco, gymnasium
+    def sysctl(k):
+        try: return subprocess.run(["sysctl", "-n", k], capture_output=True, text=True).stdout.strip()
+        except Exception: return "unknown"
+    env_info = {"machine": platform.machine(), "cpu": sysctl("machdep.cpu.brand_string"), "cores": sysctl("hw.ncpu"), "memory_bytes": sysctl("hw.memsize"), "os": platform.platform(),
+                "python": platform.python_version(), "mujoco": mujoco.__version__, "gymnasium": gymnasium.__version__, "torch": torch.__version__, "numpy": np.__version__,
+                "processes": len(CFG["seeds"]), "torch_threads_per_process": 1,
+                "timing_scope": "aif_decision_total and its components exclude logging; controller_step_total includes the construction of the per-decision log record in Mode B (not the per-step raw log, which is written only for one episode per condition in seed 1 and is outside the timer)"}
+    meta = {"milestone": 1, "runtime_environment": env_info, "controller_checkpoints_sha256": ck, "config": CFG, "observability": OBSERVABILITY, "policies": POLICIES, "not_instantiable": {"lateral impulse": "Walker2d-v5 is planar (sagittal plane only)"}, "wall_s": round(time.time() - t0, 1), "versions": {"torch": torch.__version__, "numpy": np.__version__}}
     (OUT / "raw.json").write_text(json.dumps({"meta": meta, "seeds": res}, default=float))
     print("wrote", OUT / "raw.json", meta["wall_s"], "s")
 

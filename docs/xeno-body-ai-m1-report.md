@@ -28,30 +28,40 @@ generator). Remaining differences, all intended or recorded:
 4. Layer-2 computation time does not delay actuation in simulation: the simulator waits for the controller, so
    measured latency has no behavioural effect in this experiment.
 
+Controller identity was verified at run time: in every seed the parameter hash of the single controller object was
+the same before the first episode and after every condition of both modes (seed 1: `b9002e05c3bbe142…`); checkpoint
+file hashes are in the run metadata. Training: existing `train_xeno` (round-robin module-wise ES, 48 iterations,
+pushes 0 / ±80 N, rng `default_rng(seed)`, `torch.manual_seed(seed)`), seeds 1–5. Neutral configuration: bit-identical
+output (tolerance 0, tested with exact array equality).
+
 **Lateral perturbation** is not included and not approximated: Walker2d is planar. It is a simulator limitation,
 deferred to a future 3D embodiment.
 
-## Latency (ms; pooled over all calls; this machine, Python 3.12, one thread per process)
+## Latency (ms; pooled over all calls; final run)
 
-| component | median | p95 | max |
-|---|---|---|---|
-| observation adaptation | 0.009 | 0.018 | 5.5 |
-| latent-state inference | 0.053 | 0.080 | 8.4 |
-| VFE computation | 0.017 | 0.025 | 4.4 |
-| EFE preference term (9 policies) | 0.042 | 0.078 | 4.8 |
-| EFE epistemic term (9 policies) | 1.39 | 2.46 | 21.3 |
-| total EFE (9 policies) | 1.72 | 3.07 | 47.0 |
-| policy selection | 0.024 | 0.038 | 4.0 |
-| **total Active Inference decision** | **1.86** | **3.31** | **47.2** |
-| existing fast controller (Layer 0), Mode B | 0.50 | 1.09 | 390 |
-| complete controller step, Mode B (all steps) | 0.51 | 2.06 | 390 |
-| complete controller step, Mode B (steps with a decision) | 2.50 | 4.47 | 54 |
-| complete controller step, Mode A | 0.49 | 0.99 | 389 |
+Environment: Apple M1 (8 cores, 8 GB), macOS 26.6.2 arm64, Python 3.12.13, MuJoCo 3.14.0, gymnasium 1.3.0,
+torch 2.13.0, numpy 2.5.1; five processes in parallel, one torch thread each. The Active Inference components exclude
+logging; the complete controller step includes building the per-decision log record in Mode B.
 
-T_total_AIF_decision < 200 ms, < 100 ms and < 50 ms at median, p95 and maximum; < 10 ms at median and p95 but not at
-the maximum (47 ms). The epistemic term dominates (Python loop over state entropies; vectorizable). The 390 ms maxima
-occur in Layer 0 in both modes (process scheduling / first-call effects) and exceed the 8 ms control period; no
-real-time capability is claimed for either mode.
+| component | samples | median | p95 | max |
+|---|---|---|---|---|
+| T_observation_adapter (Mode B) | 120 018 | 0.0076 | 0.0148 | 2.50 |
+| T_state_inference | 5 068 | 0.049 | 0.066 | 2.11 |
+| T_VFE | 5 068 | 0.017 | 0.021 | 1.26 |
+| T_EFE_preference (9 policies) | 5 068 | 0.037 | 0.059 | 4.42 |
+| T_EFE_epistemic (9 policies) | 5 068 | 1.27 | 1.82 | 9.71 |
+| T_EFE_total (9 policies) | 5 068 | 1.52 | 2.29 | 20.6 |
+| T_policy_selection | 5 068 | 0.021 | 0.032 | 1.18 |
+| **T_AIF_total** | 5 068 | **1.63** | **2.46** | **20.8** |
+| existing fast controller (Layer 0), Mode B | 120 018 | 0.42 | 0.76 | 104 |
+| T_complete_controller_step, Mode B (all steps) | 120 018 | 0.43 | 1.51 | 104 |
+| T_complete_controller_step, Mode B (steps with a decision) | 5 068 | 2.12 | 3.41 | 21.7 |
+| T_complete_controller_step, Mode A | 121 597 | 0.43 | 0.77 | 44.3 |
+
+T_AIF_total < 200 ms, < 100 ms and < 50 ms at median, p95 and maximum; < 10 ms at median and p95, not at the maximum
+(20.8 ms). The epistemic term dominates (Python loop over state entropies). The Layer-0 maxima (44 ms in Mode A,
+104 ms in Mode B) exceed the 8 ms control period in both modes; no real-time capability is claimed for either mode.
+Latencies vary between runs (an earlier run: T_AIF_total max 47 ms); behavioural results were identical across runs.
 
 ## Mathematical separation of VFE and EFE
 

@@ -27,9 +27,9 @@ def per_seed(eps, m):
 
 def ci(x):
     x = np.asarray([v for v in x if v is not None and np.isfinite(v)], dtype=float)
-    if len(x) < 2: return {"mean": round(float(x.mean()), 4) if len(x) else None, "lo": None, "hi": None, "n": int(len(x))}
+    if len(x) < 2: return {"mean": round(float(x.mean()), 4) if len(x) else None, "median": round(float(np.median(x)), 4) if len(x) else None, "lo": None, "hi": None, "n": int(len(x)), "perSeed": x.round(4).tolist()}
     b = x[BOOT.integers(0, len(x), (10_000, len(x)))].mean(1)
-    return {"mean": round(float(x.mean()), 4), "lo": round(float(np.percentile(b, 2.5)), 4), "hi": round(float(np.percentile(b, 97.5)), 4), "n": int(len(x))}
+    return {"mean": round(float(x.mean()), 4), "median": round(float(np.median(x)), 4), "lo": round(float(np.percentile(b, 2.5)), 4), "hi": round(float(np.percentile(b, 97.5)), 4), "n": int(len(x)), "perSeed": x.round(4).tolist()}
 
 
 def interval(c):
@@ -61,12 +61,14 @@ def main():
     aif = lat["B"]["aif_decision_total"]
     budget = {f"< {b} ms": {"median": aif["median_ms"] < b, "p95": aif["p95_ms"] < b, "max": aif["max_ms"] < b} for b in (200, 100, 50, 10)}
     counts = {k: {iv: sum(1 for c in conds if table[c][k]["interval"] == iv) for iv in ["B higher", "B lower", "no difference established", "undetermined"]} for k in PAIRED}
-    summary = {"meta": raw["meta"], "table": table, "interval_counts_over_conditions": counts, "latency": lat, "aif_budget_check": budget, "calibration": [s["calibration"] for s in seeds]}
+    ident = {s["seed"]: s["controller_identity"] for s in seeds}
+    per_episode_falls = {c: {str(s["seed"]): {"A": [int(e["fell"]) for e in s["conditions"][c]["A"]], "B": [int(e["fell"]) for e in s["conditions"][c]["B"]]} for s in seeds} for c in conds}
+    summary = {"meta": raw["meta"], "controller_identity": ident, "per_episode_fall": per_episode_falls, "table": table, "interval_counts_over_conditions": counts, "latency": lat, "aif_budget_check": budget, "calibration": [s["calibration"] for s in seeds]}
     (D / "summary.json").write_text(json.dumps(summary, indent=1, default=float))
     f = lambda x: "n/a" if x["mean"] is None else (f"{x['mean']}" + (f" [{x['lo']}, {x['hi']}]" if x["lo"] is not None else ""))
     L = ["# Xeno-Body + Active Inference — Milestone 1 results (generated)", "", "Planar Xeno-Body prototype (Walker2d-v5). Experiment 1, balance recovery; seeds 1–5 (paired: each seed has one trained base controller used by both modes) × 10 episodes per condition and mode. Values: mean over seeds [95% bootstrap interval over seeds]; B − A paired by seed. Claim status: synthetic-world result. Lateral impulses are not included: the embodiment is planar.", ""]
     for c, row in table.items():
-        L += [f"## {c}", "", "| metric | Mode A | Mode B | B − A | interval |", "|---|---|---|---|---|"] + [f"| {m} | {f(row[m]['A'])} | {f(row[m]['B'])} | {f(row[m]['B_minus_A'])} | {row[m]['interval']} |" for m in PAIRED]
+        L += [f"## {c}", "", "| metric | Mode A | Mode B | B − A mean [95% CI] | B − A median | n | per-seed B − A (seeds 1–5) | interval |", "|---|---|---|---|---|---|---|---|"] + [f"| {m} | {f(row[m]['A'])} | {f(row[m]['B'])} | {f(row[m]['B_minus_A'])} | {row[m]['B_minus_A']['median']} | {row[m]['B_minus_A']['n']} | {row[m]['B_minus_A']['perSeed']} | {row[m]['interval']} |" for m in PAIRED]
         pe = row["prediction_error_modeB"]
         L += ["", f"Prediction error (Mode B, {pe['decisions']} decisions): mean log loss {pe['mean_log_loss']}, argmax hit rate {pe['argmax_hit_rate']}; Mode A: not applicable. Policy distribution (Mode B, share of decisions): {json.dumps(row['policy_distribution_modeB'])}", ""]
     L += ["## Interval summary over the 12 conditions", "", "| metric | B higher | B lower | no difference established |", "|---|---|---|---|"] + [f"| {k} | {v['B higher']} | {v['B lower']} | {v['no difference established']} |" for k, v in counts.items()]
