@@ -1,6 +1,10 @@
 # Empirical evaluation — plan and first dataset selection
 
-Status: **planned; no external data downloaded or used.** Every result so far is a synthetic-world result.
+Status: **dataset acquired and verified (2026-09-28); protocol CT-P1 frozen before any model was implemented or
+fitted.** The protocol-freeze commit is the commit that adds this section and
+`results/external-comparison/cascaded-tanks/protocol.json`; its hash is recorded in
+[cascaded-tanks-results.md](cascaded-tanks-results.md). Results so far in this repository other than Cascaded Tanks
+are synthetic-world results.
 
 ## Order of work
 
@@ -30,45 +34,57 @@ evidence, and `claimFor()` in the comparison code returns *replayed empirical re
 Public availability · clear provenance · known measurement process · intervention history · temporal structure ·
 reasonable size · reproducibility. The dataset must **not** be chosen because it is likely to favour Ziran / Xeno.
 
-## First candidate: Cascaded Tanks benchmark
+## First dataset: Cascaded Tanks benchmark
 
-| field | value (verified from the repository landing pages) |
-|---|---|
-| source | 4TU.ResearchData, DOI 10.4121/12960104; described at nonlinearbenchmark.org |
-| title | Cascaded Tanks Benchmark Combining Soft and Hard Nonlinearities |
-| version | 1, published 2020-09-21 |
-| authors | M. Schoukens, P. Mattsson, T. Wigren, J.-P. Noël |
-| license | CC BY-SA 4.0 |
-| files | `CascadedTanksFiles.zip` (≈ 7.5 MB; .mat and .csv), setup photo, report `TanksBenchmark.pdf` |
-| system | fluid-level control system: two tanks with free outlets fed by a pump; the input drives the pump |
-| intervention record | the recorded pump input (estimation and test records) |
-| known effects | soft nonlinearity from outflow dynamics and hard nonlinearity from tank overflow (stated by the publisher) |
-| to verify after download | sampling period, number of samples, units, sensor type, noise level, missingness — from `TanksBenchmark.pdf`, not from memory |
+Acquired from the primary archive (4TU.ResearchData, DOI 10.4121/12960104.v1, CC BY-SA 4.0) by
+`comparison/empirical/fetch-cascaded-tanks.ts`; publisher MD5 verified; SHA-256 recorded. Full record:
+[cascaded-tanks-provenance.md](cascaded-tanks-provenance.md) and
+`results/external-comparison/cascaded-tanks/provenance.json`. Raw and derived files stay outside git
+(`data/external/**/raw|derived`).
 
-**Why it fits the criteria.** Public with a DOI, version and license; documented physical setup; the excitation is
-part of the data; separate estimation and test records; small; widely used, so strong system-identification
-baselines are established.
+Verified from `TanksBenchmark.pdf`: Ts = 4 s; 1024 samples per record; one estimation and one test record; input =
+pump voltage (V), output = lower-tank water level from an uncalibrated capacitive sensor (V); SNR ≈ 40 dB; unknown
+initial state, the same for both records; test data must not be used during estimation; report e_RMSt for simulation
+and/or prediction.
 
-**Selection risk, stated in advance.** The overflow regime is not captured by a linear-tank model and could look
-favourable to description-space mechanisms. Mitigations: (1) predicates and evaluation splits are fixed before the
-run (below); (2) established nonlinear system-identification formulations (e.g. NARX and nonlinear state-space models)
-are included as baselines, so the comparison is not against a linear strawman; (3) only the publisher's
-estimation / test split is used.
+**Why it fits the criteria.** Public with a DOI, version and license; documented physical setup; the excitation is part
+of the data; separate estimation and test records; small; widely used, so strong system-identification baselines are
+established.
 
-## Protocol fixed before the run
+**Selection risk, stated before acquisition.** The overflow regime could look favourable to description-space
+mechanisms. Mitigations: predicates fixed in advance; strong conventional baselines (ARX, output-error, NARX, grey-box
+with the documented physics and overflow, switching ARX, twin with EKF, MLP); the publisher's split only.
 
-- Estimation record for fitting, test record for evaluation, exactly as published; no tuning on the test record.
-- Measured for every model class: simulation and one-step prediction error on the test record (the benchmark's
-  published figure of merit plus normalized MSE), behaviour in overflow segments reported separately, representation
-  cost, generated distinctions (named / unnamed), and information lost in each conversion (raw → state, continuous →
-  discrete).
-- Model classes: fixed linear model, parameter-adaptive linear model, NARX-style lagged polynomial model, MLP on lag
-  windows, v0.3.0 grammar-bounded / grammar morphogenesis / description-space transformation, and a digital-twin
-  formulation (state estimation with parameter update).
-- Result wording: "on the Cascaded Tanks test record, under configuration C and implementation B, distinction D was
-  (not) retained" with claim status *replayed empirical result*.
+**Replay vs intervention.** The recorded input is a designed multisine excitation, not a randomized intervention, and
+there are no recorded outcomes for altered inputs. Replay fidelity is a *replayed empirical result*; counterfactual
+simulations are reported as unvalidated model outputs only.
 
-## Pending
+## Protocol CT-P1 (frozen)
 
-Downloading `CascadedTanksFiles.zip` (≈ 7.5 MB) from 4TU.ResearchData requires the maintainer's approval. After
-download, the provenance record is completed from `TanksBenchmark.pdf` and validated before any model is fitted.
+The machine-readable protocol is `results/external-comparison/cascaded-tanks/protocol.json`. In summary:
+
+- **Trajectories.** Estimation record (uEst, yEst) for fitting and selection; test record (uVal, yVal) evaluated once.
+- **Split.** Fit on estimation samples 1–768, select hyperparameters on 769–1024, refit on all 1024, then test.
+- **Preprocessing / normalization.** None beyond parsing; MLP standardized with estimation statistics.
+- **Initialization.** Input–output models seed simulation with their first L measured outputs (counted in e_RMSt,
+  excluded in the secondary RMSE); state-space and grey-box models estimate initial states on the estimation record
+  and reuse them (licensed by the documentation).
+- **Modes.** Simulation and one-step prediction, both where the model allows.
+- **Metrics.** Primary e_RMSt on all test samples per mode; secondary RMSE without the initialization window, MAE,
+  fit %; regime RMSE in the bands y ≥ 9.0 V and y < 9.0 V (band chosen from the documentation's Figure 2 before
+  fitting; evaluation only).
+- **Models.** M1 ARX · M2 second-order output-error (linear state-space, MPC-compatible) · M3 polynomial NARX ·
+  M4a grey-box from the documented equations · M4b grey-box with overflow saturation · M5 digital twin (M4b + EKF,
+  state updates only) · M6 NARX-MLP (seeds 1–5) · M7 switching / piecewise ARX (fairness extension) · Z Ziran / Xeno
+  adapter (v0.3.0 external adapter + grammar morphogenesis, one-step prediction only) with five ablations.
+- **Selection / stopping.** Validation simulation RMSE; Nelder–Mead 5 multi-starts ≤ 4000 evaluations; MLP 500
+  epochs; morphogenesis 3 rounds.
+- **Fairness rule.** Any Ziran improvement is checked against conventional extensions on the same metric.
+- **Questions.** Q1 replay fidelity · Q2 regime bands · Q3 near-identical observations with divergent successors
+  (empirical observation) and per-model insufficiency signals · Q4 whether generated variables change held-out error ·
+  Q5 input–output lag (descriptive; no too-late analysis, as no corrections are recorded).
+- **Counterfactual.** One demonstration (test input × 1.2) reported as unvalidated model output.
+- **Exclusions / changes.** None planned; anything after the freeze is an exploratory follow-up that does not overwrite
+  the pre-registered results.
+- **RL and active inference** are not applied: the dataset records a designed excitation with no task, reward or
+  preference structure; forcing either onto replay would be an artificial formulation.

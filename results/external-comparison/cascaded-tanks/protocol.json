@@ -1,0 +1,56 @@
+{
+  "protocol_id": "CT-P1",
+  "status": "frozen before any model was implemented or fitted on the dataset; freeze commit recorded in docs/empirical-evaluation.md",
+  "claim_status": "replayed empirical result (replay metrics); empirical observation (direct properties of the measurements only); counterfactual predictions are reported as unvalidated model outputs",
+  "trajectories": { "estimation": "uEst, yEst (1024 samples)", "test": "uVal, yVal (1024 samples; the documentation's test record)" },
+  "split": {
+    "fit": "estimation samples 1–768",
+    "validation": "estimation samples 769–1024 (hyperparameter and structure selection only)",
+    "final_fit": "all 1024 estimation samples with the selected hyperparameters",
+    "test": "the test record, evaluated once per final model; never used for fitting, selection or stopping"
+  },
+  "preprocessing": "none beyond parsing; signals in volts as stored",
+  "normalization": "feature-learning inputs/outputs standardized with estimation-record mean and standard deviation; all other models on raw volts",
+  "initialization": {
+    "simulation_mode_input_output_models": "the first L measured test outputs (L = the model's largest output lag) seed the recursion; those L samples are counted as model outputs equal to the measurements in the benchmark RMSE and excluded in the secondary RMSE",
+    "state_space_and_grey_box": "initial states are free parameters estimated on the estimation record and reused for the test record, as licensed by the documentation (same unknown initial state for both records)"
+  },
+  "modes": ["simulation (test input only)", "one-step prediction (test input and past test outputs)"],
+  "metrics": {
+    "primary": "e_RMSt (benchmark §4) on all 1024 test samples, per mode",
+    "secondary": ["RMSE excluding the initialization window", "MAE", "fit % = 100·(1 − ‖y − ŷ‖/‖y − mean(y)‖)"],
+    "regime": "RMSE separately on test samples with measured y ≥ 9.0 V (upper band where the documentation's Figure 2 shows saturation) and y < 9.0 V; the band is used for evaluation only"
+  },
+  "models": [
+    { "id": "M1-ARX", "family": "classical system identification (linear)", "structure": "ARX y(t) = Σ a_i y(t−i) + Σ b_j u(t−nk−j+1) + c", "hyperparameters": "na ∈ {1..5}, nb ∈ {1..5}, nk ∈ {0,1}", "fit": "least squares", "selection": "validation simulation RMSE" },
+    { "id": "M2-OE", "family": "linear state-space / output-error (MPC-compatible)", "structure": "second-order output-error model (equivalent to a 2-state linear state-space model) with offset", "fit": "simulation-error minimization, Nelder–Mead, 5 multi-starts (seeds 1–5), ≤ 4000 evaluations each", "selection": "best validation simulation RMSE among starts" },
+    { "id": "M3-NARX", "family": "nonlinear autoregressive (polynomial)", "structure": "degree-2 polynomial in y(t−1..t−na), u(t−nk..t−nk−nb+1) with ridge 1e-6", "hyperparameters": "na ∈ {1..3}, nb ∈ {1..3}, nk ∈ {0,1}", "fit": "least squares (one-step)", "selection": "validation simulation RMSE" },
+    { "id": "M4a-grey-box", "family": "grey-box nonlinear state-space (documented physics)", "structure": "equations (1)–(3) of the documentation, y = x2 + c; forward Euler with 4 sub-steps per sample; states clipped at 0", "parameters": "k1..k4, c, x1(0), x2(0)", "fit": "simulation-error minimization, Nelder–Mead, 5 multi-starts", "selection": "best validation simulation RMSE" },
+    { "id": "M4b-grey-box-overflow", "family": "grey-box with documented overflow", "structure": "M4a plus saturation of x1 and x2 at fitted maxima (overflow documented in §2)", "parameters": "M4a + x1max, x2max", "fit": "as M4a" },
+    { "id": "M5-twin", "family": "digital twin", "structure": "M4b as the digital model, synchronized to the sensor feed by an extended Kalman filter in prediction mode (state updates only; no parameter updates on test data)", "noise_settings": "process and measurement variances fitted on the estimation record" },
+    { "id": "M6-MLP", "family": "feature learning", "structure": "NARX-MLP, inputs y(t−1..t−L), u(t..t−L+1), 8 tanh hidden units", "hyperparameters": "L ∈ {2,3,5}", "training": "full-batch Adam, 500 epochs, lr 0.01, seeds 1–5; one-step training; results reported per seed and as the mean", "selection": "validation simulation RMSE (mean over seeds)" },
+    { "id": "M7-PWARX", "family": "switching / piecewise-affine ARX (fairness extension)", "structure": "two ARX(na, nb, nk) regimes switched by y(t−1) ≥ θ", "hyperparameters": "(na, nb, nk) as M1; θ ∈ {7, 8, 9} V", "fit": "least squares per regime", "selection": "validation simulation RMSE" },
+    { "id": "Z-full", "family": "Ziran / Xeno adapter", "structure": "records replayed through the v0.3.0 external adapter (provenance and uncertainty as configuration); v0.3.0 grammarMorphogenesis on {u, y} with selection restricted to the estimation fit rows (trainUntil); generated variables + {u(t), y(t)} → least-squares one-step readout; full mutation registry and meta-grammar, 3 rounds", "modes": "one-step prediction only — generated variables are functions of measured series and the adapter has no generative simulation of y; simulation mode is reported as not evaluable", "test_features": "variables computed on the concatenated series [estimation; test] with selection limited to estimation rows" }
+  ],
+  "ziran_ablations": [
+    { "id": "Z-fixed-observations", "change": "no generated variables (readout on u(t), y(t) only)" },
+    { "id": "Z-no-grammar-revision", "change": "empty mutation registry (grammar-bounded)" },
+    { "id": "Z-fixed-description-space", "change": "registry without representation-change operators (discretize, sign, continuize)" },
+    { "id": "Z-no-multiple-windows", "change": "registry without delay, window and temporal-diff operators" },
+    { "id": "Z-no-meta", "change": "full registry, meta-grammar off" }
+  ],
+  "fairness_rule": "if a Ziran / Xeno variant improves over the best conventional model on any pre-registered metric or regime, the corresponding conventional extensions (higher order ARX, PWARX with threshold, NARX with saturation, grey-box with overflow, twin/EKF) are compared on that same metric; if any extension matches, the distinction is reported as not uniquely required",
+  "questions": {
+    "Q1_replay_fidelity": "e_RMSt per model and mode",
+    "Q2_regimes": "RMSE in the y ≥ 9.0 V and y < 9.0 V test bands",
+    "Q3_observation_adequacy": "pairs of estimation samples with |Δy(t)| ≤ 0.05 V and |Δu(t)| ≤ 0.05 V whose next-step output changes differ by more than 0.3 V; counted as an empirical observation; per model, a representation-insufficiency signal: residual autocorrelation at lag 1 above 2/√N on the estimation record (all models), aliasing records (Ziran adapter), normalized innovation test (twin)",
+    "Q4_description_revision": "whether any Ziran variant retains generated variables and whether they change held-out one-step RMSE",
+    "Q5_timing": "lag of maximal cross-correlation between Δu and Δy on the estimation record (descriptive empirical observation); too-late correction analysis is not applicable because the dataset contains no recorded corrections"
+  },
+  "counterfactual": "one unvalidated counterfactual demonstration: test input scaled by 1.2, simulated with M1, M4b and M5; reported as model output only, never as an empirical finding",
+  "compute_reporting": "fit time, inference time, trainable parameters, observations used, adaptation steps (optimizer evaluations / epochs); no equalization",
+  "exclusions": "none planned; any post-hoc exclusion or model change is recorded as an exploratory follow-up without overwriting the pre-registered results",
+  "seeds": "1–5 wherever randomness is used (multi-starts, MLP initialization)",
+  "stopping": "Nelder–Mead: 4000 evaluations or simplex size < 1e-9; MLP: fixed 500 epochs; morphogenesis: 3 rounds",
+  "missing_data_handling": "not needed (no missing samples); the rule would have been: no imputation, samples excluded from metrics and reported"
+}
