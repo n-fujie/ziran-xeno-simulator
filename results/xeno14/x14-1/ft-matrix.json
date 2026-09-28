@@ -1,0 +1,554 @@
+{
+ "xeno14": {
+  "80": {
+   "axis-maintenance": {
+    "axis-maintenance": {
+     "mean": 0.0073,
+     "sd": 2.6616,
+     "n": 3,
+     "perSeed": [
+      2.6726,
+      -2.6507,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": -0.6327,
+     "sd": 1.0958,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      -1.898,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0026,
+     "sd": 0.0048,
+     "n": 3,
+     "perSeed": [
+      0.002,
+      -0.0022,
+      -0.0076
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": 0.001,
+     "sd": 0.0924,
+     "n": 3,
+     "perSeed": [
+      -0.1055,
+      0.0605,
+      0.048
+     ]
+    }
+   },
+   "lower-abdominal-continuity": {
+    "axis-maintenance": {
+     "mean": 0.1824,
+     "sd": 2.4368,
+     "n": 3,
+     "perSeed": [
+      2.6726,
+      0.0721,
+      -2.1973
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": -0.8222,
+     "sd": 1.5985,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.1979,
+      -2.6645
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0033,
+     "sd": 0.0068,
+     "n": 3,
+     "perSeed": [
+      0.0037,
+      -0.0036,
+      -0.01
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": 0.067,
+     "sd": 0.0936,
+     "n": 3,
+     "perSeed": [
+      0.1115,
+      -0.0405,
+      0.13
+     ]
+    }
+   },
+   "low-noise-movement": {
+    "axis-maintenance": {
+     "mean": 0.9134,
+     "sd": 1.5201,
+     "n": 3,
+     "perSeed": [
+      2.6682,
+      0.0721,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": 0.0214,
+     "sd": 0.1592,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.1903,
+      -0.126
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0043,
+     "sd": 0.0097,
+     "n": 3,
+     "perSeed": [
+      0.0063,
+      -0.0127,
+      -0.0065
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": -0.0218,
+     "sd": 0.1182,
+     "n": 3,
+     "perSeed": [
+      -0.1575,
+      0.0335,
+      0.0585
+     ]
+    }
+   }
+  },
+  "140": {
+   "axis-maintenance": {
+    "axis-maintenance": {
+     "mean": 0.5699,
+     "sd": 0.9871,
+     "n": 3,
+     "perSeed": [
+      1.7098,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": -0.1417,
+     "sd": 0.2454,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      -0.4251,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0025,
+     "sd": 0.0042,
+     "n": 3,
+     "perSeed": [
+      0.0017,
+      -0.0023,
+      -0.0068
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": -0.0082,
+     "sd": 0.0639,
+     "n": 3,
+     "perSeed": [
+      -0.0775,
+      0.0485,
+      0.0045
+     ]
+    }
+   },
+   "lower-abdominal-continuity": {
+    "axis-maintenance": {
+     "mean": 0.5699,
+     "sd": 0.9871,
+     "n": 3,
+     "perSeed": [
+      1.7098,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": 0.0,
+     "sd": 0.0,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0027,
+     "sd": 0.008,
+     "n": 3,
+     "perSeed": [
+      0.006,
+      -0.0044,
+      -0.0097
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": 0.0268,
+     "sd": 0.064,
+     "n": 3,
+     "perSeed": [
+      0.002,
+      -0.021,
+      0.0995
+     ]
+    }
+   },
+   "low-noise-movement": {
+    "axis-maintenance": {
+     "mean": 0.5699,
+     "sd": 0.9871,
+     "n": 3,
+     "perSeed": [
+      1.7098,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": 0.0,
+     "sd": 0.0,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0045,
+     "sd": 0.0097,
+     "n": 3,
+     "perSeed": [
+      0.006,
+      -0.0131,
+      -0.0062
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": -0.0365,
+     "sd": 0.0965,
+     "n": 3,
+     "perSeed": [
+      -0.139,
+      -0.023,
+      0.0525
+     ]
+    }
+   }
+  }
+ },
+ "tradeoff-scalarized-mlp": {
+  "80": {
+   "axis-maintenance": {
+    "axis-maintenance": {
+     "mean": -0.2561,
+     "sd": 0.4436,
+     "n": 3,
+     "perSeed": [
+      -0.7683,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": -0.4519,
+     "sd": 1.2099,
+     "n": 3,
+     "perSeed": [
+      -1.8227,
+      0.0,
+      0.467
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0124,
+     "sd": 0.0464,
+     "n": 3,
+     "perSeed": [
+      0.0326,
+      -0.0098,
+      -0.06
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": 0.0247,
+     "sd": 0.0684,
+     "n": 3,
+     "perSeed": [
+      -0.0475,
+      0.033,
+      0.0885
+     ]
+    }
+   },
+   "lower-abdominal-continuity": {
+    "axis-maintenance": {
+     "mean": 0.0,
+     "sd": 0.0,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": 0.131,
+     "sd": 0.1986,
+     "n": 3,
+     "perSeed": [
+      0.0335,
+      0.0,
+      0.3595
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0033,
+     "sd": 0.105,
+     "n": 3,
+     "perSeed": [
+      -0.0706,
+      0.1177,
+      -0.0569
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": 0.0202,
+     "sd": 0.0333,
+     "n": 3,
+     "perSeed": [
+      0.02,
+      -0.013,
+      0.0535
+     ]
+    }
+   },
+   "low-noise-movement": {
+    "axis-maintenance": {
+     "mean": 0.0,
+     "sd": 0.0,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": 0.1798,
+     "sd": 0.2785,
+     "n": 3,
+     "perSeed": [
+      0.5006,
+      0.0,
+      0.0388
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0188,
+     "sd": 0.0426,
+     "n": 3,
+     "perSeed": [
+      -0.0357,
+      0.0296,
+      -0.0503
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": 0.0447,
+     "sd": 0.043,
+     "n": 3,
+     "perSeed": [
+      0.0935,
+      0.0125,
+      0.028
+     ]
+    }
+   }
+  },
+  "140": {
+   "axis-maintenance": {
+    "axis-maintenance": {
+     "mean": 0.0,
+     "sd": 0.0,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": -0.2298,
+     "sd": 0.398,
+     "n": 3,
+     "perSeed": [
+      -0.6894,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0158,
+     "sd": 0.0414,
+     "n": 3,
+     "perSeed": [
+      0.022,
+      -0.0095,
+      -0.06
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": 0.0278,
+     "sd": 0.0168,
+     "n": 3,
+     "perSeed": [
+      0.0155,
+      0.021,
+      0.047
+     ]
+    }
+   },
+   "lower-abdominal-continuity": {
+    "axis-maintenance": {
+     "mean": 0.0,
+     "sd": 0.0,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": 0.0011,
+     "sd": 0.0019,
+     "n": 3,
+     "perSeed": [
+      0.0033,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0051,
+     "sd": 0.1181,
+     "n": 3,
+     "perSeed": [
+      -0.082,
+      0.1309,
+      -0.0643
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": 0.0257,
+     "sd": 0.031,
+     "n": 3,
+     "perSeed": [
+      0.0335,
+      -0.0085,
+      0.052
+     ]
+    }
+   },
+   "low-noise-movement": {
+    "axis-maintenance": {
+     "mean": 0.0,
+     "sd": 0.0,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "lower-abdominal-continuity": {
+     "mean": 0.0011,
+     "sd": 0.0019,
+     "n": 3,
+     "perSeed": [
+      0.0033,
+      0.0,
+      0.0
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "low-noise-movement": {
+     "mean": -0.0173,
+     "sd": 0.0479,
+     "n": 3,
+     "perSeed": [
+      -0.0159,
+      0.0298,
+      -0.0659
+     ],
+     "signConsistent": "inconsistent"
+    },
+    "survival": {
+     "mean": 0.0403,
+     "sd": 0.0311,
+     "n": 3,
+     "perSeed": [
+      0.0165,
+      0.029,
+      0.0755
+     ]
+    }
+   }
+  }
+ }
+}
