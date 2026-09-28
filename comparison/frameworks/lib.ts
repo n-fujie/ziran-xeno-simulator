@@ -102,3 +102,22 @@ export class MLP {
     }
   }
 }
+
+/** Nelder–Mead simplex minimization (standard coefficients 1, 2, 0.5, 0.5). */
+export function nelderMead(f: (x: number[]) => number, x0: number[], o: { maxEvals?: number; tol?: number; step?: number } = {}): { x: number[]; f: number; evals: number } {
+  const n = x0.length, maxE = o.maxEvals ?? 4000, tol = o.tol ?? 1e-9, st = o.step ?? 0.1; let evals = 0;
+  const F = (x: number[]) => { evals++; const v = f(x); return Number.isFinite(v) ? v : 1e12; };
+  let S = [x0, ...x0.map((_, i) => x0.map((v, j) => (i === j ? v + (Math.abs(v) > 1e-9 ? st * Math.abs(v) : st) : v)))].map((x) => ({ x, f: F(x) }));
+  while (evals < maxE) {
+    S.sort((a, b) => a.f - b.f);
+    const size = Math.max(...S.slice(1).map((p) => Math.max(...p.x.map((v, i) => Math.abs(v - S[0].x[i])))));
+    if (size < tol) break;
+    const c = x0.map((_, i) => S.slice(0, n).reduce((s, p) => s + p.x[i], 0) / n);
+    const w = S[n]; const at = (a: number) => c.map((v, i) => v + a * (w.x[i] - v));
+    const r = { x: at(-1), f: 0 }; r.f = F(r.x);
+    if (r.f < S[0].f) { const e = { x: at(-2), f: 0 }; e.f = F(e.x); S[n] = e.f < r.f ? e : r; }
+    else if (r.f < S[n - 1].f) S[n] = r;
+    else { const k = { x: at(r.f < w.f ? -0.5 : 0.5), f: 0 }; k.f = F(k.x); if (k.f < Math.min(r.f, w.f)) S[n] = k; else S = S.map((p, i) => (i === 0 ? p : { x: p.x.map((v, j) => S[0].x[j] + 0.5 * (v - S[0].x[j])), f: 0 })).map((p, i) => (i === 0 ? p : { x: p.x, f: F(p.x) })); }
+  }
+  S.sort((a, b) => a.f - b.f); return { x: S[0].x, f: S[0].f, evals };
+}
