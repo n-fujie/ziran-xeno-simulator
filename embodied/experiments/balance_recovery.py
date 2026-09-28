@@ -15,7 +15,6 @@ from active_inference.state_inference import posterior, vfe
 from active_inference.policy_selection import select
 from benchmarks.fixed_controller import ConfiguredController
 from metrics.recovery import recovery_latency
-from metrics.latency import LayerTimer
 
 ROOT = Path(__file__).resolve().parents[2]
 CFG = json.loads((ROOT / "embodied" / "configs" / "milestone1.json").read_text())
@@ -36,33 +35,48 @@ def fast_controller(seed: int) -> Xeno14Controller:
 
 
 def episode(env, ctrl: ConfiguredController, adapter, model, seed, push, noise_sd, mode, log=False):
+    """One episode. Mode A: existing controller only (the Active Inference code path is not executed).
+    Mode B: same controller, same sensed observations; the Active Inference layer sets the body configuration every K steps."""
     rng = np.random.default_rng(seed + 7); obs, _ = env.reset(seed=seed); data = env.unwrapped.data; ctrl.reset(); ctrl.set(0.0, 1.0)
-    T = LayerTimer(); pitch, acts, rows = [], [], []; prev_a = None; effort = 0.0; corr = 0.0; fell = False
-    q = model.D.copy() if model else None; pi = POLICIES.index((0.0, 1.0)); decisions = []
-    P0, PS = E["push_start_step"], E["push_steps"]
+    lat = {k: [] for k in ["observation_adaptation", "latent_state_inference", "vfe", "efe_preference", "efe_epistemic", "efe_total", "policy_selection", "aif_decision_total", "controller_step_total", "controller_step_with_decision", "layer0_fast_control"]}
+    pitch, rows = [], []; prev_a = None; effort = 0.0; corr = 0.0; fell = False; ret = 0.0
+    q = model.D.copy() if model else None; pi = POLICIES.index((0.0, 1.0)); decisions = []; pred_prev = None; pred_err = []
+    P0, PS = E["push_start_step"], E["push_steps"]; ns = time.perf_counter_ns
     for t in range(E["episode_steps"]):
         sensed = obs + noise_vec(rng, noise_sd, len(obs))
-        with T.time("layer1_state_estimation"):
-            d = adapter.derived(sensed); o = adapter.index(sensed)
+        ts = ns()
+        d = adapter.derived(sensed); o = adapter.index(sensed)
+        lat["observation_adaptation"].append(ns() - ts)
+        decided = False
         if mode == "B" and t % K == 0:
-            with T.time("layer2_active_inference"):
-                prior = model.B[pi] @ q if t else model.D
-                q = posterior(model.A, prior, o); F = vfe(model.A, prior, q, o)
-                s = select(model, q, CFG["policy_precision_gamma"]); pi = s["chosen"]; ctrl.set(*POLICIES[pi])
-            decisions.append({"t": t, "obs_index": o, "derived": d, "q": q.round(4).tolist(), "vfe": F, "policy_scores": [{"policy": POLICIES[k], "G": sc["G"], "pragmatic": sc["pragmatic"], "epistemic": sc["epistemic"]} for k, sc in enumerate(s["scores"])], "policy_posterior": s["policy_posterior"].round(4).tolist(), "chosen": POLICIES[pi]})
-        with T.time("layer0_fast_control"):
-            a = np.clip(ctrl.act(sensed), -1.0, 1.0)
+            td = ns(); tm = {"prediction": 0, "preference": 0, "epistemic": 0, "efe_total": 0, "policy_selection": 0}
+            if pred_prev is not None: pred_err.append({"t": t, "log_loss": float(-np.log(pred_prev[o] + 1e-16)), "hit": int(np.argmax(pred_prev) == o)})
+            t1 = ns(); prior = model.B[pi] @ q if t else model.D; q = posterior(model.A, prior, o); t2 = ns()
+            F = vfe(model.A, prior, q, o); t3 = ns()
+            sres = select(model, q, CFG["policy_precision_gamma"], tm); pi = sres["chosen"]; ctrl.set(*POLICIES[pi])
+            pred_prev = sres["scores"][pi]["predicted_obs"]
+            lat["latent_state_inference"].append(t2 - t1); lat["vfe"].append(t3 - t2); lat["efe_preference"].append(tm["preference"]); lat["efe_epistemic"].append(tm["epistemic"])
+            lat["efe_total"].append(tm["efe_total"]); lat["policy_selection"].append(tm["policy_selection"]); lat["aif_decision_total"].append(ns() - td); decided = True
+            decisions.append({"t": t, "obs_index": o, "derived": d, "q": q.round(4).tolist(), "vfe": F, "policy_scores": [{"policy": POLICIES[k], "G": sc["G"], "pragmatic": sc["pragmatic"], "epistemic": sc["epistemic"]} for k, sc in enumerate(sres["scores"])], "policy_posterior": sres["policy_posterior"].round(4).tolist(), "chosen": POLICIES[pi]})
+        t0 = ns(); a = np.clip(ctrl.act(sensed), -1.0, 1.0); lat["layer0_fast_control"].append(ns() - t0)
+        total = ns() - ts; lat["controller_step_total"].append(total)
+        if decided: lat["controller_step_with_decision"].append(total)
         data.xfrc_applied[1, 0] = push if P0 <= t < P0 + PS else 0.0
-        obs, _r, term, trunc, _ = env.step(a)
+        obs, r, term, trunc, _ = env.step(a); ret += float(r)
         pitch.append(float(data.qpos[2])); effort += float(np.sum(a * a))
         if prev_a is not None and t >= P0: corr += float(np.linalg.norm(a - prev_a))
         prev_a = a
         if log: rows.append({"t": t, "raw_obs": obs.round(4).tolist(), "sensed_obs": sensed.round(4).tolist(), "motor_target": a.round(4).tolist(), "config": [ctrl.pitch_offset, ctrl.gain]})
-        if term or trunc: fell = bool(term); break
+        if term or trunc:
+            fell = bool(term)
+            if mode == "B" and fell and pred_prev is not None: pred_err.append({"t": t, "log_loss": float(-np.log(pred_prev[adapter.FALLEN] + 1e-16)), "hit": int(np.argmax(pred_prev) == adapter.FALLEN), "outcome": "fallen"})
+            break
     data.xfrc_applied[1, 0] = 0.0
     post = pitch[P0:] if len(pitch) > P0 else [np.nan]
     res = {"fell": fell, "steps": len(pitch), "max_axis_deviation": float(np.nanmax(np.abs(post))), "recovery_steps": recovery_latency(pitch, P0 + PS, CFG["recovery"]["pitch_threshold"], CFG["recovery"]["hold_steps"]),
-           "corrective_movement": corr, "motor_effort": effort, "latency": T.summary(), "policies_used": sorted({tuple(x["chosen"]) for x in decisions}) if decisions else [(0.0, 1.0)]}
+           "corrective_movement": corr, "motor_effort": effort, "episode_return": ret, "latency_ns": {k: v for k, v in lat.items() if v},
+           "prediction_error": pred_err, "policy_counts": {str(tuple(x["chosen"])): sum(1 for y in decisions if y["chosen"] == x["chosen"]) for x in decisions},
+           "pitch_trace": [round(x, 5) for x in pitch] if log else None}
     if log: res["log"] = {"steps": rows, "decisions": decisions}
     return res
 
@@ -103,8 +117,11 @@ def run_seed(seed: int) -> dict:
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True); t0 = time.time()
+    import hashlib
+    for sd in CFG["seeds"]: fast_controller(sd)
+    ck = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((OUT / "controllers").glob("*.pt"))}
     with Pool(len(CFG["seeds"])) as p: res = p.map(run_seed, CFG["seeds"])
-    meta = {"milestone": 1, "config": CFG, "observability": OBSERVABILITY, "policies": POLICIES, "not_instantiable": {"lateral impulse": "Walker2d-v5 is planar (sagittal plane only)"}, "wall_s": round(time.time() - t0, 1), "versions": {"torch": torch.__version__, "numpy": np.__version__}}
+    meta = {"milestone": 1, "controller_checkpoints_sha256": ck, "config": CFG, "observability": OBSERVABILITY, "policies": POLICIES, "not_instantiable": {"lateral impulse": "Walker2d-v5 is planar (sagittal plane only)"}, "wall_s": round(time.time() - t0, 1), "versions": {"torch": torch.__version__, "numpy": np.__version__}}
     (OUT / "raw.json").write_text(json.dumps({"meta": meta, "seeds": res}, default=float))
     print("wrote", OUT / "raw.json", meta["wall_s"], "s")
 

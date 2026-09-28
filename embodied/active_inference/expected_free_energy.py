@@ -13,10 +13,17 @@ EPS = 1e-16
 def entropy(p): return float(-np.sum(p * np.log(p + EPS)))
 
 
-def efe(A: np.ndarray, B_pi: np.ndarray, q: np.ndarray, logC: np.ndarray) -> dict:
+def efe(A: np.ndarray, B_pi: np.ndarray, q: np.ndarray, logC: np.ndarray, timer=None) -> dict:
+    """`timer` (optional) records the preference and epistemic terms separately; it does not affect the values."""
+    import time
+    t0 = time.perf_counter_ns()
     qs = B_pi @ q                         # predicted state distribution
     qo = A @ qs                           # predicted observation distribution
+    t1 = time.perf_counter_ns()
     pragmatic = float(np.sum(qo * logC))  # expected log preference (higher = better)
+    t2 = time.perf_counter_ns()
     ambiguity = float(np.sum(qs * np.array([entropy(A[:, s]) for s in range(A.shape[1])])))
     epistemic = entropy(qo) - ambiguity   # mutual information I(s; o | π)
+    t3 = time.perf_counter_ns()
+    if timer is not None: timer["prediction"] += t1 - t0; timer["preference"] += t2 - t1; timer["epistemic"] += t3 - t2
     return {"G": -pragmatic - epistemic, "pragmatic": pragmatic, "epistemic": epistemic, "risk_proxy": -pragmatic, "ambiguity": ambiguity, "predicted_obs": qo}

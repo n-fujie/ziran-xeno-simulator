@@ -1,6 +1,13 @@
 {
  "meta": {
   "milestone": 1,
+  "controller_checkpoints_sha256": {
+   "seed1.pt": "fe97567fad6277f5a3c87cd702eadfe4b7922971f6103430184d9a38e48b03a1",
+   "seed2.pt": "7336173d7416effa7bacfd5b5a3c5eb8aed6966776032ca29a5220ce99441b59",
+   "seed3.pt": "998e17d7e2d8c9d2e515eed96e524ec036670a61f55d1edbc7a8587bdd1fe18b",
+   "seed4.pt": "1a6e00b904d4bdf38e9feb23b3913253c285cc53af5c240168f4e20cbc3f1ef6",
+   "seed5.pt": "14be2db406096eb84db9e6e7cb98a43df2b0d34c47b53307edda61bd5a11450a"
+  },
   "config": {
    "embodiment": "walker2d",
    "seeds": [
@@ -131,43 +138,15 @@
   "not_instantiable": {
    "lateral impulse": "Walker2d-v5 is planar (sagittal plane only)"
   },
-  "wall_s": 171.4,
+  "wall_s": 64.5,
   "versions": {
    "torch": "2.13.0",
    "numpy": "2.5.1"
-  },
-  "note": "paired by seed; B \u2212 A; no aggregate score"
- },
- "calibration": [
-  {
-   "transitions": 482,
-   "seconds": 8.5,
-   "episodes": 60
-  },
-  {
-   "transitions": 530,
-   "seconds": 9.8,
-   "episodes": 60
-  },
-  {
-   "transitions": 468,
-   "seconds": 8.3,
-   "episodes": 60
-  },
-  {
-   "transitions": 488,
-   "seconds": 9.0,
-   "episodes": 60
-  },
-  {
-   "transitions": 535,
-   "seconds": 10.4,
-   "episodes": 60
   }
- ],
+ },
  "table": {
   "forward|80N|noise0.0": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.74,
      "lo": 0.36,
@@ -185,9 +164,10 @@
      "lo": 0.0,
      "hi": 0.12,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.7053,
      "lo": 0.3938,
@@ -196,18 +176,19 @@
     },
     "B": {
      "mean": 0.7494,
-     "lo": 0.4488,
+     "lo": 0.4496,
      "hi": 0.908,
      "n": 5
     },
     "B_minus_A": {
      "mean": 0.0441,
-     "lo": 0.0034,
-     "hi": 0.1049,
+     "lo": 0.0029,
+     "hi": 0.104,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.52,
      "lo": 0.16,
@@ -225,9 +206,10 @@
      "lo": -0.14,
      "hi": 0.0,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 0.3,
      "lo": 0.0,
@@ -245,9 +227,10 @@
      "lo": 0.0,
      "hi": 6.075,
      "n": 4
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 1.1748,
      "lo": 0.1542,
@@ -257,7 +240,7 @@
     "B": {
      "mean": 1.5664,
      "lo": 0.443,
-     "hi": 3.6844,
+     "hi": 3.681,
      "n": 5
     },
     "B_minus_A": {
@@ -265,7 +248,8 @@
      "lo": 0.2042,
      "hi": 0.5822,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
    "motor_effort": {
     "A": {
@@ -285,11 +269,49 @@
      "lo": 2.739,
      "hi": 20.0686,
      "n": 5
-    }
+    },
+    "interval": "B higher"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 208.0497,
+     "lo": 178.9201,
+     "hi": 235.9168,
+     "n": 5
+    },
+    "B": {
+     "mean": 201.2589,
+     "lo": 173.2693,
+     "hi": 228.6014,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -6.7908,
+     "lo": -11.0048,
+     "hi": -2.5769,
+     "n": 5
+    },
+    "interval": "B lower"
+   },
+   "prediction_error_modeB": {
+    "decisions": 414,
+    "mean_log_loss": 1.3,
+    "argmax_hit_rate": 0.6135,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.264,
+    "(0.0, 1.2)": 0.169,
+    "(0.0, 1.0)": 0.153,
+    "(0.1, 1.0)": 0.129,
+    "(-0.1, 1.2)": 0.127,
+    "(-0.1, 0.8)": 0.092,
+    "(-0.1, 1.0)": 0.042,
+    "(0.0, 0.8)": 0.024
    }
   },
   "forward|80N|noise0.05": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.7,
      "lo": 0.34,
@@ -307,29 +329,31 @@
      "lo": 0.0,
      "hi": 0.26,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.6955,
-     "lo": 0.3995,
+     "lo": 0.4002,
      "hi": 0.8773,
      "n": 5
     },
     "B": {
      "mean": 0.7703,
-     "lo": 0.6176,
+     "lo": 0.617,
      "hi": 0.8848,
      "n": 5
     },
     "B_minus_A": {
      "mean": 0.0749,
      "lo": -0.0152,
-     "hi": 0.2243,
+     "hi": 0.2242,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.52,
      "lo": 0.14,
@@ -347,9 +371,10 @@
      "lo": -0.12,
      "hi": 0.12,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 0.225,
      "lo": 0.0,
@@ -367,9 +392,10 @@
      "lo": 0.0,
      "hi": 2.2417,
      "n": 4
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 7.04,
      "lo": 4.5859,
@@ -385,9 +411,10 @@
     "B_minus_A": {
      "mean": 0.355,
      "lo": 0.1308,
-     "hi": 0.5413,
+     "hi": 0.5358,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
    "motor_effort": {
     "A": {
@@ -407,11 +434,50 @@
      "lo": 3.2908,
      "hi": 12.929,
      "n": 5
-    }
+    },
+    "interval": "B higher"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 208.9288,
+     "lo": 179.6583,
+     "hi": 237.6159,
+     "n": 5
+    },
+    "B": {
+     "mean": 202.3007,
+     "lo": 175.7095,
+     "hi": 228.8919,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -6.6281,
+     "lo": -13.3285,
+     "hi": 0.0723,
+     "n": 5
+    },
+    "interval": "no difference established"
+   },
+   "prediction_error_modeB": {
+    "decisions": 415,
+    "mean_log_loss": 1.9398,
+    "argmax_hit_rate": 0.3614,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.249,
+    "(0.1, 1.0)": 0.139,
+    "(-0.1, 1.2)": 0.139,
+    "(0.0, 1.2)": 0.129,
+    "(-0.1, 0.8)": 0.111,
+    "(0.0, 1.0)": 0.106,
+    "(0.0, 0.8)": 0.052,
+    "(-0.1, 1.0)": 0.052,
+    "(0.1, 0.8)": 0.024
    }
   },
   "forward|140N|noise0.0": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.84,
      "lo": 0.52,
@@ -429,9 +495,10 @@
      "lo": 0.0,
      "hi": 0.24,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.8288,
      "lo": 0.674,
@@ -449,9 +516,10 @@
      "lo": -0.0006,
      "hi": 0.0972,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.56,
      "lo": 0.16,
@@ -469,9 +537,10 @@
      "lo": -0.06,
      "hi": 0.0,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 0.7417,
      "lo": 0.0,
@@ -489,13 +558,14 @@
      "lo": 0.0,
      "hi": 3.0,
      "n": 3
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 1.0486,
-     "lo": 0.2442,
-     "hi": 2.5367,
+     "lo": 0.2424,
+     "hi": 2.5495,
      "n": 5
     },
     "B": {
@@ -509,7 +579,8 @@
      "lo": 0.2146,
      "hi": 0.7341,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
    "motor_effort": {
     "A": {
@@ -521,7 +592,7 @@
     "B": {
      "mean": 75.0651,
      "lo": 42.9099,
-     "hi": 115.9857,
+     "hi": 115.926,
      "n": 5
     },
     "B_minus_A": {
@@ -529,11 +600,50 @@
      "lo": 2.4607,
      "hi": 12.7858,
      "n": 5
-    }
+    },
+    "interval": "B higher"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 202.013,
+     "lo": 170.0445,
+     "hi": 233.9815,
+     "n": 5
+    },
+    "B": {
+     "mean": 195.7049,
+     "lo": 164.9769,
+     "hi": 226.4329,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -6.3081,
+     "lo": -8.4708,
+     "hi": -4.1454,
+     "n": 5
+    },
+    "interval": "B lower"
+   },
+   "prediction_error_modeB": {
+    "decisions": 415,
+    "mean_log_loss": 1.5306,
+    "argmax_hit_rate": 0.5663,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.217,
+    "(0.1, 1.0)": 0.143,
+    "(0.0, 1.2)": 0.143,
+    "(-0.1, 1.2)": 0.138,
+    "(0.0, 1.0)": 0.136,
+    "(-0.1, 0.8)": 0.119,
+    "(-0.1, 1.0)": 0.048,
+    "(0.0, 0.8)": 0.031,
+    "(0.1, 0.8)": 0.024
    }
   },
   "forward|140N|noise0.05": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.84,
      "lo": 0.56,
@@ -551,12 +661,13 @@
      "lo": -0.04,
      "hi": 0.08,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.8236,
-     "lo": 0.6631,
+     "lo": 0.663,
      "hi": 0.9056,
      "n": 5
     },
@@ -571,9 +682,10 @@
      "lo": -0.0072,
      "hi": 0.0303,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.56,
      "lo": 0.16,
@@ -591,9 +703,10 @@
      "lo": -0.18,
      "hi": 0.08,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 0.45,
      "lo": 0.0,
@@ -611,9 +724,10 @@
      "lo": -0.6944,
      "hi": 1.2333,
      "n": 3
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 6.5009,
      "lo": 4.4459,
@@ -631,7 +745,8 @@
      "lo": -0.2588,
      "hi": 0.6842,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
    "motor_effort": {
     "A": {
@@ -648,14 +763,53 @@
     },
     "B_minus_A": {
      "mean": 6.9763,
-     "lo": 1.2732,
+     "lo": 1.2979,
      "hi": 12.6793,
      "n": 5
-    }
+    },
+    "interval": "B higher"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 201.4726,
+     "lo": 170.2034,
+     "hi": 232.7419,
+     "n": 5
+    },
+    "B": {
+     "mean": 194.4857,
+     "lo": 166.3133,
+     "hi": 222.658,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -6.987,
+     "lo": -14.6266,
+     "hi": -2.1468,
+     "n": 5
+    },
+    "interval": "B lower"
+   },
+   "prediction_error_modeB": {
+    "decisions": 410,
+    "mean_log_loss": 2.0753,
+    "argmax_hit_rate": 0.3293,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.225,
+    "(-0.1, 1.2)": 0.173,
+    "(-0.1, 0.8)": 0.125,
+    "(0.1, 1.0)": 0.118,
+    "(0.0, 1.2)": 0.113,
+    "(0.0, 1.0)": 0.086,
+    "(0.0, 0.8)": 0.062,
+    "(-0.1, 1.0)": 0.06,
+    "(0.1, 0.8)": 0.038
    }
   },
   "forward|200N|noise0.0": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.9,
      "lo": 0.7,
@@ -673,29 +827,31 @@
      "lo": -0.06,
      "hi": 0.0,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.8734,
-     "lo": 0.8064,
+     "lo": 0.8066,
      "hi": 0.9085,
      "n": 5
     },
     "B": {
      "mean": 0.8526,
-     "lo": 0.7445,
+     "lo": 0.7444,
      "hi": 0.9086,
      "n": 5
     },
     "B_minus_A": {
      "mean": -0.0208,
-     "lo": -0.0623,
-     "hi": 0.0005,
+     "lo": -0.0624,
+     "hi": 0.0004,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.54,
      "lo": 0.16,
@@ -713,9 +869,10 @@
      "lo": -0.18,
      "hi": 0.0,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 0.4074,
      "lo": 0.0,
@@ -733,9 +890,10 @@
      "lo": 0.0,
      "hi": 1.6667,
      "n": 3
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 0.9852,
      "lo": 0.3155,
@@ -751,9 +909,10 @@
     "B_minus_A": {
      "mean": 0.432,
      "lo": 0.2177,
-     "hi": 0.6836,
+     "hi": 0.6524,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
    "motor_effort": {
     "A": {
@@ -773,11 +932,50 @@
      "lo": 2.4283,
      "hi": 15.9851,
      "n": 5
-    }
+    },
+    "interval": "B higher"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 188.1789,
+     "lo": 161.1682,
+     "hi": 218.0229,
+     "n": 5
+    },
+    "B": {
+     "mean": 185.6097,
+     "lo": 158.9634,
+     "hi": 215.0451,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -2.5692,
+     "lo": -4.8128,
+     "hi": -0.0251,
+     "n": 5
+    },
+    "interval": "B lower"
+   },
+   "prediction_error_modeB": {
+    "decisions": 393,
+    "mean_log_loss": 1.728,
+    "argmax_hit_rate": 0.5165,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.223,
+    "(-0.1, 1.2)": 0.163,
+    "(0.0, 1.2)": 0.148,
+    "(0.0, 1.0)": 0.13,
+    "(0.1, 1.0)": 0.105,
+    "(-0.1, 0.8)": 0.093,
+    "(0.0, 0.8)": 0.07,
+    "(-0.1, 1.0)": 0.055,
+    "(0.1, 0.8)": 0.013
    }
   },
   "forward|200N|noise0.05": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.92,
      "lo": 0.76,
@@ -795,19 +993,20 @@
      "lo": 0.0,
      "hi": 0.0,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.8749,
-     "lo": 0.8071,
+     "lo": 0.8077,
      "hi": 0.9116,
      "n": 5
     },
     "B": {
      "mean": 0.8715,
-     "lo": 0.8049,
-     "hi": 0.9071,
+     "lo": 0.8055,
+     "hi": 0.907,
      "n": 5
     },
     "B_minus_A": {
@@ -815,9 +1014,10 @@
      "lo": -0.0048,
      "hi": -0.0021,
      "n": 5
-    }
+    },
+    "interval": "B lower"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.58,
      "lo": 0.18,
@@ -832,12 +1032,13 @@
     },
     "B_minus_A": {
      "mean": -0.1,
-     "lo": -0.26,
+     "lo": -0.28,
      "hi": 0.04,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 1.0333,
      "lo": 0.0,
@@ -855,9 +1056,10 @@
      "lo": -3.0,
      "hi": 0.375,
      "n": 3
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 5.6212,
      "lo": 3.8778,
@@ -875,7 +1077,8 @@
      "lo": -0.2893,
      "hi": 0.4491,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
    "motor_effort": {
     "A": {
@@ -887,7 +1090,7 @@
     "B": {
      "mean": 67.9326,
      "lo": 39.6307,
-     "hi": 106.5871,
+     "hi": 106.5743,
      "n": 5
     },
     "B_minus_A": {
@@ -895,11 +1098,50 @@
      "lo": 0.4557,
      "hi": 11.8576,
      "n": 5
-    }
+    },
+    "interval": "B higher"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 187.6985,
+     "lo": 161.3871,
+     "hi": 215.0339,
+     "n": 5
+    },
+    "B": {
+     "mean": 181.8321,
+     "lo": 157.9585,
+     "hi": 208.0739,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -5.8664,
+     "lo": -8.6447,
+     "hi": -3.4014,
+     "n": 5
+    },
+    "interval": "B lower"
+   },
+   "prediction_error_modeB": {
+    "decisions": 386,
+    "mean_log_loss": 2.2558,
+    "argmax_hit_rate": 0.2927,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.221,
+    "(-0.1, 1.2)": 0.172,
+    "(-0.1, 0.8)": 0.156,
+    "(0.0, 1.2)": 0.118,
+    "(0.0, 0.8)": 0.087,
+    "(0.1, 1.0)": 0.082,
+    "(0.0, 1.0)": 0.077,
+    "(-0.1, 1.0)": 0.064,
+    "(0.1, 0.8)": 0.023
    }
   },
   "backward|80N|noise0.0": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.94,
      "lo": 0.82,
@@ -917,12 +1159,13 @@
      "lo": -0.36,
      "hi": 0.12,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.8579,
-     "lo": 0.8023,
+     "lo": 0.8034,
      "hi": 0.8927,
      "n": 5
     },
@@ -934,12 +1177,13 @@
     },
     "B_minus_A": {
      "mean": -0.0063,
-     "lo": -0.0541,
+     "lo": -0.055,
      "hi": 0.0347,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.36,
      "lo": 0.0,
@@ -957,9 +1201,10 @@
      "lo": -0.18,
      "hi": 0.0,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 0.0,
      "lo": 0.0,
@@ -977,9 +1222,10 @@
      "lo": 0.0,
      "hi": 0.0,
      "n": 2
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 1.2344,
      "lo": 0.2103,
@@ -995,15 +1241,16 @@
     "B_minus_A": {
      "mean": 0.257,
      "lo": 0.1585,
-     "hi": 0.3555,
+     "hi": 0.3533,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
    "motor_effort": {
     "A": {
      "mean": 72.3244,
      "lo": 39.8826,
-     "hi": 124.5773,
+     "hi": 123.6751,
      "n": 5
     },
     "B": {
@@ -1014,14 +1261,52 @@
     },
     "B_minus_A": {
      "mean": 10.3585,
-     "lo": -0.7389,
-     "hi": 23.617,
+     "lo": -0.8663,
+     "hi": 22.7978,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 208.5077,
+     "lo": 188.0218,
+     "hi": 227.1226,
+     "n": 5
+    },
+    "B": {
+     "mean": 208.4773,
+     "lo": 184.7462,
+     "hi": 232.0037,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -0.0304,
+     "lo": -10.5482,
+     "hi": 11.2972,
+     "n": 5
+    },
+    "interval": "no difference established"
+   },
+   "prediction_error_modeB": {
+    "decisions": 434,
+    "mean_log_loss": 1.4176,
+    "argmax_hit_rate": 0.5806,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.254,
+    "(0.0, 1.2)": 0.197,
+    "(0.0, 1.0)": 0.17,
+    "(0.1, 1.0)": 0.098,
+    "(-0.1, 0.8)": 0.093,
+    "(-0.1, 1.2)": 0.093,
+    "(0.0, 0.8)": 0.061,
+    "(-0.1, 1.0)": 0.034
    }
   },
   "backward|80N|noise0.05": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.92,
      "lo": 0.8,
@@ -1039,9 +1324,10 @@
      "lo": -0.22,
      "hi": 0.08,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.8623,
      "lo": 0.8181,
@@ -1056,12 +1342,13 @@
     },
     "B_minus_A": {
      "mean": -0.0346,
-     "lo": -0.1152,
+     "lo": -0.1087,
      "hi": 0.0361,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.36,
      "lo": 0.0,
@@ -1070,18 +1357,19 @@
     },
     "B": {
      "mean": 0.36,
-     "lo": 0.12,
+     "lo": 0.1,
      "hi": 0.64,
      "n": 5
     },
     "B_minus_A": {
      "mean": 0.0,
-     "lo": -0.22,
-     "hi": 0.22,
+     "lo": -0.24,
+     "hi": 0.24,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 0.0,
      "lo": 0.0,
@@ -1099,12 +1387,13 @@
      "lo": 0.0,
      "hi": 0.0,
      "n": 2
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 6.906,
-     "lo": 5.3024,
+     "lo": 5.3043,
      "hi": 8.6878,
      "n": 5
     },
@@ -1117,20 +1406,21 @@
     "B_minus_A": {
      "mean": 0.8437,
      "lo": -0.0919,
-     "hi": 2.0003,
+     "hi": 1.9048,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
    "motor_effort": {
     "A": {
      "mean": 72.9357,
      "lo": 41.1419,
-     "hi": 123.3535,
+     "hi": 123.9836,
      "n": 5
     },
     "B": {
      "mean": 82.7534,
-     "lo": 45.9972,
+     "lo": 45.7911,
      "hi": 132.8073,
      "n": 5
     },
@@ -1139,11 +1429,50 @@
      "lo": 1.5651,
      "hi": 19.3883,
      "n": 5
-    }
+    },
+    "interval": "B higher"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 208.7471,
+     "lo": 189.0564,
+     "hi": 226.238,
+     "n": 5
+    },
+    "B": {
+     "mean": 208.1172,
+     "lo": 186.6717,
+     "hi": 229.5628,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -0.6298,
+     "lo": -14.8289,
+     "hi": 11.7459,
+     "n": 5
+    },
+    "interval": "no difference established"
+   },
+   "prediction_error_modeB": {
+    "decisions": 429,
+    "mean_log_loss": 1.9544,
+    "argmax_hit_rate": 0.3893,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.236,
+    "(0.0, 1.2)": 0.158,
+    "(0.0, 1.0)": 0.149,
+    "(-0.1, 0.8)": 0.115,
+    "(-0.1, 1.2)": 0.112,
+    "(0.1, 1.0)": 0.092,
+    "(0.0, 0.8)": 0.069,
+    "(-0.1, 1.0)": 0.06,
+    "(0.1, 0.8)": 0.009
    }
   },
   "backward|140N|noise0.0": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.86,
      "lo": 0.66,
@@ -1161,9 +1490,10 @@
      "lo": 0.0,
      "hi": 0.14,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.8339,
      "lo": 0.7516,
@@ -1172,7 +1502,7 @@
     },
     "B": {
      "mean": 0.859,
-     "lo": 0.8058,
+     "lo": 0.8066,
      "hi": 0.893,
      "n": 5
     },
@@ -1181,9 +1511,10 @@
      "lo": -0.0061,
      "hi": 0.0615,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.44,
      "lo": 0.08,
@@ -1201,9 +1532,10 @@
      "lo": -0.24,
      "hi": 0.08,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 1.8333,
      "lo": 0.0,
@@ -1221,27 +1553,29 @@
      "lo": 0.0,
      "hi": 1.5,
      "n": 3
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 1.0285,
      "lo": 0.2566,
-     "hi": 2.182,
+     "hi": 2.1822,
      "n": 5
     },
     "B": {
      "mean": 1.2486,
      "lo": 0.506,
-     "hi": 2.2328,
+     "hi": 2.367,
      "n": 5
     },
     "B_minus_A": {
      "mean": 0.2201,
-     "lo": 0.1383,
+     "lo": 0.1444,
      "hi": 0.3011,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
    "motor_effort": {
     "A": {
@@ -1252,20 +1586,58 @@
     },
     "B": {
      "mean": 77.2428,
-     "lo": 49.1577,
+     "lo": 49.3736,
      "hi": 114.3997,
      "n": 5
     },
     "B_minus_A": {
      "mean": 9.1352,
-     "lo": -0.4994,
-     "hi": 19.2668,
+     "lo": -0.7734,
+     "hi": 19.2158,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 204.5119,
+     "lo": 181.2399,
+     "hi": 227.7277,
+     "n": 5
+    },
+    "B": {
+     "mean": 202.8428,
+     "lo": 179.8151,
+     "hi": 222.7783,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -1.6691,
+     "lo": -8.9892,
+     "hi": 5.6509,
+     "n": 5
+    },
+    "interval": "no difference established"
+   },
+   "prediction_error_modeB": {
+    "decisions": 428,
+    "mean_log_loss": 1.4058,
+    "argmax_hit_rate": 0.6005,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.289,
+    "(0.0, 1.2)": 0.176,
+    "(0.0, 1.0)": 0.164,
+    "(-0.1, 0.8)": 0.106,
+    "(-0.1, 1.2)": 0.081,
+    "(0.1, 1.0)": 0.076,
+    "(0.0, 0.8)": 0.069,
+    "(-0.1, 1.0)": 0.037
    }
   },
   "backward|140N|noise0.05": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.86,
      "lo": 0.66,
@@ -1283,13 +1655,14 @@
      "lo": -0.08,
      "hi": 0.22,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.8426,
      "lo": 0.7802,
-     "hi": 0.8915,
+     "hi": 0.8921,
      "n": 5
     },
     "B": {
@@ -1303,9 +1676,10 @@
      "lo": -0.0636,
      "hi": 0.0493,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.46,
      "lo": 0.08,
@@ -1323,9 +1697,10 @@
      "lo": -0.42,
      "hi": 0.14,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 0.1667,
      "lo": 0.0,
@@ -1343,9 +1718,10 @@
      "lo": 0.0,
      "hi": 0.0,
      "n": 2
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 6.5979,
      "lo": 5.0415,
@@ -1354,21 +1730,22 @@
     },
     "B": {
      "mean": 7.2238,
-     "lo": 5.5608,
+     "lo": 5.5701,
      "hi": 8.5404,
      "n": 5
     },
     "B_minus_A": {
      "mean": 0.6259,
-     "lo": -0.1639,
+     "lo": -0.1419,
      "hi": 1.455,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
    "motor_effort": {
     "A": {
      "mean": 69.1184,
-     "lo": 40.926,
+     "lo": 41.0404,
      "hi": 111.7387,
      "n": 5
     },
@@ -1383,11 +1760,50 @@
      "lo": 1.7036,
      "hi": 16.1421,
      "n": 5
-    }
+    },
+    "interval": "B higher"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 205.7509,
+     "lo": 182.559,
+     "hi": 229.2264,
+     "n": 5
+    },
+    "B": {
+     "mean": 203.3421,
+     "lo": 184.3536,
+     "hi": 214.4031,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": -2.4088,
+     "lo": -16.1635,
+     "hi": 11.2089,
+     "n": 5
+    },
+    "interval": "no difference established"
+   },
+   "prediction_error_modeB": {
+    "decisions": 426,
+    "mean_log_loss": 1.9999,
+    "argmax_hit_rate": 0.3826,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.253,
+    "(0.0, 1.2)": 0.14,
+    "(0.0, 1.0)": 0.133,
+    "(-0.1, 0.8)": 0.126,
+    "(-0.1, 1.2)": 0.114,
+    "(0.1, 1.0)": 0.093,
+    "(0.0, 0.8)": 0.077,
+    "(-0.1, 1.0)": 0.056,
+    "(0.1, 0.8)": 0.009
    }
   },
   "backward|200N|noise0.0": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.78,
      "lo": 0.42,
@@ -1405,29 +1821,31 @@
      "lo": -0.18,
      "hi": 0.18,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.793,
-     "lo": 0.6481,
+     "lo": 0.6482,
      "hi": 0.8806,
      "n": 5
     },
     "B": {
      "mean": 0.7924,
-     "lo": 0.6679,
+     "lo": 0.6678,
      "hi": 0.8897,
      "n": 5
     },
     "B_minus_A": {
      "mean": -0.0006,
-     "lo": -0.0444,
+     "lo": -0.0452,
      "hi": 0.035,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.46,
      "lo": 0.08,
@@ -1445,9 +1863,10 @@
      "lo": -0.12,
      "hi": 0.36,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 2.3333,
      "lo": 0.0,
@@ -1465,9 +1884,10 @@
      "lo": 0.0,
      "hi": 2.2,
      "n": 3
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 0.9768,
      "lo": 0.3742,
@@ -1485,13 +1905,14 @@
      "lo": 0.0739,
      "hi": 0.3352,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
    "motor_effort": {
     "A": {
      "mean": 65.3429,
-     "lo": 38.9699,
-     "hi": 104.4098,
+     "lo": 39.7643,
+     "hi": 105.1844,
      "n": 5
     },
     "B": {
@@ -1505,11 +1926,49 @@
      "lo": -0.7511,
      "hi": 21.4773,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 197.9747,
+     "lo": 170.7988,
+     "hi": 229.5461,
+     "n": 5
+    },
+    "B": {
+     "mean": 201.2243,
+     "lo": 173.348,
+     "hi": 229.9851,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": 3.2496,
+     "lo": -2.7425,
+     "hi": 9.2156,
+     "n": 5
+    },
+    "interval": "no difference established"
+   },
+   "prediction_error_modeB": {
+    "decisions": 413,
+    "mean_log_loss": 1.4373,
+    "argmax_hit_rate": 0.586,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.311,
+    "(0.0, 1.2)": 0.16,
+    "(0.0, 1.0)": 0.153,
+    "(-0.1, 0.8)": 0.134,
+    "(0.1, 1.0)": 0.08,
+    "(-0.1, 1.2)": 0.068,
+    "(0.0, 0.8)": 0.061,
+    "(-0.1, 1.0)": 0.031
    }
   },
   "backward|200N|noise0.05": {
-   "fell": {
+   "fall_rate": {
     "A": {
      "mean": 0.76,
      "lo": 0.36,
@@ -1527,9 +1986,10 @@
      "lo": 0.0,
      "hi": 0.2,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "max_axis_deviation": {
+   "max_posture_deviation": {
     "A": {
      "mean": 0.783,
      "lo": 0.6117,
@@ -1547,9 +2007,10 @@
      "lo": 0.0011,
      "hi": 0.0147,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
-   "recovered": {
+   "recovered_fraction": {
     "A": {
      "mean": 0.48,
      "lo": 0.08,
@@ -1558,7 +2019,7 @@
     },
     "B": {
      "mean": 0.52,
-     "lo": 0.22,
+     "lo": 0.2,
      "hi": 0.82,
      "n": 5
     },
@@ -1567,9 +2028,10 @@
      "lo": -0.16,
      "hi": 0.26,
      "n": 5
-    }
+    },
+    "interval": "no difference established"
    },
-   "recovery_steps": {
+   "recovery_latency_steps": {
     "A": {
      "mean": 1.7,
      "lo": 0.0,
@@ -1587,9 +2049,10 @@
      "lo": 0.0,
      "hi": 6.4286,
      "n": 3
-    }
+    },
+    "interval": "no difference established"
    },
-   "corrective_movement": {
+   "corrective_action_magnitude": {
     "A": {
      "mean": 6.2295,
      "lo": 4.5643,
@@ -1599,27 +2062,28 @@
     "B": {
      "mean": 7.1987,
      "lo": 5.2114,
-     "hi": 9.1776,
+     "hi": 9.1761,
      "n": 5
     },
     "B_minus_A": {
      "mean": 0.9692,
-     "lo": 0.5901,
+     "lo": 0.5732,
      "hi": 1.4981,
      "n": 5
-    }
+    },
+    "interval": "B higher"
    },
    "motor_effort": {
     "A": {
      "mean": 66.2476,
      "lo": 40.5465,
-     "hi": 104.6411,
+     "hi": 105.7797,
      "n": 5
     },
     "B": {
      "mean": 76.6208,
-     "lo": 46.7275,
-     "hi": 110.7422,
+     "lo": 48.5215,
+     "hi": 112.6041,
      "n": 5
     },
     "B_minus_A": {
@@ -1627,757 +2091,230 @@
      "lo": 3.0475,
      "hi": 17.6989,
      "n": 5
-    }
+    },
+    "interval": "B higher"
+   },
+   "episode_return_secondary": {
+    "A": {
+     "mean": 199.2338,
+     "lo": 171.5385,
+     "hi": 230.6041,
+     "n": 5
+    },
+    "B": {
+     "mean": 203.9034,
+     "lo": 178.3295,
+     "hi": 229.4772,
+     "n": 5
+    },
+    "B_minus_A": {
+     "mean": 4.6696,
+     "lo": 0.0658,
+     "hi": 9.1105,
+     "n": 5
+    },
+    "interval": "B higher"
+   },
+   "prediction_error_modeB": {
+    "decisions": 422,
+    "mean_log_loss": 2.1169,
+    "argmax_hit_rate": 0.3507,
+    "modeA": "not applicable (no generative model)"
+   },
+   "policy_distribution_modeB": {
+    "(0.1, 1.2)": 0.295,
+    "(-0.1, 0.8)": 0.137,
+    "(0.0, 1.2)": 0.126,
+    "(0.0, 1.0)": 0.119,
+    "(-0.1, 1.2)": 0.098,
+    "(0.1, 1.0)": 0.086,
+    "(0.0, 0.8)": 0.081,
+    "(-0.1, 1.0)": 0.049,
+    "(0.1, 0.8)": 0.009
    }
   }
  },
- "latency_by_layer": {
+ "interval_counts_over_conditions": {
+  "fall_rate": {
+   "B higher": 0,
+   "B lower": 0,
+   "no difference established": 12,
+   "undetermined": 0
+  },
+  "max_posture_deviation": {
+   "B higher": 2,
+   "B lower": 1,
+   "no difference established": 9,
+   "undetermined": 0
+  },
+  "recovered_fraction": {
+   "B higher": 0,
+   "B lower": 0,
+   "no difference established": 12,
+   "undetermined": 0
+  },
+  "recovery_latency_steps": {
+   "B higher": 0,
+   "B lower": 0,
+   "no difference established": 12,
+   "undetermined": 0
+  },
+  "corrective_action_magnitude": {
+   "B higher": 8,
+   "B lower": 0,
+   "no difference established": 4,
+   "undetermined": 0
+  },
+  "motor_effort": {
+   "B higher": 9,
+   "B lower": 0,
+   "no difference established": 3,
+   "undetermined": 0
+  },
+  "episode_return_secondary": {
+   "B higher": 1,
+   "B lower": 5,
+   "no difference established": 6,
+   "undetermined": 0
+  }
+ },
+ "latency": {
   "A": {
-   "layer1_state_estimation": {
-    "mean_ms": 0.03438,
-    "p95_ms": 0.05819,
-    "max_ms": 9.52454
+   "observation_adaptation": {
+    "calls": 121597,
+    "median_ms": 0.00854,
+    "p95_ms": 0.01733,
+    "max_ms": 11.71271
    },
    "layer0_fast_control": {
-    "mean_ms": 0.64605,
-    "p95_ms": 1.11122,
-    "max_ms": 166.36163
+    "calls": 121597,
+    "median_ms": 0.47621,
+    "p95_ms": 0.96737,
+    "max_ms": 389.10175
+   },
+   "controller_step_total": {
+    "calls": 121597,
+    "median_ms": 0.48733,
+    "p95_ms": 0.99234,
+    "max_ms": 389.12613
    }
   },
   "B": {
-   "layer1_state_estimation": {
-    "mean_ms": 0.03498,
-    "p95_ms": 0.05601,
-    "max_ms": 13.36975
+   "observation_adaptation": {
+    "calls": 120018,
+    "median_ms": 0.00892,
+    "p95_ms": 0.01812,
+    "max_ms": 5.51179
    },
-   "layer2_active_inference": {
-    "mean_ms": 2.06093,
-    "p95_ms": 2.35722,
-    "max_ms": 35.10787
+   "latent_state_inference": {
+    "calls": 5068,
+    "median_ms": 0.05342,
+    "p95_ms": 0.08003,
+    "max_ms": 8.43675
+   },
+   "vfe": {
+    "calls": 5068,
+    "median_ms": 0.01733,
+    "p95_ms": 0.02539,
+    "max_ms": 4.41779
+   },
+   "efe_preference": {
+    "calls": 5068,
+    "median_ms": 0.04179,
+    "p95_ms": 0.07818,
+    "max_ms": 4.82358
+   },
+   "efe_epistemic": {
+    "calls": 5068,
+    "median_ms": 1.39244,
+    "p95_ms": 2.45844,
+    "max_ms": 21.27904
+   },
+   "efe_total": {
+    "calls": 5068,
+    "median_ms": 1.72154,
+    "p95_ms": 3.06953,
+    "max_ms": 47.047
+   },
+   "policy_selection": {
+    "calls": 5068,
+    "median_ms": 0.02367,
+    "p95_ms": 0.0379,
+    "max_ms": 3.98858
+   },
+   "aif_decision_total": {
+    "calls": 5068,
+    "median_ms": 1.8575,
+    "p95_ms": 3.31313,
+    "max_ms": 47.23725
    },
    "layer0_fast_control": {
-    "mean_ms": 0.65903,
-    "p95_ms": 1.13835,
-    "max_ms": 130.82621
+    "calls": 120018,
+    "median_ms": 0.49517,
+    "p95_ms": 1.0926,
+    "max_ms": 389.74725
+   },
+   "controller_step_total": {
+    "calls": 120018,
+    "median_ms": 0.511,
+    "p95_ms": 2.06198,
+    "max_ms": 389.77342
+   },
+   "controller_step_with_decision": {
+    "calls": 5068,
+    "median_ms": 2.497,
+    "p95_ms": 4.47266,
+    "max_ms": 54.15221
    }
   }
  },
- "mode_B_policy_usage": {
-  "(0.1, 1.2)": 348,
-  "(0.0, 1.0)": 324,
-  "(0.1, 1.0)": 320,
-  "(-0.1, 0.8)": 303,
-  "(-0.1, 1.2)": 303,
-  "(0.0, 1.2)": 237,
-  "(-0.1, 1.0)": 203,
-  "(0.0, 0.8)": 196,
-  "(0.1, 0.8)": 46
+ "aif_budget_check": {
+  "< 200 ms": {
+   "median": true,
+   "p95": true,
+   "max": true
+  },
+  "< 100 ms": {
+   "median": true,
+   "p95": true,
+   "max": true
+  },
+  "< 50 ms": {
+   "median": true,
+   "p95": true,
+   "max": true
+  },
+  "< 10 ms": {
+   "median": true,
+   "p95": true,
+   "max": false
+  }
  },
- "operational_shape_seed1": [
+ "calibration": [
   {
-   "condition": "forward|80N|noise0.0",
-   "t": 0,
-   "current_configuration": [
-    0.1,
-    1.0
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [0.1, 1.0] for 25 steps",
-   "retained_difference": 0.01231625448974604,
-   "transformed_difference": 0.012169654775848521,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
+   "transitions": 482,
+   "seconds": 9.1,
+   "episodes": 60
   },
   {
-   "condition": "forward|80N|noise0.0",
-   "t": 25,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.0026292664498721603,
-   "transformed_difference": -0.009686988039873879,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
+   "transitions": 530,
+   "seconds": 10.7,
+   "episodes": 60
   },
   {
-   "condition": "forward|80N|noise0.0",
-   "t": 50,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.02565812251008415,
-   "transformed_difference": 0.02302885606021199,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
+   "transitions": 468,
+   "seconds": 8.9,
+   "episodes": 60
   },
   {
-   "condition": "forward|80N|noise0.0",
-   "t": 75,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.06513040636737617,
-   "transformed_difference": 0.039472283857292026,
-   "interrupted_transition": false,
-   "return_signal": 13,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
+   "transitions": 488,
+   "seconds": 9.4,
+   "episodes": 60
   },
   {
-   "condition": "forward|80N|noise0.0",
-   "t": 100,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 13",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": 0.20931353682353457,
-   "transformed_difference": 0.14418313045615838,
-   "interrupted_transition": false,
-   "return_signal": 16,
-   "reconfigured_next_condition": [
-    -0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|80N|noise0.0",
-   "t": 125,
-   "current_configuration": [
-    -0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 16",
-   "active_transition": "policy [-0.1, 1.2] for 25 steps",
-   "retained_difference": 0.44521642356517516,
-   "transformed_difference": 0.2359028867416406,
-   "interrupted_transition": false,
-   "return_signal": 20,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|80N|noise0.0",
-   "t": 150,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 17",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": 0.868598462968204,
-   "transformed_difference": 0.4233820394030288,
-   "interrupted_transition": false,
-   "return_signal": 20,
-   "reconfigured_next_condition": [
-    -0.1,
-    1.0
-   ]
-  },
-  {
-   "condition": "forward|80N|noise0.0",
-   "t": 175,
-   "current_configuration": [
-    -0.1,
-    1.0
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 20",
-   "active_transition": "policy [-0.1, 1.0] for 25 steps",
-   "retained_difference": null,
-   "transformed_difference": null,
-   "interrupted_transition": true,
-   "return_signal": "fallen",
-   "reconfigured_next_condition": null
-  },
-  {
-   "condition": "forward|80N|noise0.05",
-   "t": 0,
-   "current_configuration": [
-    0.1,
-    1.0
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [0.1, 1.0] for 25 steps",
-   "retained_difference": 2.7761745811370406e-05,
-   "transformed_difference": -0.011430910710583482,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|80N|noise0.05",
-   "t": 25,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.0037724903822374846,
-   "transformed_difference": 0.003744728636426114,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|80N|noise0.05",
-   "t": 50,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.010138877293625698,
-   "transformed_difference": 0.006366386911388213,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|80N|noise0.05",
-   "t": 75,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.11894949979354255,
-   "transformed_difference": 0.10881062249991685,
-   "interrupted_transition": false,
-   "return_signal": 13,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|80N|noise0.05",
-   "t": 100,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 13",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": 0.19223299802402496,
-   "transformed_difference": 0.07328349823048241,
-   "interrupted_transition": false,
-   "return_signal": 16,
-   "reconfigured_next_condition": [
-    -0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|80N|noise0.05",
-   "t": 125,
-   "current_configuration": [
-    -0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 16",
-   "active_transition": "policy [-0.1, 1.2] for 25 steps",
-   "retained_difference": 0.5132005643389472,
-   "transformed_difference": 0.3209675663149223,
-   "interrupted_transition": false,
-   "return_signal": 20,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|80N|noise0.05",
-   "t": 150,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 17",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": null,
-   "transformed_difference": null,
-   "interrupted_transition": true,
-   "return_signal": "fallen",
-   "reconfigured_next_condition": null
-  },
-  {
-   "condition": "forward|140N|noise0.0",
-   "t": 0,
-   "current_configuration": [
-    0.1,
-    1.0
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [0.1, 1.0] for 25 steps",
-   "retained_difference": 0.01231625448974604,
-   "transformed_difference": 0.012169654775848521,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.0",
-   "t": 25,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.0026292664498721603,
-   "transformed_difference": -0.009686988039873879,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.0",
-   "t": 50,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.02565812251008415,
-   "transformed_difference": 0.02302885606021199,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.0",
-   "t": 75,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.06513040636737617,
-   "transformed_difference": 0.039472283857292026,
-   "interrupted_transition": false,
-   "return_signal": 13,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.0",
-   "t": 100,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 13",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": 0.2573078049370033,
-   "transformed_difference": 0.19217739856962712,
-   "interrupted_transition": false,
-   "return_signal": 17,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.0",
-   "t": 125,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 17",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": 0.5674030777139981,
-   "transformed_difference": 0.31009527277699483,
-   "interrupted_transition": false,
-   "return_signal": 20,
-   "reconfigured_next_condition": [
-    -0.1,
-    1.0
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.0",
-   "t": 150,
-   "current_configuration": [
-    -0.1,
-    1.0
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 20",
-   "active_transition": "policy [-0.1, 1.0] for 25 steps",
-   "retained_difference": null,
-   "transformed_difference": null,
-   "interrupted_transition": true,
-   "return_signal": "fallen",
-   "reconfigured_next_condition": null
-  },
-  {
-   "condition": "forward|140N|noise0.05",
-   "t": 0,
-   "current_configuration": [
-    0.1,
-    1.0
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [0.1, 1.0] for 25 steps",
-   "retained_difference": 2.7761745811370406e-05,
-   "transformed_difference": -0.011430910710583482,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.05",
-   "t": 25,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.0037724903822374846,
-   "transformed_difference": 0.003744728636426114,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.05",
-   "t": 50,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.010138877293625698,
-   "transformed_difference": 0.006366386911388213,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.05",
-   "t": 75,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.11894949979354255,
-   "transformed_difference": 0.10881062249991685,
-   "interrupted_transition": false,
-   "return_signal": 13,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.05",
-   "t": 100,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 13",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": 0.24017322966075813,
-   "transformed_difference": 0.12122372986721558,
-   "interrupted_transition": false,
-   "return_signal": 16,
-   "reconfigured_next_condition": [
-    -0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.05",
-   "t": 125,
-   "current_configuration": [
-    -0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 16",
-   "active_transition": "policy [-0.1, 1.2] for 25 steps",
-   "retained_difference": 0.6330949388545394,
-   "transformed_difference": 0.3929217091937812,
-   "interrupted_transition": false,
-   "return_signal": 20,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|140N|noise0.05",
-   "t": 150,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 17",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": null,
-   "transformed_difference": null,
-   "interrupted_transition": true,
-   "return_signal": "fallen",
-   "reconfigured_next_condition": null
-  },
-  {
-   "condition": "forward|200N|noise0.0",
-   "t": 0,
-   "current_configuration": [
-    0.1,
-    1.0
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [0.1, 1.0] for 25 steps",
-   "retained_difference": 0.01231625448974604,
-   "transformed_difference": 0.012169654775848521,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|200N|noise0.0",
-   "t": 25,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.0026292664498721603,
-   "transformed_difference": -0.009686988039873879,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|200N|noise0.0",
-   "t": 50,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.02565812251008415,
-   "transformed_difference": 0.02302885606021199,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|200N|noise0.0",
-   "t": 75,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.06513040636737617,
-   "transformed_difference": 0.039472283857292026,
-   "interrupted_transition": false,
-   "return_signal": 13,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|200N|noise0.0",
-   "t": 100,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 13",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": 0.30527388466054306,
-   "transformed_difference": 0.2401434782931669,
-   "interrupted_transition": false,
-   "return_signal": 17,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
-  },
-  {
-   "condition": "forward|200N|noise0.0",
-   "t": 125,
-   "current_configuration": [
-    0.1,
-    1.2
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 17",
-   "active_transition": "policy [0.1, 1.2] for 25 steps",
-   "retained_difference": 0.6859807064462876,
-   "transformed_difference": 0.38070682178574455,
-   "interrupted_transition": false,
-   "return_signal": 20,
-   "reconfigured_next_condition": [
-    -0.1,
-    1.0
-   ]
-  },
-  {
-   "condition": "forward|200N|noise0.0",
-   "t": 150,
-   "current_configuration": [
-    -0.1,
-    1.0
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 20",
-   "active_transition": "policy [-0.1, 1.0] for 25 steps",
-   "retained_difference": null,
-   "transformed_difference": null,
-   "interrupted_transition": true,
-   "return_signal": "fallen",
-   "reconfigured_next_condition": null
-  },
-  {
-   "condition": "forward|200N|noise0.05",
-   "t": 0,
-   "current_configuration": [
-    0.1,
-    1.0
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [0.1, 1.0] for 25 steps",
-   "retained_difference": 2.7761745811370406e-05,
-   "transformed_difference": -0.011430910710583482,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|200N|noise0.05",
-   "t": 25,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.0037724903822374846,
-   "transformed_difference": 0.003744728636426114,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|200N|noise0.05",
-   "t": 50,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.010138877293625698,
-   "transformed_difference": 0.006366386911388213,
-   "interrupted_transition": false,
-   "return_signal": 10,
-   "reconfigured_next_condition": [
-    -0.1,
-    0.8
-   ]
-  },
-  {
-   "condition": "forward|200N|noise0.05",
-   "t": 75,
-   "current_configuration": [
-    -0.1,
-    0.8
-   ],
-   "ignition_condition": "decision interval reached; inferred state argmax 10",
-   "active_transition": "policy [-0.1, 0.8] for 25 steps",
-   "retained_difference": 0.11894949979354255,
-   "transformed_difference": 0.10881062249991685,
-   "interrupted_transition": false,
-   "return_signal": 13,
-   "reconfigured_next_condition": [
-    0.1,
-    1.2
-   ]
+   "transitions": 535,
+   "seconds": 11.1,
+   "episodes": 60
   }
  ]
 }
