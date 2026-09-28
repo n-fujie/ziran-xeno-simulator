@@ -1,0 +1,101 @@
+{
+ "status": "exploratory subgroup after the Milestone 1 run: seeds 2 and 5 only (the existing controller stands without a push); n = 2 seeds, no intervals",
+ "conditions": {
+  "forward|80N|noise0.0": {
+   "fell_A": 0.4,
+   "fell_B": 0.5,
+   "motor_effort_A": 118.261,
+   "motor_effort_B": 136.931,
+   "recovered_A": 1.0,
+   "recovered_B": 1.0
+  },
+  "forward|80N|noise0.05": {
+   "fell_A": 0.35,
+   "fell_B": 0.6,
+   "motor_effort_A": 119.405,
+   "motor_effort_B": 129.32,
+   "recovered_A": 1.0,
+   "recovered_B": 0.85
+  },
+  "forward|140N|noise0.0": {
+   "fell_A": 1.0,
+   "fell_B": 1.0,
+   "motor_effort_A": 110.973,
+   "motor_effort_B": 121.534,
+   "recovered_A": 1.0,
+   "recovered_B": 1.0
+  },
+  "forward|140N|noise0.05": {
+   "fell_A": 0.95,
+   "fell_B": 0.95,
+   "motor_effort_A": 110.723,
+   "motor_effort_B": 119.016,
+   "recovered_A": 1.0,
+   "recovered_B": 0.8
+  },
+  "forward|200N|noise0.0": {
+   "fell_A": 1.0,
+   "fell_B": 1.0,
+   "motor_effort_A": 98.841,
+   "motor_effort_B": 112.816,
+   "recovered_A": 0.9,
+   "recovered_B": 0.75
+  },
+  "forward|200N|noise0.05": {
+   "fell_A": 1.0,
+   "fell_B": 1.0,
+   "motor_effort_A": 98.873,
+   "motor_effort_B": 108.448,
+   "recovered_A": 0.95,
+   "recovered_B": 0.65
+  },
+  "backward|80N|noise0.0": {
+   "fell_A": 1.0,
+   "fell_B": 0.7,
+   "motor_effort_A": 118.427,
+   "motor_effort_B": 132.937,
+   "recovered_A": 0.5,
+   "recovered_B": 0.5
+  },
+  "backward|80N|noise0.05": {
+   "fell_A": 0.95,
+   "fell_B": 0.7,
+   "motor_effort_A": 118.416,
+   "motor_effort_B": 134.469,
+   "recovered_A": 0.5,
+   "recovered_B": 0.65
+  },
+  "backward|140N|noise0.0": {
+   "fell_A": 1.0,
+   "fell_B": 1.0,
+   "motor_effort_A": 103.998,
+   "motor_effort_B": 114.064,
+   "recovered_A": 0.4,
+   "recovered_B": 0.5
+  },
+  "backward|140N|noise0.05": {
+   "fell_A": 1.0,
+   "fell_B": 0.9,
+   "motor_effort_A": 104.363,
+   "motor_effort_B": 117.573,
+   "recovered_A": 0.45,
+   "recovered_B": 0.55
+  },
+  "backward|200N|noise0.0": {
+   "fell_A": 1.0,
+   "fell_B": 1.0,
+   "motor_effort_A": 96.813,
+   "motor_effort_B": 107.17,
+   "recovered_A": 0.2,
+   "recovered_B": 0.5
+  },
+  "backward|200N|noise0.05": {
+   "fell_A": 1.0,
+   "fell_B": 1.0,
+   "motor_effort_A": 97.053,
+   "motor_effort_B": 107.386,
+   "recovered_A": 0.2,
+   "recovered_B": 0.5
+  }
+ }
+}

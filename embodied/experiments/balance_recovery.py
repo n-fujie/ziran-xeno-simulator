@@ -1,0 +1,113 @@
+"""Experiment 1 (Milestone 1): balance recovery, Mode A (existing controller) vs Mode B (existing controller + Active
+Inference layer), matched seeds, pushes and sensor noise. Usage (from embodied/): python -m experiments.balance_recovery"""
+from __future__ import annotations
+import json, sys, time
+from multiprocessing import Pool
+from pathlib import Path
+import numpy as np
+import torch
+from xeno14.env import make_env, EMBODIMENTS
+from xeno14.modules import Xeno14Controller
+from xeno14 import experiment as X
+from active_inference.observations import ObservationAdapter, OBSERVABILITY
+from active_inference.generative_model import GenerativeModel
+from active_inference.state_inference import posterior, vfe
+from active_inference.policy_selection import select
+from benchmarks.fixed_controller import ConfiguredController
+from metrics.recovery import recovery_latency
+from metrics.latency import LayerTimer
+
+ROOT = Path(__file__).resolve().parents[2]
+CFG = json.loads((ROOT / "embodied" / "configs" / "milestone1.json").read_text())
+OUT = ROOT / "results" / "xeno-body-ai" / "m1"
+POLICIES = [(o, g) for o in CFG["policies"]["pitch_offsets"] for g in CFG["policies"]["gains"]]
+E = CFG["experiment"]; K = CFG["timescales"]["layer2_every_steps"]
+
+
+def noise_vec(rng, sd, n): return rng.standard_normal(n) * sd * np.array([1.0] * 8 + [10.0] * (n - 8)) if sd else np.zeros(n)
+
+
+def fast_controller(seed: int) -> Xeno14Controller:
+    """The existing Xeno-Body controller, trained with the existing code and checkpointed (created once per seed)."""
+    ck = OUT / "controllers" / f"seed{seed}.pt"; c = Xeno14Controller(X.ORGS)
+    if ck.exists(): c.load_state_dict(torch.load(ck)); return c
+    torch.manual_seed(seed); X.train_xeno(make_env(), c, CFG["fast_controller"]["train_iterations"], np.random.default_rng(seed))
+    ck.parent.mkdir(parents=True, exist_ok=True); torch.save(c.state_dict(), ck); return c
+
+
+def episode(env, ctrl: ConfiguredController, adapter, model, seed, push, noise_sd, mode, log=False):
+    rng = np.random.default_rng(seed + 7); obs, _ = env.reset(seed=seed); data = env.unwrapped.data; ctrl.reset(); ctrl.set(0.0, 1.0)
+    T = LayerTimer(); pitch, acts, rows = [], [], []; prev_a = None; effort = 0.0; corr = 0.0; fell = False
+    q = model.D.copy() if model else None; pi = POLICIES.index((0.0, 1.0)); decisions = []
+    P0, PS = E["push_start_step"], E["push_steps"]
+    for t in range(E["episode_steps"]):
+        sensed = obs + noise_vec(rng, noise_sd, len(obs))
+        with T.time("layer1_state_estimation"):
+            d = adapter.derived(sensed); o = adapter.index(sensed)
+        if mode == "B" and t % K == 0:
+            with T.time("layer2_active_inference"):
+                prior = model.B[pi] @ q if t else model.D
+                q = posterior(model.A, prior, o); F = vfe(model.A, prior, q, o)
+                s = select(model, q, CFG["policy_precision_gamma"]); pi = s["chosen"]; ctrl.set(*POLICIES[pi])
+            decisions.append({"t": t, "obs_index": o, "derived": d, "q": q.round(4).tolist(), "vfe": F, "policy_scores": [{"policy": POLICIES[k], "G": sc["G"], "pragmatic": sc["pragmatic"], "epistemic": sc["epistemic"]} for k, sc in enumerate(s["scores"])], "policy_posterior": s["policy_posterior"].round(4).tolist(), "chosen": POLICIES[pi]})
+        with T.time("layer0_fast_control"):
+            a = np.clip(ctrl.act(sensed), -1.0, 1.0)
+        data.xfrc_applied[1, 0] = push if P0 <= t < P0 + PS else 0.0
+        obs, _r, term, trunc, _ = env.step(a)
+        pitch.append(float(data.qpos[2])); effort += float(np.sum(a * a))
+        if prev_a is not None and t >= P0: corr += float(np.linalg.norm(a - prev_a))
+        prev_a = a
+        if log: rows.append({"t": t, "raw_obs": obs.round(4).tolist(), "sensed_obs": sensed.round(4).tolist(), "motor_target": a.round(4).tolist(), "config": [ctrl.pitch_offset, ctrl.gain]})
+        if term or trunc: fell = bool(term); break
+    data.xfrc_applied[1, 0] = 0.0
+    post = pitch[P0:] if len(pitch) > P0 else [np.nan]
+    res = {"fell": fell, "steps": len(pitch), "max_axis_deviation": float(np.nanmax(np.abs(post))), "recovery_steps": recovery_latency(pitch, P0 + PS, CFG["recovery"]["pitch_threshold"], CFG["recovery"]["hold_steps"]),
+           "corrective_movement": corr, "motor_effort": effort, "latency": T.summary(), "policies_used": sorted({tuple(x["chosen"]) for x in decisions}) if decisions else [(0.0, 1.0)]}
+    if log: res["log"] = {"steps": rows, "decisions": decisions}
+    return res
+
+
+def calibrate(env, ctrl, adapter, seed) -> GenerativeModel:
+    """Mode B only: learn B from calibration episodes (random policy per decision interval, random pushes), seeds disjoint from evaluation."""
+    g = CFG["generative_model"]; m = GenerativeModel(adapter.n_obs, len(POLICIES), adapter.n_rate, adapter.FALLEN, g["likelihood_precision"], g["dirichlet_prior"], CFG["preferences"])
+    rng = np.random.default_rng(seed * 101); n = 0
+    for ep in range(g["calibration_episodes"]):
+        obs, _ = env.reset(seed=g["calibration_seed_base"] + 100 * seed + ep); data = env.unwrapped.data; ctrl.reset()
+        push = float(rng.choice([0, 60, 120, 180]) * rng.choice([-1, 1])); pi = int(rng.integers(len(POLICIES))); ctrl.set(*POLICIES[pi]); o_prev = adapter.index(obs); fell = False
+        for t in range(E["episode_steps"]):
+            if t and t % K == 0:
+                o = adapter.index(obs); m.learn_transition(pi, o_prev, o); n += 1; o_prev = o; pi = int(rng.integers(len(POLICIES))); ctrl.set(*POLICIES[pi])
+            data.xfrc_applied[1, 0] = push if E["push_start_step"] <= t < E["push_start_step"] + E["push_steps"] else 0.0
+            obs, _r, term, trunc, _ = env.step(np.clip(ctrl.act(obs), -1, 1))
+            if term: fell = True; break
+        data.xfrc_applied[1, 0] = 0.0
+        if fell: m.learn_transition(pi, o_prev, adapter.FALLEN); n += 1
+    m.calibration_transitions = n
+    return m
+
+
+def run_seed(seed: int) -> dict:
+    torch.set_num_threads(1); env = make_env(); base = fast_controller(seed); ctrl = ConfiguredController(base)
+    ad = ObservationAdapter(CFG["observation"]["pitch_edges"], CFG["observation"]["rate_edges"])
+    t0 = time.time(); model = calibrate(env, ctrl, ad, seed); cal_s = time.time() - t0
+    out = {"seed": seed, "calibration": {"transitions": model.calibration_transitions, "seconds": round(cal_s, 1), "episodes": CFG["generative_model"]["calibration_episodes"]}, "conditions": {}}
+    for direction in E["directions"]:
+        for F in E["pushes_N"]:
+            for sd in [0.0, E["sensor_noise_sd"]]:
+                key = f"{direction}|{int(F)}N|noise{sd}"; out["conditions"][key] = {}
+                for mode in ["A", "B"]:
+                    eps = [episode(env, ctrl, ad, model if mode == "B" else None, E["eval_seed_base"] + 100 * seed + k, F if direction == "forward" else -F, sd, mode, log=(seed == 1 and k == 0)) for k in range(E["episodes_per_condition"])]
+                    out["conditions"][key][mode] = eps
+    return out
+
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True); t0 = time.time()
+    with Pool(len(CFG["seeds"])) as p: res = p.map(run_seed, CFG["seeds"])
+    meta = {"milestone": 1, "config": CFG, "observability": OBSERVABILITY, "policies": POLICIES, "not_instantiable": {"lateral impulse": "Walker2d-v5 is planar (sagittal plane only)"}, "wall_s": round(time.time() - t0, 1), "versions": {"torch": torch.__version__, "numpy": np.__version__}}
+    (OUT / "raw.json").write_text(json.dumps({"meta": meta, "seeds": res}, default=float))
+    print("wrote", OUT / "raw.json", meta["wall_s"], "s")
+
+
+if __name__ == "__main__":
+    main()
