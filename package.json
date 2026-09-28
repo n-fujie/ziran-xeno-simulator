@@ -1,0 +1,36 @@
+{
+  "name": "ziran-xeno-simulator",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Ziran / Xeno Operational World Simulator \u2014 Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization (open research prototype)",
+  "author": "Naoto Fujie",
+  "homepage": "https://github.com/n-fujie/ziran-xeno-simulator#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-fujie/ziran-xeno-simulator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/n-fujie/ziran-xeno-simulator/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=23.6"
+  },
+  "scripts": {
+    "start": "node src/server.ts",
+    "test": "node --test \"test/*.test.ts\"",
+    "typecheck": "tsc -p tsconfig.json",
+    "bench": "node bin/zx.ts bench",
+    "bench:conformance": "node bin/zx.ts bench --suite conformance",
+    "bench:theory": "node bin/zx.ts bench --suite theory",
+    "bench:meta": "node bin/zx.ts bench --suite meta",
+    "check:presets": "node bin/zx.ts check-presets",
+    "check:api": "node scripts/check-api.ts",
+    "docs:benchmarks": "node scripts/benchmark-results.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.0",
+    "typescript": "5.9"
+  },
+  "license": "MIT"
+}

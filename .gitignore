@@ -1,0 +1,9 @@
+node_modules/
+*.trace.json
+*.tii.jsonl
+trace.json
+tii.jsonl
+results.json
+*.log
+.DS_Store
+*.zip

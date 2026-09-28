@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ziran / Xeno Simulator</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="mark" aria-hidden="true">◇</span>
+    <div><strong>Ziran / Xeno Operational World Simulator</strong><small>Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization · v0.3.0 research prototype</small></div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="experiment" aria-selected="true">Experiment</button>
+    <button role="tab" data-tab="compare">Compare</button>
+    <button role="tab" data-tab="bench">Benchmark</button>
+    <button role="tab" data-tab="meta">Meta-Configuration</button>
+    <button role="tab" data-tab="about">About</button>
+  </nav>
+  <button id="theme" class="ghost" title="Toggle theme">◐</button>
+</header>
+
+<main>
+  <!-- ======================= EXPERIMENT ======================= -->
+  <section id="tab-experiment" class="tab active">
+    <aside class="side">
+      <div class="side-h">Presets</div>
+      <input id="preset-filter" type="search" placeholder="filter presets">
+      <div id="presets"></div>
+      <div class="side-h">Runs</div>
+      <div id="runs" class="runs"></div>
+    </aside>
+
+    <div class="work">
+      <div id="config" class="panel">
+        <div class="empty">Choose a preset.</div>
+      </div>
+
+      <div id="result" class="hidden">
+        <div class="panel">
+          <div class="panel-h"><h2 id="run-title"></h2>
+            <div class="actions">
+              <button id="btn-rerun" class="ghost">Verify exact rerun</button>
+              <a id="btn-export" class="btn ghost" download>Export trace</a>
+              <a id="btn-tii" class="btn ghost" download>TII JSONL</a>
+            </div>
+          </div>
+          <div id="meta" class="meta"></div>
+          <div id="pipeline" class="pipeline" aria-label="Primary operational pipeline"></div>
+        </div>
+
+        <div class="grid2">
+          <div class="panel"><div class="panel-h"><h3>Multi-timescale ignitions</h3><span class="hint">one lane per clock · click a mark to inspect</span></div><div id="timeline"></div></div>
+          <div class="panel"><div class="panel-h"><h3>Probe-relative reachability</h3><span class="hint">relative to declared probes, option menu, horizon and observation configuration — not unrestricted reachability</span></div><div id="reach"></div></div>
+        </div>
+
+        <div class="grid2">
+          <div class="panel"><div class="panel-h"><h3>Observation</h3><span class="hint">not detected ≠ absent</span></div><div id="epistemic"></div><div id="obs-chart"></div></div>
+          <div class="panel"><div class="panel-h"><h3>Feedback &amp; reorganization</h3></div><div id="loops"></div></div>
+        </div>
+
+        <div class="grid2">
+          <div class="panel"><div class="panel-h"><h3>Emergent reachability</h3><span class="hint">description-space expansion / contraction in the same forks — independent of probes</span></div><div id="emergent"></div></div>
+          <div class="panel"><div class="panel-h"><h3>Level A / B / C / D lineage</h3><span class="hint">different kinds of change — not a ranking</span></div>
+            <div class="subtabs" id="lvl-filter"><button data-lvl="all" class="on">all</button><button data-lvl="A">A · operation</button><button data-lvl="B">B · C<sub>t</sub>→C<sub>t+1</sub></button><button data-lvl="C">C · S<sub>t</sub>→S<sub>t+1</sub></button><button data-lvl="D">D · M<sub>t</sub>→M<sub>t+1</sub></button></div>
+            <div id="lineage"></div></div>
+        </div>
+
+        <div class="panel"><div class="panel-h"><h3>Analyses</h3>
+          <div class="subtabs" id="an-tabs">
+            <button data-an="revisions" class="on">Observation revisions</button>
+            <button data-an="timing">Timing / corrections</button>
+            <button data-an="rates">Local rates</button>
+            <button data-an="interactions">Interactions</button>
+            <button data-an="categories">Operational bundles</button>
+            <button data-an="addresses">Addresses</button>
+            <button data-an="runmeta">Run meta-configuration</button>
+            <button data-an="notes">Notes &amp; goals</button>
+            <button data-an="tii">TII</button>
+            <button data-an="domain">Domain</button>
+            <button data-an="config">Configuration</button>
+          </div></div>
+          <div id="an-body"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h3>Trace</h3>
+            <div class="filters">
+              <select id="ev-kind"><option value="">all kinds</option></select>
+              <input id="ev-q" type="search" placeholder="search (rule, address, via…)">
+              <span id="ev-count" class="hint"></span>
+              <button id="ev-prev" class="ghost">‹</button><button id="ev-next" class="ghost">›</button>
+            </div>
+          </div>
+          <div id="events" class="events"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h3>Replay</h3><span id="replay-t" class="hint"></span></div>
+          <input id="replay" type="range" min="0" value="0">
+          <div id="replay-state" class="state-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <aside id="inspector" class="inspector hidden">
+      <div class="panel-h"><h3>Event</h3><button id="insp-close" class="ghost">×</button></div>
+      <div id="insp-body"></div>
+    </aside>
+  </section>
+
+  <!-- ======================= COMPARE ======================= -->
+  <section id="tab-compare" class="tab">
+    <div class="work single">
+      <div class="panel">
+        <h2>Cross-configuration comparison</h2>
+        <p class="hint">Same label, same nominal input, same measured difference, same ignition condition, same operational transition, same output, same downstream penetration and same reachability change are separate levels — never assumed equivalent.</p>
+        <div class="row">
+          <label>Run A <select id="cmp-a"></select></label>
+          <label>Run B <select id="cmp-b"></select></label>
+          <label class="grow">Fragility regions <input id="cmp-regions" placeholder="id:prefix,prefix; id:prefix   e.g. A:A/; B:B/; pool:pool/"></label>
+          <label>Target <input id="cmp-target" size="8" placeholder="A"></label>
+          <button id="cmp-go">Compare</button>
+        </div>
+      </div>
+      <div id="cmp-out"></div>
+    </div>
+  </section>
+
+  <!-- ======================= BENCH ======================= -->
+  <section id="tab-bench" class="tab">
+    <div class="work single">
+      <div class="panel">
+        <div class="panel-h"><h2>Benchmarks</h2><button id="bench-go">Run both suites</button></div>
+        <p class="hint"><b>Implementation Conformance Benchmarks</b> test whether the implementation behaves according to the specification — they are not theory validation. A passing check above a failing layer is reported as <em>untrusted</em>.
+        <b>Theory-Discriminating Benchmarks</b> compare competing model classes or ablations; results are simulation-internal.</p>
+      </div>
+      <div id="bench-out"></div>
+    </div>
+  </section>
+
+  <!-- ======================= META ======================= -->
+  <section id="tab-meta" class="tab">
+    <div class="work single">
+      <div class="panel">
+        <h2>Meta-Configuration M</h2>
+        <p class="hint">Explicitly represented and partially revisable meta-configuration: the registries that decide what can count as a value kind, a description facet, a transition class, an observation-revision candidate, a grammar mutation, a comparison metric, an emergence feature, a Pareto axis, a trace schema or a benchmark predicate. Level D (M<sub>t</sub> → M<sub>t+1</sub>) changes some of these during a run; the registry interfaces and the code consulting them remain fixed. This does not remove constraints — it makes some of them inspectable.</p>
+        <div id="meta-evidence" class="hint"></div>
+      </div>
+      <div id="meta-out"></div>
+    </div>
+  </section>
+
+  <!-- ======================= ABOUT ======================= -->
+  <section id="tab-about" class="tab">
+    <div class="work single prose panel">
+      <h2>What this is</h2>
+      <p>Ziran / Xeno Operational World Simulator is an experimental framework for studying how operational differences ignite under configuration-dependent conditions, alter downstream reachability, penetrate across coupled configurations, and reorganize observation and description systems.</p>
+      <p>The current release supports explicit analysis of configuration reorganization, description-space transformation, and partially revisable meta-configuration. Its benchmark results are synthetic and are not empirical validation of the underlying theoretical framework.</p>
+      <p class="hint">An open research prototype (v0.3.0) — not a completed theory implementation, not an empirically validated theory, not an unrestricted autonomous-science system, not an ontology-free simulator, not a historical-person simulator.</p>
+      <pre class="flow">C<sub>t</sub> → Δ<sub>t</sub> → ignition → operation → real effect → penetration → feedback → reorganization → C<sub>t+1</sub></pre>
+      <h3>The core knows only</h3>
+      <ul>
+        <li><b>storage addresses</b> holding opaque operational values (scalar, vector, relation, event, opaque, unknown or registered kinds), separated from <b>operational addresses</b>,</li>
+        <li>an open <b>configuration</b> of dimensions that can appear, disappear, split, merge, change resolution,</li>
+        <li><b>clocks</b> (no global simulation clock),</li>
+        <li><b>ignition rules</b> (condition → operation, with delay),</li>
+        <li><b>couplings</b> along which differences penetrate (delay, transform, loss, medium),</li>
+        <li><b>observation apparatuses</b> (several; none privileged) whose non-detections are classified, never read as absence,</li>
+        <li><b>probes</b> (possibilities) whose reachability is computed by forking the world,</li>
+        <li>and the <b>trace</b>.</li>
+      </ul>
+      <h3>A / B / C / D</h3>
+      <p class="hint">A/B/C/D are not ontological strata. They are revisable analytical distinctions used to localize different forms of operational change. A higher letter is not a deeper reality, a superior explanation or a more advanced intelligence.</p>
+      <ul><li><b>Level A</b> — operation within C (real effects).</li>
+      <li><b>Level B</b> — C<sub>t</sub> → C<sub>t+1</sub>: reorganization of the configuration within the same description space.</li>
+      <li><b>Level C</b> — S<sub>t</sub> → S<sub>t+1</sub>: open but meta-bounded description-space morphogenesis — descriptors appear or disappear within the registered facets.</li>
+      <li><b>Level D</b> — M<sub>t</sub> → M<sub>t+1</sub>: explicitly represented and partially revisable meta-configuration — facets, value kinds and other registry entries are registered or retired.</li></ul>
+      <h3>Terminology</h3>
+      <ul><li><b>Probe-relative reachability</b> (implemented) vs <b>emergent reachability</b> (description-space change in the same forks; implemented as a first mechanism, not unrestricted).</li>
+      <li><b>Grammar-bounded variable discovery</b> (baseline) vs <b>operator-grammar morphogenesis</b> (the construction grammar changes; the meta-operations themselves are fixed code).</li>
+      <li><b>Historically constrained operational reconstruction</b> — never person simulation; generated behaviour is simulation-internal.</li>
+      <li><b>Horizon-relative closure</b> — not demonstrated irreversibility.</li>
+      <li><b>Meta-grammar morphogenesis</b> — mutation operators are data; recurring sequences can be composed, abstracted, retired. Not unrestricted grammar generation.</li>
+      <li>All results in this repository are <b>synthetic</b>. The external adapter can replay recorded data as configuration-bound observations; none is bundled.</li>
+      <li>Storage values are <b>opaque operational values</b>; numbers are one kind, handled by a scalar adapter.</li></ul>
+      <p>Humans, agents, bodies, markets, beliefs, goals, capabilities, sciences and philosophies are not in the core. Domain layers compose them from these positions; categories are introduced where they produce non-redundant operational differences, and the analysis modules test when that is the case (benchmarks J and K show both outcomes).</p>
+      <h3>Stopping principle</h3>
+      <p>A fixed condition is not automatically a theoretical defect. It becomes a new experimental object only when changing it produces a non-redundant difference in observation, intervention, reachability, real effect, penetration, feedback, reorganization or the interpretation of the result.</p>
+      <h3>Reading the interface</h3>
+      <p>Nodes are events and differences, not persons or concepts. Every number links back to trace events; every event links to its upstream causes and downstream penetration.</p>
+    </div>
+  </section>
+</main>
+<script src="/app.js" type="module"></script>
+</body>
+</html>

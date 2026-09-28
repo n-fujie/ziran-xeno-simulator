@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below. This is an open research prototype; its benchmark results are synthetic and are not empirical validation of the Ziran / Xeno framework."
+type: software
+title: "Ziran / Xeno Operational World Simulator: Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization"
+version: "0.3.0"
+date-released: "2026-09-28"
+license: MIT
+authors:
+  - family-names: "Fujie"
+    given-names: "Naoto"
+repository-code: "https://github.com/n-fujie/ziran-xeno-simulator"
+url: "https://github.com/n-fujie/ziran-xeno-simulator"
+# No DOI has been assigned. If a DOI is issued later, add it here as `doi:` and under `identifiers`.
+abstract: >-
+  An experimental framework for studying how operational differences ignite under configuration-dependent
+  conditions, alter downstream reachability, penetrate across coupled configurations, and reorganize observation
+  and description systems. The release supports explicit analysis of configuration reorganization, description-space
+  transformation, and partially revisable meta-configuration, with implementation conformance, theory-discriminating
+  and meta-boundedness benchmark suites whose results are synthetic.
+keywords:
+  - simulation
+  - observability
+  - reachability
+  - description space
+  - meta-configuration
+  - research prototype
+preferred-citation:
+  type: software
+  title: "Ziran / Xeno Operational World Simulator: Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization"
+  version: "0.3.0"
+  year: 2026
+  authors:
+    - family-names: "Fujie"
+      given-names: "Naoto"
+  url: "https://github.com/n-fujie/ziran-xeno-simulator"
+  repository-code: "https://github.com/n-fujie/ziran-xeno-simulator"
+  notes: "Open research prototype, v0.3.0. Synthetic benchmark results only."
