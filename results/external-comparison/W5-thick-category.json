@@ -1,0 +1,1065 @@
+{
+  "world": "W5-thick-category",
+  "question": "In paired worlds where an account category is interventionally relevant (A) or redundant (B), how does each framework handle it, and what does that do to intervention prediction?",
+  "design": "eight Poisson streams, two accounts; separate budgets (A) vs pooled budget (B)",
+  "matched": {
+    "world": "W5-thick-category",
+    "inputData": "same counts per world and seed for all",
+    "initialConditions": "budgets 1",
+    "interventionHistory": "two account-level budget cuts, stated identically in both worlds",
+    "temporalHorizon": "300 (prediction target: response to the t=200 cut)",
+    "computationalBudget": "negligible for all",
+    "observationAvailability": "per-stream counts and account labels",
+    "measurementResolution": "Poisson counts",
+    "resourceConstraints": "budgets",
+    "evaluationWindow": "50 steps before/after each cut",
+    "sameness": [
+      {
+        "framework": "all",
+        "sameRawSource": true,
+        "samePreprocessing": true,
+        "sameObservation": true,
+        "sameStateRepresentation": false,
+        "sameIntervention": true,
+        "sameOperationalEffect": null,
+        "transformation": "each framework maps \"cut account a’s budget\" into its own representation (agent budget, pool, stream elasticity, structure posterior, bundle)"
+      }
+    ]
+  },
+  "records": [
+    {
+      "world": "W5-thick-category",
+      "framework": "agent-based-modeling",
+      "configuration": "ABM: accounts as agents owning streams",
+      "role": "primary",
+      "representationSupplied": [
+        "agents = accounts",
+        "agent budget → stream rates"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "per-stream counts t < 200",
+        "account metadata label",
+        "intervention statements"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "t=100 cut a2 −40%",
+        "t=200 cut a1 −50% (predicted)"
+      ],
+      "detectedDifferences": [
+        "worlds A and B not distinguished by category use"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {},
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "worldA_predictionMAE": 0.082,
+        "worldA_usesCategory": true,
+        "worldA_judgement_seed1": "assumed (agents defined by account)",
+        "worldA_predicted_seed1": [
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          1,
+          1,
+          1,
+          1
+        ],
+        "worldA_actual_seed1": [
+          0.62,
+          0.54,
+          0.5,
+          0.56,
+          0.9,
+          1.01,
+          0.86,
+          1.03
+        ],
+        "worldB_predictionMAE": 0.275,
+        "worldB_usesCategory": true,
+        "worldB_judgement_seed1": "assumed (agents defined by account)",
+        "worldB_predicted_seed1": [
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          1,
+          1,
+          1,
+          1
+        ],
+        "worldB_actual_seed1": [
+          0.79,
+          0.77,
+          0.55,
+          0.69,
+          0.67,
+          0.66,
+          0.74,
+          0.74
+        ]
+      },
+      "burden": [
+        {
+          "item": "agents",
+          "supplied": "account = agent",
+          "enabled": "account-level intervention semantics",
+          "prevented": "pooled-budget structure",
+          "wrongWhen": "World B"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 200,
+        "observationsUsed": 1600,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": 2
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "evidence (World A, seed 1): agent identity = account; agent budget scales its streams",
+        "evidence (World B, seed 1): agent identity = account; agent budget scales its streams"
+      ]
+    },
+    {
+      "world": "W5-thick-category",
+      "framework": "agent-based-modeling",
+      "configuration": "ABM with budget structure selected by fit to the first intervention",
+      "role": "fairness",
+      "representationSupplied": [
+        "two candidate agent structures",
+        "calibration on t=100"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "per-stream counts t < 200",
+        "account metadata label",
+        "intervention statements"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "t=100 cut a2 −40%",
+        "t=200 cut a1 −50% (predicted)"
+      ],
+      "detectedDifferences": [
+        "category relevant in A and redundant in B (distinguished)"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {},
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "worldA_predictionMAE": 0.082,
+        "worldA_usesCategory": true,
+        "worldA_judgement_seed1": "per-agent budget structure selected",
+        "worldA_predicted_seed1": [
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          1,
+          1,
+          1,
+          1
+        ],
+        "worldA_actual_seed1": [
+          0.62,
+          0.54,
+          0.5,
+          0.56,
+          0.9,
+          1.01,
+          0.86,
+          1.03
+        ],
+        "worldB_predictionMAE": 0.086,
+        "worldB_usesCategory": false,
+        "worldB_judgement_seed1": "shared environment budget selected",
+        "worldB_predicted_seed1": [
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69
+        ],
+        "worldB_actual_seed1": [
+          0.79,
+          0.77,
+          0.55,
+          0.69,
+          0.67,
+          0.66,
+          0.74,
+          0.74
+        ]
+      },
+      "burden": [
+        {
+          "item": "agents",
+          "supplied": "agents plus a structural alternative",
+          "enabled": "choosing the structure from data",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 200,
+        "observationsUsed": 1600,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": 2
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "evidence (World A, seed 1): SSE per-agent 0.098 vs shared 0.592",
+        "evidence (World B, seed 1): SSE per-agent 0.49 vs shared 0.119"
+      ]
+    },
+    {
+      "world": "W5-thick-category",
+      "framework": "dynamical-systems",
+      "configuration": "aggregate flow model (pooled budget)",
+      "role": "primary",
+      "representationSupplied": [
+        "total flow ∝ pooled budget"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "per-stream counts t < 200",
+        "account metadata label",
+        "intervention statements"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "t=100 cut a2 −40%",
+        "t=200 cut a1 −50% (predicted)"
+      ],
+      "detectedDifferences": [
+        "worlds A and B not distinguished by category use"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {},
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "worldA_predictionMAE": 0.264,
+        "worldA_usesCategory": false,
+        "worldA_judgement_seed1": "not represented",
+        "worldA_predicted_seed1": [
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69
+        ],
+        "worldA_actual_seed1": [
+          0.62,
+          0.54,
+          0.5,
+          0.56,
+          0.9,
+          1.01,
+          0.86,
+          1.03
+        ],
+        "worldB_predictionMAE": 0.086,
+        "worldB_usesCategory": false,
+        "worldB_judgement_seed1": "not represented",
+        "worldB_predicted_seed1": [
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69
+        ],
+        "worldB_actual_seed1": [
+          0.79,
+          0.77,
+          0.55,
+          0.69,
+          0.67,
+          0.66,
+          0.74,
+          0.74
+        ]
+      },
+      "burden": [
+        {
+          "item": "state-variables",
+          "supplied": "total flow",
+          "enabled": "parsimony",
+          "prevented": "account structure",
+          "wrongWhen": "World A"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 200,
+        "observationsUsed": 1600,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": 1
+      },
+      "conversions": [
+        {
+          "from": "per-stream counts",
+          "to": "total flow",
+          "retained": [
+            "total rate"
+          ],
+          "lost": [
+            "which streams respond"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "evidence (World A, seed 1): total flow ∝ pooled budget",
+        "evidence (World B, seed 1): total flow ∝ pooled budget"
+      ]
+    },
+    {
+      "world": "W5-thick-category",
+      "framework": "digital-twin",
+      "configuration": "stream-level twin (per-stream elasticity, no account variable)",
+      "role": "primary",
+      "representationSupplied": [
+        "per-stream state",
+        "elasticity update from events"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "per-stream counts t < 200",
+        "account metadata label",
+        "intervention statements"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "t=100 cut a2 −40%",
+        "t=200 cut a1 −50% (predicted)"
+      ],
+      "detectedDifferences": [
+        "worlds A and B not distinguished by category use"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {},
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "worldA_predictionMAE": 0.532,
+        "worldA_usesCategory": false,
+        "worldA_judgement_seed1": "not represented (stream state vocabulary)",
+        "worldA_predicted_seed1": [
+          1.27,
+          1.11,
+          0.91,
+          1.14,
+          0.37,
+          0.38,
+          0.53,
+          0.6
+        ],
+        "worldA_actual_seed1": [
+          0.62,
+          0.54,
+          0.5,
+          0.56,
+          0.9,
+          1.01,
+          0.86,
+          1.03
+        ],
+        "worldB_predictionMAE": 0.137,
+        "worldB_usesCategory": false,
+        "worldB_judgement_seed1": "not represented (stream state vocabulary)",
+        "worldB_predicted_seed1": [
+          0.68,
+          1.04,
+          0.72,
+          0.67,
+          0.63,
+          0.75,
+          0.94,
+          0.95
+        ],
+        "worldB_actual_seed1": [
+          0.79,
+          0.77,
+          0.55,
+          0.69,
+          0.67,
+          0.66,
+          0.74,
+          0.74
+        ]
+      },
+      "burden": [
+        {
+          "item": "state-variables",
+          "supplied": "one state per stream",
+          "enabled": "stream-specific response",
+          "prevented": "relating an event to its target account",
+          "wrongWhen": "the next event targets a different account"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 200,
+        "observationsUsed": 1600,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": 8
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "evidence (World A, seed 1): per-stream elasticity carried to the next budget event",
+        "evidence (World B, seed 1): per-stream elasticity carried to the next budget event"
+      ]
+    },
+    {
+      "world": "W5-thick-category",
+      "framework": "digital-twin",
+      "configuration": "twin extended with the account variable",
+      "role": "fairness",
+      "representationSupplied": [
+        "per-stream state + account label"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "per-stream counts t < 200",
+        "account metadata label",
+        "intervention statements"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "t=100 cut a2 −40%",
+        "t=200 cut a1 −50% (predicted)"
+      ],
+      "detectedDifferences": [
+        "worlds A and B not distinguished by category use"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {},
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "worldA_predictionMAE": 0.106,
+        "worldA_usesCategory": true,
+        "worldA_judgement_seed1": "account variable in twin state; elasticity own 1.06 / other -0.21",
+        "worldA_predicted_seed1": [
+          0.47,
+          0.47,
+          0.47,
+          0.47,
+          1.11,
+          1.11,
+          1.11,
+          1.11
+        ],
+        "worldA_actual_seed1": [
+          0.62,
+          0.54,
+          0.5,
+          0.56,
+          0.9,
+          1.01,
+          0.86,
+          1.03
+        ],
+        "worldB_predictionMAE": 0.1,
+        "worldB_usesCategory": true,
+        "worldB_judgement_seed1": "account variable in twin state; elasticity own 0.37 / other 0.44",
+        "worldB_predicted_seed1": [
+          0.82,
+          0.82,
+          0.82,
+          0.82,
+          0.78,
+          0.78,
+          0.78,
+          0.78
+        ],
+        "worldB_actual_seed1": [
+          0.79,
+          0.77,
+          0.55,
+          0.69,
+          0.67,
+          0.66,
+          0.74,
+          0.74
+        ]
+      },
+      "burden": [
+        {
+          "item": "state-variables",
+          "supplied": "account label added",
+          "enabled": "event targeting",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 200,
+        "observationsUsed": 1600,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": 2
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "evidence (World A, seed 1): twin extended with the account label",
+        "evidence (World B, seed 1): twin extended with the account label"
+      ]
+    },
+    {
+      "world": "W5-thick-category",
+      "framework": "active-inference",
+      "configuration": "Bayesian model comparison over two generative structures",
+      "role": "primary",
+      "representationSupplied": [
+        "two generative structures",
+        "Poisson likelihood",
+        "flat structure prior"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "per-stream counts t < 200",
+        "account metadata label",
+        "intervention statements"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "t=100 cut a2 −40%",
+        "t=200 cut a1 −50% (predicted)"
+      ],
+      "detectedDifferences": [
+        "category relevant in A and redundant in B (distinguished)"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {},
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "worldA_predictionMAE": 0.082,
+        "worldA_usesCategory": true,
+        "worldA_judgement_seed1": "posterior P(per-account structure) = 1",
+        "worldA_predicted_seed1": [
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          1,
+          1,
+          1,
+          1
+        ],
+        "worldA_actual_seed1": [
+          0.62,
+          0.54,
+          0.5,
+          0.56,
+          0.9,
+          1.01,
+          0.86,
+          1.03
+        ],
+        "worldB_predictionMAE": 0.086,
+        "worldB_usesCategory": false,
+        "worldB_judgement_seed1": "posterior P(per-account structure) = 0",
+        "worldB_predicted_seed1": [
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69
+        ],
+        "worldB_actual_seed1": [
+          0.79,
+          0.77,
+          0.55,
+          0.69,
+          0.67,
+          0.66,
+          0.74,
+          0.74
+        ]
+      },
+      "burden": [
+        {
+          "item": "hidden-factors",
+          "supplied": "the two candidate structures",
+          "enabled": "evidence-weighted prediction",
+          "prevented": "structures outside the pair"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 200,
+        "observationsUsed": 1600,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": 2
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "evidence (World A, seed 1): log-evidence difference 52.4",
+        "evidence (World B, seed 1): log-evidence difference -40.1"
+      ]
+    },
+    {
+      "world": "W5-thick-category",
+      "framework": "ziran-xeno",
+      "configuration": "Ziran / Xeno adapter (provisional bundles + v0.3.0 J/K predicate)",
+      "role": "primary",
+      "representationSupplied": [
+        "feature constructor: response ratio",
+        "grouping: largest gap > 0.15",
+        "J/K predicate (difference > 0.3)"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "per-stream counts t < 200",
+        "account metadata label",
+        "intervention statements"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "t=100 cut a2 −40%",
+        "t=200 cut a1 −50% (predicted)"
+      ],
+      "detectedDifferences": [
+        "category relevant in A and redundant in B (distinguished)"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {},
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "worldA_predictionMAE": 0.082,
+        "worldA_usesCategory": true,
+        "worldA_judgement_seed1": "account label non-redundant (isolates a recovered bundle; unit ratio difference > 0.3)",
+        "worldA_predicted_seed1": [
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          1,
+          1,
+          1,
+          1
+        ],
+        "worldA_actual_seed1": [
+          0.62,
+          0.54,
+          0.5,
+          0.56,
+          0.9,
+          1.01,
+          0.86,
+          1.03
+        ],
+        "worldB_predictionMAE": 0.086,
+        "worldB_usesCategory": false,
+        "worldB_judgement_seed1": "account label redundant given the recovered bundles",
+        "worldB_predicted_seed1": [
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69
+        ],
+        "worldB_actual_seed1": [
+          0.79,
+          0.77,
+          0.55,
+          0.69,
+          0.67,
+          0.66,
+          0.74,
+          0.74
+        ]
+      },
+      "burden": [
+        {
+          "item": "other",
+          "supplied": "feature, grouping procedure and predicate",
+          "enabled": "testing the label rather than assuming it",
+          "prevented": "bundles the feature cannot separate"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 200,
+        "observationsUsed": 1600,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": 2
+      },
+      "conversions": [
+        {
+          "from": "trace (per-stream counts)",
+          "to": "provisional bundles",
+          "retained": [
+            "response-ratio groups"
+          ],
+          "lost": [
+            "within-bundle differences"
+          ],
+          "newlyAvailable": [
+            "bundle membership"
+          ],
+          "unresolved": [
+            "whether other features would group differently"
+          ]
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "evidence (World A, seed 1): provisional bundles (schema: per-stream counts, feature: response ratio, window ±50, procedure: largest-gap split > 0.15): {s5,s6,s7,s8} {s3,s2,s4,s1}; unit ratio difference 0.509",
+        "evidence (World B, seed 1): provisional bundles (schema: per-stream counts, feature: response ratio, window ±50, procedure: largest-gap split > 0.15): {s5,s4,s1,s3,s6} {s7,s8,s2}; unit ratio difference 0.032"
+      ]
+    },
+    {
+      "world": "W5-thick-category",
+      "framework": "ziran-xeno",
+      "configuration": "ablation: fixed operational values (per-stream values collapsed)",
+      "role": "ablation",
+      "representationSupplied": [
+        "total flow only"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "per-stream counts t < 200",
+        "account metadata label",
+        "intervention statements"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "t=100 cut a2 −40%",
+        "t=200 cut a1 −50% (predicted)"
+      ],
+      "detectedDifferences": [
+        "worlds A and B not distinguished by category use"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {},
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "worldA_predictionMAE": 0.264,
+        "worldA_usesCategory": false,
+        "worldA_judgement_seed1": "no per-stream values (collapsed to total flow); label not testable",
+        "worldA_predicted_seed1": [
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69
+        ],
+        "worldA_actual_seed1": [
+          0.62,
+          0.54,
+          0.5,
+          0.56,
+          0.9,
+          1.01,
+          0.86,
+          1.03
+        ],
+        "worldB_predictionMAE": 0.086,
+        "worldB_usesCategory": false,
+        "worldB_judgement_seed1": "no per-stream values (collapsed to total flow); label not testable",
+        "worldB_predicted_seed1": [
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69,
+          0.69
+        ],
+        "worldB_actual_seed1": [
+          0.79,
+          0.77,
+          0.55,
+          0.69,
+          0.67,
+          0.66,
+          0.74,
+          0.74
+        ]
+      },
+      "burden": [],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 200,
+        "observationsUsed": 1600,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": 1
+      },
+      "conversions": [
+        {
+          "from": "per-stream counts",
+          "to": "total flow",
+          "retained": [
+            "total rate"
+          ],
+          "lost": [
+            "which streams respond"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "evidence (World A, seed 1): ablation: fixed operational values",
+        "evidence (World B, seed 1): ablation: fixed operational values"
+      ]
+    }
+  ],
+  "fairness": [
+    {
+      "distinction": "category redundant in World B",
+      "firstConfiguration": "ABM: accounts as agents owning streams",
+      "alternativeConfiguration": "ABM with budget structure selected by fit to the first intervention",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "ABM MAE in B 0.275 → 0.086"
+    },
+    {
+      "distinction": "category relevant in World A",
+      "firstConfiguration": "stream-level twin (per-stream elasticity, no account variable)",
+      "alternativeConfiguration": "twin extended with the account variable",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "twin MAE in A 0.532 → 0.106"
+    }
+  ],
+  "statements": [
+    "under configuration ABM: accounts as agents owning streams and implementation agent-based-modeling, distinction \"account category in World A\" was retained (prediction MAE 0.082)",
+    "under configuration ABM: accounts as agents owning streams and implementation agent-based-modeling, distinction \"account category in World B\" was retained (prediction MAE 0.275)",
+    "under configuration ABM with budget structure selected by fit to the first intervention and implementation agent-based-modeling, distinction \"account category in World A\" was retained (prediction MAE 0.082)",
+    "under configuration ABM with budget structure selected by fit to the first intervention and implementation agent-based-modeling, distinction \"account category in World B\" was not retained (prediction MAE 0.086)",
+    "under configuration aggregate flow model (pooled budget) and implementation dynamical-systems, distinction \"account category in World A\" was not retained (prediction MAE 0.264)",
+    "under configuration aggregate flow model (pooled budget) and implementation dynamical-systems, distinction \"account category in World B\" was not retained (prediction MAE 0.086)",
+    "under configuration stream-level twin (per-stream elasticity, no account variable) and implementation digital-twin, distinction \"account category in World A\" was not retained (prediction MAE 0.532)",
+    "under configuration stream-level twin (per-stream elasticity, no account variable) and implementation digital-twin, distinction \"account category in World B\" was not retained (prediction MAE 0.137)",
+    "under configuration twin extended with the account variable and implementation digital-twin, distinction \"account category in World A\" was retained (prediction MAE 0.106)",
+    "under configuration twin extended with the account variable and implementation digital-twin, distinction \"account category in World B\" was retained (prediction MAE 0.1)",
+    "under configuration Bayesian model comparison over two generative structures and implementation active-inference, distinction \"account category in World A\" was retained (prediction MAE 0.082)",
+    "under configuration Bayesian model comparison over two generative structures and implementation active-inference, distinction \"account category in World B\" was not retained (prediction MAE 0.086)",
+    "under configuration Ziran / Xeno adapter (provisional bundles + v0.3.0 J/K predicate) and implementation ziran-xeno, distinction \"account category in World A\" was retained (prediction MAE 0.082)",
+    "under configuration Ziran / Xeno adapter (provisional bundles + v0.3.0 J/K predicate) and implementation ziran-xeno, distinction \"account category in World B\" was not retained (prediction MAE 0.086)",
+    "under configuration ablation: fixed operational values (per-stream values collapsed) and implementation ziran-xeno, distinction \"account category in World A\" was not retained (prediction MAE 0.264)",
+    "under configuration ablation: fixed operational values (per-stream values collapsed) and implementation ziran-xeno, distinction \"account category in World B\" was not retained (prediction MAE 0.086)"
+  ],
+  "distinctionTable": [
+    {
+      "distinction": "category used in World A",
+      "retainedBy": [
+        "agent-based-modeling:ABM: accounts as agents owning streams",
+        "agent-based-modeling:ABM with budget structure selected by fit to the first intervention",
+        "digital-twin:twin extended with the account variable",
+        "active-inference:Bayesian model comparison over two generative structures",
+        "ziran-xeno:Ziran / Xeno adapter (provisional bundles + v0.3.0 J/K predicate)"
+      ],
+      "notRetainedBy": [
+        "dynamical-systems:aggregate flow model (pooled budget)",
+        "digital-twin:stream-level twin (per-stream elasticity, no account variable)",
+        "ziran-xeno:ablation: fixed operational values (per-stream values collapsed)"
+      ],
+      "notApplicable": []
+    },
+    {
+      "distinction": "category not used in World B",
+      "retainedBy": [
+        "agent-based-modeling:ABM with budget structure selected by fit to the first intervention",
+        "dynamical-systems:aggregate flow model (pooled budget)",
+        "digital-twin:stream-level twin (per-stream elasticity, no account variable)",
+        "active-inference:Bayesian model comparison over two generative structures",
+        "ziran-xeno:Ziran / Xeno adapter (provisional bundles + v0.3.0 J/K predicate)",
+        "ziran-xeno:ablation: fixed operational values (per-stream values collapsed)"
+      ],
+      "notRetainedBy": [
+        "agent-based-modeling:ABM: accounts as agents owning streams",
+        "digital-twin:twin extended with the account variable"
+      ],
+      "notApplicable": []
+    }
+  ],
+  "notApplicable": [
+    {
+      "framework": "reinforcement-learning",
+      "reason": "prediction of an intervention response; no action or reward"
+    },
+    {
+      "framework": "control-mpc",
+      "reason": "no control task"
+    },
+    {
+      "framework": "viability-reachability",
+      "reason": "no constraint set"
+    },
+    {
+      "framework": "feature-learning",
+      "reason": "eight streams and two interventions give too few samples for a learned representation to be meaningful"
+    }
+  ],
+  "references": {
+    "note": "actual ratios are estimated from 50-step windows of Poisson counts; the irreducible MAE from counting noise is non-zero"
+  },
+  "claimStatus": "synthetic-world result"
+}

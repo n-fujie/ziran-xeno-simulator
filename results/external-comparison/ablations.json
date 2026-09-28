@@ -1,0 +1,58 @@
+[
+  {
+    "mechanism": "observation revision",
+    "world": "W1-observation-aliasing",
+    "full": "Ziran / Xeno adapter (aliasing → Pareto observation revision, policy pareto-min-loss)",
+    "ablated": "ablation: no observation revision",
+    "changed": true,
+    "detail": "interventionSuccess: 0.981 → 0.54; resourceCost: 1.556 → 3.472; behaviouralLatencyMean: 11.8 → 45.5; newObservability: [\"response-sign\"] → []"
+  },
+  {
+    "mechanism": "multiple clocks",
+    "world": "W2-too-late-correction",
+    "full": "Ziran / Xeno adapter (sensor, actuator and environment clocks; premise at issue and landing)",
+    "ablated": "ablation: no multiple clocks (single clock, self-classification kept)",
+    "changed": true,
+    "detail": "correctButTooLate: 14 → 273; meanAbsTrackingError: 0.577 → 1.823; realizedEffect_effectiveFraction: 0.695 → 0.614"
+  },
+  {
+    "mechanism": "fragility transfer analysis",
+    "world": "W3-fragility-transfer",
+    "full": "Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+    "ablated": "ablation: no fragility transfer analysis",
+    "changed": true,
+    "detail": "detects: local improvement: true → true; detects: transferred dependency: true → false; detects: delayed failure: true → false; detects: resource displacement: \"1/3 seeds\" → false; detects: observation loss: true → true; detects: new closure: false → false"
+  },
+  {
+    "mechanism": "open operational values (per-unit channels)",
+    "world": "W3-fragility-transfer",
+    "full": "Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+    "ablated": "ablation: fixed operational values (per-unit channels collapsed to totals)",
+    "changed": true,
+    "detail": "detects: local improvement: true → true; detects: transferred dependency: true → false; detects: delayed failure: true → false; detects: resource displacement: \"1/3 seeds\" → false; detects: observation loss: true → false; detects: new closure: false → false"
+  },
+  {
+    "mechanism": "MetaConfiguration (meta-grammar)",
+    "world": "W4-description-space-change",
+    "full": "description-space transformation (v0.3.0 full registry + meta-grammar)",
+    "ablated": "ablation: no MetaConfiguration (full registry, meta-grammar off)",
+    "changed": false,
+    "detail": "adaptationLatencyRounds: [\"never\",\"never\",\"never\"] → [\"never\",\"never\",\"never\"]; prediction_regime2_finalNMSE: 0.215 → 0.215; newDistinctions_named: [\"sq(x)\",\"diff(v1)\"] → [\"sq(x)\",\"diff(v1)\"]"
+  },
+  {
+    "mechanism": "description-space revision",
+    "world": "W4-description-space-change",
+    "full": "description-space transformation (v0.3.0 full registry + meta-grammar)",
+    "ablated": "grammar-bounded (v0.3.0 engine, empty mutation registry)",
+    "changed": false,
+    "detail": "adaptationLatencyRounds: [\"never\",\"never\",\"never\"] → [\"never\",\"never\",\"never\"]; prediction_regime2_finalNMSE: 0.215 → 0.215; newDistinctions_named: [\"sq(x)\",\"diff(v1)\"] → [\"sq(x)\",\"diff(v1)\"]"
+  },
+  {
+    "mechanism": "open operational values (per-stream values)",
+    "world": "W5-thick-category",
+    "full": "Ziran / Xeno adapter (provisional bundles + v0.3.0 J/K predicate)",
+    "ablated": "ablation: fixed operational values (per-stream values collapsed)",
+    "changed": true,
+    "detail": "worldA_predictionMAE: 0.082 → 0.264; worldB_predictionMAE: 0.086 → 0.086; worldA_usesCategory: true → false"
+  }
+]

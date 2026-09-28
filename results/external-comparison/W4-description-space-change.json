@@ -1,0 +1,1039 @@
+{
+  "world": "W4-description-space-change",
+  "question": "When successful modelling requires a distinction absent from the initial vocabulary, which model classes generate it, how fast, at what representation cost, and with what loss?",
+  "design": "regime switch at t=200 from linear to window-threshold dependence",
+  "matched": {
+    "world": "W4-description-space-change",
+    "inputData": "the same series per seed (x, y, 500 steps) for every model class",
+    "initialConditions": "x₀ = y₀ = 0",
+    "interventionHistory": "do(x = ±2) at t ∈ {60, 130, 260, 330, 400, 460}, known to all",
+    "temporalHorizon": "500",
+    "computationalBudget": "not equalized; recorded (MLP 300 epochs; morphogenesis 3 rounds per cut-off)",
+    "observationAvailability": "x and y, noise-free readings",
+    "measurementResolution": "exact",
+    "resourceConstraints": "none",
+    "evaluationWindow": "regime 2: rows [200 + 30k, 500), k = 1…6; regime 1: rows [180, 200)",
+    "sameness": [
+      {
+        "framework": "all",
+        "sameRawSource": true,
+        "samePreprocessing": true,
+        "sameObservation": true,
+        "sameStateRepresentation": false,
+        "sameIntervention": true,
+        "sameOperationalEffect": null,
+        "transformation": "models construct their own inputs (current values, lag windows, generated variables); readout for linear and grammar models is least squares on y′"
+      },
+      {
+        "framework": "ziran-xeno",
+        "sameRawSource": true,
+        "samePreprocessing": true,
+        "sameObservation": true,
+        "sameStateRepresentation": false,
+        "sameIntervention": true,
+        "sameOperationalEffect": null,
+        "transformation": "grammar-bounded uses the v0.3.0 morphogenesis engine with an empty mutation registry, because grammarBoundedDiscovery has no train/test split; v0.3.0 selection criteria predict all observed series (x and y), the comparison evaluates y only"
+      }
+    ]
+  },
+  "records": [
+    {
+      "world": "W4-description-space-change",
+      "framework": "dynamical-systems",
+      "configuration": "fixed-state linear model (y′ ~ x, y)",
+      "role": "primary",
+      "representationSupplied": [
+        "state {x, y}",
+        "linear form"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [],
+      "observationsRevised": [],
+      "interventions": [],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "window-threshold distinction (not captured within 6 rounds)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "adaptationLatencyRounds_seed1": null,
+        "roundLength": 30
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "adaptationLatencyRounds": [
+          "never",
+          "never",
+          "never"
+        ],
+        "heldOutRecoveryByRound_seed1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "prediction_regime2_finalNMSE": 0.222,
+        "prediction_regime2_fixedStateNMSE": 0.222,
+        "intervention_regime2_NMSE": 0.261,
+        "prediction_regime1_NMSE": 0.096,
+        "newDistinctions_named": [],
+        "newDistinctions_unnamed": 0,
+        "representationCost_params": 3,
+        "informationLoss": []
+      },
+      "burden": [
+        {
+          "item": "state-variables",
+          "supplied": "{x, y}",
+          "enabled": "regime 1 fit",
+          "prevented": "the window-threshold distinction",
+          "wrongWhen": "regime 2"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 500,
+        "observationsUsed": 1000,
+        "interventionCount": 6,
+        "memoryItems": null,
+        "representationComplexity": 3,
+        "note": "per seed, all cut-offs"
+      },
+      "conversions": [
+        {
+          "from": "continuous x history",
+          "to": "current x",
+          "retained": [
+            "current x"
+          ],
+          "lost": [
+            "all history beyond x_t"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W4-description-space-change",
+      "framework": "dynamical-systems",
+      "configuration": "parameter-adaptive linear model (exponential forgetting 0.97)",
+      "role": "primary",
+      "representationSupplied": [
+        "state {x, y}",
+        "linear form",
+        "forgetting factor"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [],
+      "observationsRevised": [],
+      "interventions": [],
+      "detectedDifferences": [
+        "regime-2 dependence captured (recovery ≥ 0.25)"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "adaptationLatencyRounds_seed1": null,
+        "roundLength": 30
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [
+        "parameters re-weighted each cut-off"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "adaptationLatencyRounds": [
+          "never",
+          1,
+          1
+        ],
+        "heldOutRecoveryByRound_seed1": [
+          0.222,
+          0.149,
+          0.106,
+          0.04,
+          -0.062,
+          -0.01
+        ],
+        "prediction_regime2_finalNMSE": 0.211,
+        "prediction_regime2_fixedStateNMSE": 0.222,
+        "intervention_regime2_NMSE": 0.2,
+        "prediction_regime1_NMSE": 0.097,
+        "newDistinctions_named": [],
+        "newDistinctions_unnamed": 0,
+        "representationCost_params": 3,
+        "informationLoss": []
+      },
+      "burden": [
+        {
+          "item": "state-variables",
+          "supplied": "{x, y}",
+          "enabled": "tracking parameter drift",
+          "prevented": "new variables",
+          "wrongWhen": "regime 2 needs a new distinction, not new parameters"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 500,
+        "observationsUsed": 1000,
+        "interventionCount": 6,
+        "memoryItems": null,
+        "representationComplexity": 3,
+        "note": "per seed, all cut-offs"
+      },
+      "conversions": [
+        {
+          "from": "continuous x history",
+          "to": "current x",
+          "retained": [
+            "current x"
+          ],
+          "lost": [
+            "all history beyond x_t"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W4-description-space-change",
+      "framework": "feature-learning",
+      "configuration": "feature learning: MLP on an 8-step lag window (8 hidden units)",
+      "role": "primary",
+      "representationSupplied": [
+        "lag window 8",
+        "architecture 9-8-1 tanh",
+        "300 Adam epochs"
+      ],
+      "representationGenerated": [
+        "8 hidden tanh features (unnamed)"
+      ],
+      "observationsSupplied": [],
+      "observationsRevised": [],
+      "interventions": [],
+      "detectedDifferences": [
+        "regime-2 dependence captured (recovery ≥ 0.25)"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "adaptationLatencyRounds_seed1": null,
+        "roundLength": 30
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "adaptationLatencyRounds": [
+          "never",
+          "never",
+          4
+        ],
+        "heldOutRecoveryByRound_seed1": [
+          -0.233,
+          -0.248,
+          -0.261,
+          -0.127,
+          -0.074,
+          0
+        ],
+        "prediction_regime2_finalNMSE": 0.219,
+        "prediction_regime2_fixedStateNMSE": 0.222,
+        "intervention_regime2_NMSE": 0.297,
+        "prediction_regime1_NMSE": 0.106,
+        "newDistinctions_named": [],
+        "newDistinctions_unnamed": 8,
+        "representationCost_params": 89,
+        "informationLoss": []
+      },
+      "burden": [
+        {
+          "item": "feature-window",
+          "supplied": "8 lags of x",
+          "enabled": "implicit windowed features",
+          "prevented": "dependence beyond 8 lags"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 500,
+        "observationsUsed": 1000,
+        "interventionCount": 6,
+        "memoryItems": null,
+        "representationComplexity": 89,
+        "note": "per seed, all cut-offs"
+      },
+      "conversions": [
+        {
+          "from": "continuous x history",
+          "to": "lag window vector",
+          "retained": [
+            "last 8 values"
+          ],
+          "lost": [
+            "values beyond the window"
+          ],
+          "newlyAvailable": [
+            "8 hidden tanh features (unnamed)"
+          ],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W4-description-space-change",
+      "framework": "feature-learning",
+      "configuration": "feature learning: MLP on a 3-step lag window",
+      "role": "fairness",
+      "representationSupplied": [
+        "lag window 3"
+      ],
+      "representationGenerated": [
+        "8 hidden tanh features (unnamed)"
+      ],
+      "observationsSupplied": [],
+      "observationsRevised": [],
+      "interventions": [],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "window-threshold distinction (not captured within 6 rounds)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "adaptationLatencyRounds_seed1": null,
+        "roundLength": 30
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "adaptationLatencyRounds": [
+          "never",
+          "never",
+          "never"
+        ],
+        "heldOutRecoveryByRound_seed1": [
+          0.112,
+          0.21,
+          0.205,
+          0.181,
+          0.171,
+          0.182
+        ],
+        "prediction_regime2_finalNMSE": 0.189,
+        "prediction_regime2_fixedStateNMSE": 0.222,
+        "intervention_regime2_NMSE": 0.206,
+        "prediction_regime1_NMSE": 0.096,
+        "newDistinctions_named": [],
+        "newDistinctions_unnamed": 8,
+        "representationCost_params": 49,
+        "informationLoss": []
+      },
+      "burden": [
+        {
+          "item": "feature-window",
+          "supplied": "3 lags (shorter than the true window 5)",
+          "enabled": "fewer parameters",
+          "prevented": "the full window",
+          "wrongWhen": "the relevant window exceeds 3"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 500,
+        "observationsUsed": 1000,
+        "interventionCount": 6,
+        "memoryItems": null,
+        "representationComplexity": 49,
+        "note": "per seed, all cut-offs"
+      },
+      "conversions": [
+        {
+          "from": "continuous x history",
+          "to": "lag window vector",
+          "retained": [
+            "last 3 values"
+          ],
+          "lost": [
+            "values beyond the window"
+          ],
+          "newlyAvailable": [
+            "8 hidden tanh features (unnamed)"
+          ],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W4-description-space-change",
+      "framework": "feature-learning",
+      "configuration": "feature learning: MLP 8-step window, 1000 epochs (unmatched compute)",
+      "role": "budget-sensitivity",
+      "representationSupplied": [
+        "lag window 8",
+        "1000 epochs"
+      ],
+      "representationGenerated": [
+        "8 hidden tanh features (unnamed)"
+      ],
+      "observationsSupplied": [],
+      "observationsRevised": [],
+      "interventions": [],
+      "detectedDifferences": [
+        "regime-2 dependence captured (recovery ≥ 0.25)"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "adaptationLatencyRounds_seed1": null,
+        "roundLength": 30
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "adaptationLatencyRounds": [
+          "never",
+          "never",
+          5
+        ],
+        "heldOutRecoveryByRound_seed1": [
+          -0.638,
+          -0.389,
+          -0.574,
+          -0.365,
+          -0.117,
+          0.046
+        ],
+        "prediction_regime2_finalNMSE": 0.23,
+        "prediction_regime2_fixedStateNMSE": 0.222,
+        "intervention_regime2_NMSE": 0.251,
+        "prediction_regime1_NMSE": 0.16,
+        "newDistinctions_named": [],
+        "newDistinctions_unnamed": 8,
+        "representationCost_params": 89,
+        "informationLoss": []
+      },
+      "burden": [
+        {
+          "item": "feature-window",
+          "supplied": "8 lags of x",
+          "enabled": "implicit windowed features",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 500,
+        "observationsUsed": 1000,
+        "interventionCount": 6,
+        "memoryItems": null,
+        "representationComplexity": 89,
+        "note": "per seed, all cut-offs"
+      },
+      "conversions": [
+        {
+          "from": "continuous x history",
+          "to": "lag window vector",
+          "retained": [
+            "last 8 values"
+          ],
+          "lost": [
+            "values beyond the window"
+          ],
+          "newlyAvailable": [
+            "8 hidden tanh features (unnamed)"
+          ],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W4-description-space-change",
+      "framework": "ziran-xeno",
+      "configuration": "grammar-bounded (v0.3.0 engine, empty mutation registry)",
+      "role": "primary",
+      "representationSupplied": [
+        "supplied grammar G0 (diff, inv, inv_sq, sq, abs, log, sub, mul, ratio)"
+      ],
+      "representationGenerated": [
+        "sq(x)",
+        "diff(v1)"
+      ],
+      "observationsSupplied": [],
+      "observationsRevised": [],
+      "interventions": [],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "window-threshold distinction (not captured within 6 rounds)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "adaptationLatencyRounds_seed1": null,
+        "roundLength": 30
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "adaptationLatencyRounds": [
+          "never",
+          "never",
+          "never"
+        ],
+        "heldOutRecoveryByRound_seed1": [
+          -0.085,
+          -0.081,
+          0,
+          0,
+          0,
+          0
+        ],
+        "prediction_regime2_finalNMSE": 0.215,
+        "prediction_regime2_fixedStateNMSE": 0.222,
+        "intervention_regime2_NMSE": 0.246,
+        "prediction_regime1_NMSE": 0.096,
+        "newDistinctions_named": [
+          "sq(x)",
+          "diff(v1)"
+        ],
+        "newDistinctions_unnamed": 0,
+        "representationCost_params": 13,
+        "informationLoss": []
+      },
+      "burden": [
+        {
+          "item": "grammar",
+          "supplied": "fixed operator grammar",
+          "enabled": "named variables",
+          "prevented": "operators outside G0"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 500,
+        "observationsUsed": 1000,
+        "interventionCount": 6,
+        "memoryItems": null,
+        "representationComplexity": 13,
+        "note": "per seed, all cut-offs"
+      },
+      "conversions": [
+        {
+          "from": "continuous x history",
+          "to": "generated variables",
+          "retained": [
+            "current x"
+          ],
+          "lost": [
+            "what no generated variable carries"
+          ],
+          "newlyAvailable": [
+            "sq(x)",
+            "diff(v1)"
+          ],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W4-description-space-change",
+      "framework": "ziran-xeno",
+      "configuration": "grammar morphogenesis (v0.3.0, no representation-change operators)",
+      "role": "primary",
+      "representationSupplied": [
+        "G0",
+        "mutation registry minus discretize / sign / continuize"
+      ],
+      "representationGenerated": [
+        "sq(x)",
+        "diff(v1)"
+      ],
+      "observationsSupplied": [],
+      "observationsRevised": [],
+      "interventions": [],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "window-threshold distinction (not captured within 6 rounds)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "adaptationLatencyRounds_seed1": null,
+        "roundLength": 30
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "adaptationLatencyRounds": [
+          "never",
+          "never",
+          "never"
+        ],
+        "heldOutRecoveryByRound_seed1": [
+          -0.085,
+          -0.081,
+          0,
+          0,
+          0,
+          0
+        ],
+        "prediction_regime2_finalNMSE": 0.215,
+        "prediction_regime2_fixedStateNMSE": 0.222,
+        "intervention_regime2_NMSE": 0.246,
+        "prediction_regime1_NMSE": 0.098,
+        "newDistinctions_named": [
+          "sq(x)",
+          "diff(v1)"
+        ],
+        "newDistinctions_unnamed": 0,
+        "representationCost_params": 13,
+        "informationLoss": []
+      },
+      "burden": [
+        {
+          "item": "grammar",
+          "supplied": "G0 + 6 mutation operators",
+          "enabled": "delays, windows, composition",
+          "prevented": "discrete representations"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 500,
+        "observationsUsed": 1000,
+        "interventionCount": 6,
+        "memoryItems": null,
+        "representationComplexity": 13,
+        "note": "per seed, all cut-offs"
+      },
+      "conversions": [
+        {
+          "from": "continuous x history",
+          "to": "generated variables",
+          "retained": [
+            "current x"
+          ],
+          "lost": [
+            "what no generated variable carries"
+          ],
+          "newlyAvailable": [
+            "sq(x)",
+            "diff(v1)"
+          ],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W4-description-space-change",
+      "framework": "ziran-xeno",
+      "configuration": "description-space transformation (v0.3.0 full registry + meta-grammar)",
+      "role": "primary",
+      "representationSupplied": [
+        "G0",
+        "full mutation registry",
+        "meta-grammar"
+      ],
+      "representationGenerated": [
+        "sq(x)",
+        "diff(v1)"
+      ],
+      "observationsSupplied": [],
+      "observationsRevised": [],
+      "interventions": [],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "window-threshold distinction (not captured within 6 rounds)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "adaptationLatencyRounds_seed1": null,
+        "roundLength": 30
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "adaptationLatencyRounds": [
+          "never",
+          "never",
+          "never"
+        ],
+        "heldOutRecoveryByRound_seed1": [
+          -0.085,
+          -0.081,
+          0,
+          0,
+          0,
+          0
+        ],
+        "prediction_regime2_finalNMSE": 0.215,
+        "prediction_regime2_fixedStateNMSE": 0.222,
+        "intervention_regime2_NMSE": 0.246,
+        "prediction_regime1_NMSE": 0.098,
+        "newDistinctions_named": [
+          "sq(x)",
+          "diff(v1)"
+        ],
+        "newDistinctions_unnamed": 0,
+        "representationCost_params": 13,
+        "informationLoss": []
+      },
+      "burden": [
+        {
+          "item": "grammar",
+          "supplied": "G0 + 9 mutation operators + meta-operations",
+          "enabled": "representation change",
+          "prevented": "step types outside the templates"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 500,
+        "observationsUsed": 1000,
+        "interventionCount": 6,
+        "memoryItems": null,
+        "representationComplexity": 13,
+        "note": "per seed, all cut-offs"
+      },
+      "conversions": [
+        {
+          "from": "continuous x history",
+          "to": "generated variables",
+          "retained": [
+            "current x"
+          ],
+          "lost": [
+            "what no generated variable carries"
+          ],
+          "newlyAvailable": [
+            "sq(x)",
+            "diff(v1)"
+          ],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W4-description-space-change",
+      "framework": "ziran-xeno",
+      "configuration": "ablation: no MetaConfiguration (full registry, meta-grammar off)",
+      "role": "ablation",
+      "representationSupplied": [
+        "as primary, meta-grammar off"
+      ],
+      "representationGenerated": [
+        "sq(x)",
+        "diff(v1)"
+      ],
+      "observationsSupplied": [],
+      "observationsRevised": [],
+      "interventions": [],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "window-threshold distinction (not captured within 6 rounds)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "adaptationLatencyRounds_seed1": null,
+        "roundLength": 30
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "adaptationLatencyRounds": [
+          "never",
+          "never",
+          "never"
+        ],
+        "heldOutRecoveryByRound_seed1": [
+          -0.085,
+          -0.081,
+          0,
+          0,
+          0,
+          0
+        ],
+        "prediction_regime2_finalNMSE": 0.215,
+        "prediction_regime2_fixedStateNMSE": 0.222,
+        "intervention_regime2_NMSE": 0.246,
+        "prediction_regime1_NMSE": 0.098,
+        "newDistinctions_named": [
+          "sq(x)",
+          "diff(v1)"
+        ],
+        "newDistinctions_unnamed": 0,
+        "representationCost_params": 13,
+        "informationLoss": []
+      },
+      "burden": [],
+      "cost": {
+        "modelEvaluations": null,
+        "dataSteps": 500,
+        "observationsUsed": 1000,
+        "interventionCount": 6,
+        "memoryItems": null,
+        "representationComplexity": 13,
+        "note": "per seed, all cut-offs"
+      },
+      "conversions": [
+        {
+          "from": "continuous x history",
+          "to": "generated variables",
+          "retained": [
+            "current x"
+          ],
+          "lost": [
+            "what no generated variable carries"
+          ],
+          "newlyAvailable": [
+            "sq(x)",
+            "diff(v1)"
+          ],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    }
+  ],
+  "fairness": [
+    {
+      "distinction": "window-threshold distinction",
+      "firstConfiguration": "feature learning: MLP on a 3-step lag window",
+      "alternativeConfiguration": "feature learning: MLP on an 8-step lag window (8 hidden units)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "the feature learner depends on the supplied window length"
+    },
+    {
+      "distinction": "window-threshold distinction",
+      "firstConfiguration": "grammar-bounded (v0.3.0 engine, empty mutation registry)",
+      "alternativeConfiguration": "description-space transformation (v0.3.0 full registry + meta-grammar)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": false,
+      "note": "diagnostic on world parameters (seed 1): window 1: retained step@v1(x) · window 5: retained none"
+    }
+  ],
+  "statements": [
+    "under configuration fixed-state linear model (y′ ~ x, y) and implementation dynamical-systems, distinction \"window-threshold dependence in regime 2\" was not retained (latency [\"never\",\"never\",\"never\"] rounds; final NMSE 0.222 vs fixed 0.222)",
+    "under configuration parameter-adaptive linear model (exponential forgetting 0.97) and implementation dynamical-systems, distinction \"window-threshold dependence in regime 2\" was retained (latency [\"never\",1,1] rounds; final NMSE 0.211 vs fixed 0.222)",
+    "under configuration feature learning: MLP on an 8-step lag window (8 hidden units) and implementation feature-learning, distinction \"window-threshold dependence in regime 2\" was retained (latency [\"never\",\"never\",4] rounds; final NMSE 0.219 vs fixed 0.222)",
+    "under configuration feature learning: MLP on a 3-step lag window and implementation feature-learning, distinction \"window-threshold dependence in regime 2\" was not retained (latency [\"never\",\"never\",\"never\"] rounds; final NMSE 0.189 vs fixed 0.222)",
+    "under configuration feature learning: MLP 8-step window, 1000 epochs (unmatched compute) and implementation feature-learning, distinction \"window-threshold dependence in regime 2\" was retained (latency [\"never\",\"never\",5] rounds; final NMSE 0.23 vs fixed 0.222)",
+    "under configuration grammar-bounded (v0.3.0 engine, empty mutation registry) and implementation ziran-xeno, distinction \"window-threshold dependence in regime 2\" was not retained (latency [\"never\",\"never\",\"never\"] rounds; final NMSE 0.215 vs fixed 0.222)",
+    "under configuration grammar morphogenesis (v0.3.0, no representation-change operators) and implementation ziran-xeno, distinction \"window-threshold dependence in regime 2\" was not retained (latency [\"never\",\"never\",\"never\"] rounds; final NMSE 0.215 vs fixed 0.222)",
+    "under configuration description-space transformation (v0.3.0 full registry + meta-grammar) and implementation ziran-xeno, distinction \"window-threshold dependence in regime 2\" was not retained (latency [\"never\",\"never\",\"never\"] rounds; final NMSE 0.215 vs fixed 0.222)",
+    "under configuration ablation: no MetaConfiguration (full registry, meta-grammar off) and implementation ziran-xeno, distinction \"window-threshold dependence in regime 2\" was not retained (latency [\"never\",\"never\",\"never\"] rounds; final NMSE 0.215 vs fixed 0.222)"
+  ],
+  "distinctionTable": [
+    {
+      "distinction": "regime-2 dependence captured",
+      "retainedBy": [
+        "dynamical-systems:parameter-adaptive linear model (exponential forgetting 0.97)",
+        "feature-learning:feature learning: MLP on an 8-step lag window (8 hidden units)",
+        "feature-learning:feature learning: MLP 8-step window, 1000 epochs (unmatched compute)"
+      ],
+      "notRetainedBy": [
+        "dynamical-systems:fixed-state linear model (y′ ~ x, y)",
+        "feature-learning:feature learning: MLP on a 3-step lag window",
+        "ziran-xeno:grammar-bounded (v0.3.0 engine, empty mutation registry)",
+        "ziran-xeno:grammar morphogenesis (v0.3.0, no representation-change operators)",
+        "ziran-xeno:description-space transformation (v0.3.0 full registry + meta-grammar)",
+        "ziran-xeno:ablation: no MetaConfiguration (full registry, meta-grammar off)"
+      ],
+      "notApplicable": []
+    },
+    {
+      "distinction": "named new distinction generated",
+      "retainedBy": [
+        "ziran-xeno:grammar-bounded (v0.3.0 engine, empty mutation registry)",
+        "ziran-xeno:grammar morphogenesis (v0.3.0, no representation-change operators)",
+        "ziran-xeno:description-space transformation (v0.3.0 full registry + meta-grammar)",
+        "ziran-xeno:ablation: no MetaConfiguration (full registry, meta-grammar off)"
+      ],
+      "notRetainedBy": [
+        "dynamical-systems:fixed-state linear model (y′ ~ x, y)",
+        "dynamical-systems:parameter-adaptive linear model (exponential forgetting 0.97)",
+        "feature-learning:feature learning: MLP on an 8-step lag window (8 hidden units)",
+        "feature-learning:feature learning: MLP on a 3-step lag window",
+        "feature-learning:feature learning: MLP 8-step window, 1000 epochs (unmatched compute)"
+      ],
+      "notApplicable": []
+    }
+  ],
+  "notApplicable": [
+    {
+      "framework": "agent-based-modeling",
+      "reason": "no population"
+    },
+    {
+      "framework": "reinforcement-learning",
+      "reason": "prediction task without actions or reward; the feature-learning baseline covers learned representations"
+    },
+    {
+      "framework": "active-inference",
+      "reason": "structure learning over this hypothesis space was not implemented; a fixed generative model would coincide with the fixed-state baseline"
+    },
+    {
+      "framework": "viability-reachability",
+      "reason": "prediction task without a constraint set"
+    },
+    {
+      "framework": "control-mpc",
+      "reason": "prediction task; the adaptive linear model is the corresponding estimator"
+    },
+    {
+      "framework": "digital-twin",
+      "reason": "covered by the parameter-adaptive model (state and parameter update, fixed variable structure)"
+    }
+  ],
+  "references": {
+    "diagnostic": "window 1: retained step@v1(x) · window 5: retained none",
+    "oracleNMSE_regime2": 0.031,
+    "oracleNote": "least squares on (y, true window-threshold indicator), trained on regime-2 rows only — uses knowledge no model has; shows the room for improvement over the fixed-state NMSE"
+  },
+  "claimStatus": "synthetic-world result"
+}

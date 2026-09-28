@@ -1,0 +1,2017 @@
+{
+  "references": {
+    "passivePolicySuccess": 0.891,
+    "note": "u ≡ 0 (no framework); the band is reachable passively most of the time, so gains above this reference measure what mode tracking adds"
+  },
+  "world": "W1-observation-aliasing",
+  "question": "Two states identical under the initial apparatus diverge under the same intervention. Which frameworks register the distinction, how (model vs apparatus), how fast, and at what cost?",
+  "design": "x′ = 0.9x + 0.4·h·u + N(0, 0.15²); h flips 3× at unknown times; h sensor installable by anyone.",
+  "matched": {
+    "world": "W1-observation-aliasing",
+    "inputData": "same environment instances (seeds 1–5); RL additionally uses 20 training episodes (6000 steps) from seeds disjoint from evaluation; model-based frameworks use a supplied nominal model instead (recorded as burden)",
+    "initialConditions": "x₀ ~ N(0, 0.2²) per seed, h₀ = +1, energy 20",
+    "interventionHistory": "framework-chosen u each step; no scripted interventions",
+    "temporalHorizon": "300 steps",
+    "computationalBudget": "not equalized; model evaluations and wall time recorded per framework",
+    "observationAvailability": "x sensor for all; h sensor installable by any framework at cost 1 + 0.05/step",
+    "measurementResolution": "x noise σ = 0.02",
+    "resourceConstraints": "energy 20; actuation 0.02 per non-zero u",
+    "evaluationWindow": "t ∈ [20, 300)",
+    "sameness": [
+      {
+        "framework": "all",
+        "sameRawSource": true,
+        "samePreprocessing": true,
+        "sameObservation": true,
+        "sameStateRepresentation": false,
+        "sameIntervention": true,
+        "sameOperationalEffect": null,
+        "transformation": "RL bins x into 9 states; AIF uses 19 outcome bins; twin filters x; others use the reading directly. Same intervention set; effects differ because policies differ."
+      },
+      {
+        "framework": "ziran-xeno",
+        "sameRawSource": true,
+        "samePreprocessing": true,
+        "sameObservation": true,
+        "sameStateRepresentation": false,
+        "sameIntervention": true,
+        "sameOperationalEffect": null,
+        "transformation": "v0.3.0 lookahead on retained physical snapshots is replaced by evaluation on retained observation history (privileged access removed)"
+      }
+    ]
+  },
+  "records": [
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "control-mpc",
+      "configuration": "nominal-MPC (H=4, supplied model)",
+      "role": "primary",
+      "representationSupplied": [
+        "state x",
+        "nominal dynamics",
+        "quadratic objective",
+        "horizon 4"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "mode h (no representation)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 45.5,
+        "flipsWithoutBehaviouralRecovery": 5,
+        "meanLatencyAfterFlip": null,
+        "flipsNeverTracked": null,
+        "firstDetection": null,
+        "latencyKind": "not represented (framework has no mode estimate)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 3.472
+      },
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": null,
+        "modelChanged": false,
+        "apparatusChanged": false,
+        "detectionLatencyMean": null,
+        "behaviouralLatencyMean": 45.5,
+        "interventionSuccess": 0.54,
+        "interventionSuccessPerSeed": [
+          0.687,
+          0.491,
+          0.662,
+          0.345,
+          0.512
+        ],
+        "resourceCost": 3.472,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 0.606
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "nominal model x' = 0.9x + 0.4u (valid in the initial mode h=+1)",
+          "enabled": "immediate regulation in the initial mode",
+          "prevented": "nothing by itself; the mode is outside the model",
+          "wrongWhen": "after each flip the supplied gain has the wrong sign"
+        },
+        {
+          "item": "action-set",
+          "supplied": "u ∈ {−1,0,+1} (and sensor installation, available to every framework)",
+          "enabled": "finite enumeration",
+          "prevented": "continuous control"
+        },
+        {
+          "item": "goals",
+          "supplied": "objective Σx² + 0.01|u|",
+          "enabled": "regulation",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 24300,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 1,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [
+          "mode-dependent gain (not in model)"
+        ],
+        "detectsEarlier": [],
+        "detectsLater": [
+          "behavioural recovery after a flip (mean 45.5 vs Ziran adapter 11.8 steps)"
+        ],
+        "requiresPredefined": [
+          "dynamics",
+          "objective"
+        ],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "control-mpc",
+      "configuration": "adaptive-MPC (RLS gain estimate, forgetting 0.85)",
+      "role": "primary",
+      "representationSupplied": [
+        "state x",
+        "model structure x' = a x + β u with a supplied",
+        "objective",
+        "estimator"
+      ],
+      "representationGenerated": [
+        "online estimate of β"
+      ],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [
+        "mode change registered in 5/5 runs"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 10.53,
+        "flipsWithoutBehaviouralRecovery": 0,
+        "meanLatencyAfterFlip": 8.47,
+        "flipsNeverTracked": 0,
+        "firstDetection": 103.4,
+        "latencyKind": "estimate-based (framework mode estimate correct 3 steps in a row)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 2.08
+      },
+      "reorganization": [],
+      "modelRevisions": [
+        "t=139: gain estimate changed sign → -0.08",
+        "t=191: gain estimate changed sign → 0.00",
+        "t=277: gain estimate changed sign → -0.06"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": true,
+        "modelChanged": true,
+        "apparatusChanged": false,
+        "detectionLatencyMean": 8.47,
+        "behaviouralLatencyMean": 10.53,
+        "interventionSuccess": 0.918,
+        "interventionSuccessPerSeed": [
+          0.915,
+          0.907,
+          0.918,
+          0.925,
+          0.925
+        ],
+        "resourceCost": 2.08,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 0.999
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "nominal model x' = 0.9x + 0.4u (valid in the initial mode h=+1)",
+          "enabled": "immediate regulation in the initial mode",
+          "prevented": "nothing by itself; the mode is outside the model",
+          "wrongWhen": "recovered by re-estimating β; requires u ≠ 0 (persistent excitation)"
+        },
+        {
+          "item": "action-set",
+          "supplied": "u ∈ {−1,0,+1} (and sensor installation, available to every framework)",
+          "enabled": "finite enumeration",
+          "prevented": "continuous control"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 24300,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 3,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [
+          "mode h and gain magnitude into one parameter β"
+        ],
+        "cannotExpress": [],
+        "detectsEarlier": [
+          "behavioural recovery after a flip (mean 10.53 vs Ziran adapter 11.8 steps)"
+        ],
+        "detectsLater": [],
+        "requiresPredefined": [
+          "model structure",
+          "a"
+        ],
+        "canRevise": [
+          "gain parameter β"
+        ],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "reinforcement-learning",
+      "configuration": "tabular Q, fixed state (x bin)",
+      "role": "primary",
+      "representationSupplied": [
+        "state encoding: 9 x-bins",
+        "reward −x² − 0.5·energy",
+        "actions {−1,0,+1}"
+      ],
+      "representationGenerated": [
+        "Q-values"
+      ],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "mode h (no representation)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 140,
+        "flipsWithoutBehaviouralRecovery": 13,
+        "meanLatencyAfterFlip": null,
+        "flipsNeverTracked": null,
+        "firstDetection": null,
+        "latencyKind": "not represented (framework has no mode estimate)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 0.136
+      },
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": null,
+        "modelChanged": false,
+        "apparatusChanged": false,
+        "detectionLatencyMean": null,
+        "behaviouralLatencyMean": 140,
+        "interventionSuccess": 0.833,
+        "interventionSuccessPerSeed": [
+          0.851,
+          0.722,
+          0.79,
+          0.915,
+          0.89
+        ],
+        "resourceCost": 0.136,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 1
+      },
+      "burden": [
+        {
+          "item": "state-variables",
+          "supplied": "9 x bins",
+          "enabled": "tabular learning",
+          "prevented": "distinguishing states aliased under x",
+          "wrongWhen": "the optimal action differs between aliased states; one Q-row must serve both"
+        },
+        {
+          "item": "reward",
+          "supplied": "−x² − 0.5·Δenergy",
+          "enabled": "learning",
+          "prevented": "—"
+        },
+        {
+          "item": "action-set",
+          "supplied": "u ∈ {−1,0,+1} (and sensor installation, available to every framework)",
+          "enabled": "finite enumeration",
+          "prevented": "continuous control"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 300,
+        "dataSteps": 6000,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 27,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        },
+        {
+          "from": "observation x",
+          "to": "state x-bin",
+          "retained": [
+            "coarse x"
+          ],
+          "lost": [
+            "x within bin",
+            "action-response history"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [
+          "states with equal x bin and different h"
+        ],
+        "cannotExpress": [
+          "the mode h (not in state)"
+        ],
+        "detectsEarlier": [],
+        "detectsLater": [
+          "behavioural recovery after a flip (mean 140 vs Ziran adapter 11.8 steps)"
+        ],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "reinforcement-learning",
+      "configuration": "tabular Q, history-augmented state (x bin, last u, sign Δx)",
+      "role": "fairness",
+      "representationSupplied": [
+        "state: x bin × last action × sign of last change",
+        "reward",
+        "actions"
+      ],
+      "representationGenerated": [
+        "Q-values"
+      ],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "mode h (no representation)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 24,
+        "flipsWithoutBehaviouralRecovery": 0,
+        "meanLatencyAfterFlip": null,
+        "flipsNeverTracked": null,
+        "firstDetection": null,
+        "latencyKind": "not represented (framework has no mode estimate)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 1.44
+      },
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": null,
+        "modelChanged": false,
+        "apparatusChanged": false,
+        "detectionLatencyMean": null,
+        "behaviouralLatencyMean": 24,
+        "interventionSuccess": 0.903,
+        "interventionSuccessPerSeed": [
+          0.89,
+          0.911,
+          0.918,
+          0.907,
+          0.89
+        ],
+        "resourceCost": 1.44,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 1
+      },
+      "burden": [
+        {
+          "item": "state-variables",
+          "supplied": "history features chosen by the designer",
+          "enabled": "implicit mode inference from response",
+          "prevented": "—"
+        },
+        {
+          "item": "action-set",
+          "supplied": "u ∈ {−1,0,+1} (and sensor installation, available to every framework)",
+          "enabled": "finite enumeration",
+          "prevented": "continuous control"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 300,
+        "dataSteps": 6000,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 199,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        },
+        {
+          "from": "observation x",
+          "to": "state x-bin",
+          "retained": [
+            "coarse x"
+          ],
+          "lost": [
+            "x within bin"
+          ],
+          "newlyAvailable": [
+            "last action × sign of change"
+          ],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "response-to-action history"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [
+          "behavioural recovery after a flip (mean 24 vs Ziran adapter 11.8 steps)"
+        ],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "reinforcement-learning",
+      "configuration": "tabular Q with sensor-installation action",
+      "role": "fairness",
+      "representationSupplied": [
+        "state: x bin × h reading if installed",
+        "reward incl. energy",
+        "actions incl. install h"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [
+        "install h sensor (learned action)"
+      ],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "mode h (no representation)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 13,
+        "flipsWithoutBehaviouralRecovery": 0,
+        "meanLatencyAfterFlip": null,
+        "flipsNeverTracked": null,
+        "firstDetection": null,
+        "latencyKind": "not represented (framework has no mode estimate)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 13.27
+      },
+      "reorganization": [
+        "h@2",
+        "h@78",
+        "h@136",
+        "h@86",
+        "h@159"
+      ],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": null,
+        "modelChanged": false,
+        "apparatusChanged": true,
+        "detectionLatencyMean": null,
+        "behaviouralLatencyMean": 13,
+        "interventionSuccess": 0.962,
+        "interventionSuccessPerSeed": [
+          0.996,
+          0.975,
+          0.961,
+          0.968,
+          0.907
+        ],
+        "resourceCost": 13.27,
+        "lostObservability": [],
+        "newObservability": [
+          "h"
+        ],
+        "downstreamReachability": 1
+      },
+      "burden": [
+        {
+          "item": "action-set",
+          "supplied": "install-h added to the action set",
+          "enabled": "learning whether sensing pays",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 300,
+        "dataSteps": 6000,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 96,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        },
+        {
+          "from": "observation x",
+          "to": "state x-bin",
+          "retained": [
+            "coarse x"
+          ],
+          "lost": [
+            "x within bin"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [
+          "behavioural recovery after a flip (mean 13 vs Ziran adapter 11.8 steps)"
+        ],
+        "requiresPredefined": [],
+        "canRevise": [
+          "observation (if the learned policy installs)"
+        ],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "active-inference",
+      "configuration": "discrete AIF with hidden mode factor h (EFE, 2-step policies)",
+      "role": "primary",
+      "representationSupplied": [
+        "generative model: hidden h with switching prior 0.01",
+        "likelihood N(a x + b h u, σ)",
+        "preferences over x bins and energy",
+        "policy space (2 steps, optional sensing)"
+      ],
+      "representationGenerated": [
+        "posterior beliefs over h"
+      ],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [
+        "mode change registered in 5/5 runs"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 8.47,
+        "flipsWithoutBehaviouralRecovery": 0,
+        "meanLatencyAfterFlip": 2.93,
+        "flipsNeverTracked": 0,
+        "firstDetection": 111.6,
+        "latencyKind": "estimate-based (framework mode estimate correct 3 steps in a row)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 1.956
+      },
+      "reorganization": [],
+      "modelRevisions": [
+        "t=78: belief over h → + (1.00)",
+        "t=132: belief over h → − (1.00)",
+        "t=187: belief over h → + (0.96)",
+        "t=274: belief over h → − (1.00)"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": true,
+        "modelChanged": true,
+        "apparatusChanged": false,
+        "detectionLatencyMean": 2.93,
+        "behaviouralLatencyMean": 8.47,
+        "interventionSuccess": 0.983,
+        "interventionSuccessPerSeed": [
+          0.989,
+          0.989,
+          0.982,
+          0.982,
+          0.972
+        ],
+        "resourceCost": 1.956,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 1
+      },
+      "burden": [
+        {
+          "item": "hidden-factors",
+          "supplied": "mode h ∈ {+,−} and its switching rate",
+          "enabled": "belief updating about the mode; epistemic value of sensing",
+          "prevented": "—",
+          "wrongWhen": "not tested (see fairness row without the factor)"
+        },
+        {
+          "item": "preferences",
+          "supplied": "ln P̃(x) ∝ −(x/0.5)², energy weight 0.5",
+          "enabled": "risk term",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 3000,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 2,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        },
+        {
+          "from": "observation x",
+          "to": "outcome bins (19)",
+          "retained": [
+            "x to 0.2"
+          ],
+          "lost": [
+            "x within bin"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "uncertainty about h"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [
+          "behavioural recovery after a flip (mean 8.47 vs Ziran adapter 11.8 steps)"
+        ],
+        "detectsLater": [],
+        "requiresPredefined": [
+          "state space incl. h",
+          "likelihood",
+          "preferences"
+        ],
+        "canRevise": [
+          "beliefs",
+          "observation (sensor installation through EFE)"
+        ],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "active-inference",
+      "configuration": "discrete AIF without mode factor",
+      "role": "fairness",
+      "representationSupplied": [
+        "generative model without h"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [
+        "mode change registered in 0/5 runs"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 45.5,
+        "flipsWithoutBehaviouralRecovery": 5,
+        "meanLatencyAfterFlip": null,
+        "flipsNeverTracked": 15,
+        "firstDetection": null,
+        "latencyKind": "not represented (framework has no mode estimate)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 3.324
+      },
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": false,
+        "modelChanged": false,
+        "apparatusChanged": false,
+        "detectionLatencyMean": null,
+        "behaviouralLatencyMean": 45.5,
+        "interventionSuccess": 0.534,
+        "interventionSuccessPerSeed": [
+          0.665,
+          0.495,
+          0.662,
+          0.342,
+          0.505
+        ],
+        "resourceCost": 3.324,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 0.602
+      },
+      "burden": [
+        {
+          "item": "hidden-factors",
+          "supplied": "none",
+          "enabled": "—",
+          "prevented": "any representation of the mode",
+          "wrongWhen": "after a flip the model predicts the wrong response sign"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2700,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 2,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        },
+        {
+          "from": "observation x",
+          "to": "outcome bins (19)",
+          "retained": [
+            "x to 0.2"
+          ],
+          "lost": [
+            "x within bin"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [
+          "h"
+        ],
+        "detectsEarlier": [],
+        "detectsLater": [
+          "behavioural recovery after a flip (mean 45.5 vs Ziran adapter 11.8 steps)"
+        ],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "digital-twin",
+      "configuration": "twin: Kalman sync + event-triggered parameter recalibration",
+      "role": "primary",
+      "representationSupplied": [
+        "physical state x ↔ digital x̂",
+        "nominal model",
+        "sensor feed x",
+        "innovation test NIS > 6.6 ×3"
+      ],
+      "representationGenerated": [
+        "recalibrated gain"
+      ],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [
+        "mode change registered in 5/5 runs"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 10.47,
+        "flipsWithoutBehaviouralRecovery": 0,
+        "meanLatencyAfterFlip": 8.47,
+        "flipsNeverTracked": 0,
+        "firstDetection": 104.8,
+        "latencyKind": "estimate-based (framework mode estimate correct 3 steps in a row)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 2.712
+      },
+      "reorganization": [],
+      "modelRevisions": [
+        "t=136: parameter recalibration β 0.40 → 0.08",
+        "t=139: parameter recalibration β 0.08 → -0.18",
+        "t=190: parameter recalibration β -0.18 → -0.18",
+        "t=192: parameter recalibration β -0.18 → 0.19",
+        "t=276: parameter recalibration β 0.19 → 0.19",
+        "t=278: parameter recalibration β 0.19 → -0.17"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": true,
+        "modelChanged": true,
+        "apparatusChanged": false,
+        "detectionLatencyMean": 8.47,
+        "behaviouralLatencyMean": 10.47,
+        "interventionSuccess": 0.908,
+        "interventionSuccessPerSeed": [
+          0.9,
+          0.897,
+          0.907,
+          0.907,
+          0.929
+        ],
+        "resourceCost": 2.712,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 0.997
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "nominal model x' = 0.9x + 0.4u (valid in the initial mode h=+1)",
+          "enabled": "immediate regulation in the initial mode",
+          "prevented": "nothing by itself; the mode is outside the model",
+          "wrongWhen": "after each flip the supplied gain has the wrong sign"
+        },
+        {
+          "item": "observation-model",
+          "supplied": "z = x + v",
+          "enabled": "synchronization",
+          "prevented": "nothing observes h"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 24300,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 4,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [
+          "variable structure change",
+          "observation structure change (fixed sensor set)"
+        ],
+        "detectsEarlier": [
+          "behavioural recovery after a flip (mean 10.47 vs Ziran adapter 11.8 steps)"
+        ],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [
+          "state values",
+          "model parameters"
+        ],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "twin update profile (seed 1): {\"stateValueUpdates\":299,\"parameterUpdates\":6,\"modeProbabilityUpdates\":0,\"variableStructureChanges\":0,\"observationStructureChanges\":0,\"meanNIS\":2.679}"
+      ]
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "digital-twin",
+      "configuration": "twin with interacting-multiple-model (two modes)",
+      "role": "fairness",
+      "representationSupplied": [
+        "two-mode model (±b) with Markov switching"
+      ],
+      "representationGenerated": [
+        "mode probabilities"
+      ],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [
+        "mode change registered in 5/5 runs"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 12.8,
+        "flipsWithoutBehaviouralRecovery": 0,
+        "meanLatencyAfterFlip": 4.07,
+        "flipsNeverTracked": 0,
+        "firstDetection": 84,
+        "latencyKind": "estimate-based (framework mode estimate correct 3 steps in a row)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 1.54
+      },
+      "reorganization": [],
+      "modelRevisions": [
+        "t=58: mode probability → +",
+        "t=81: mode probability → +",
+        "t=95: mode probability → +",
+        "t=134: mode probability → −",
+        "t=190: mode probability → +",
+        "t=274: mode probability → −"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": true,
+        "modelChanged": true,
+        "apparatusChanged": false,
+        "detectionLatencyMean": 4.07,
+        "behaviouralLatencyMean": 12.8,
+        "interventionSuccess": 0.981,
+        "interventionSuccessPerSeed": [
+          0.982,
+          0.993,
+          0.982,
+          0.972,
+          0.979
+        ],
+        "resourceCost": 1.54,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 1
+      },
+      "burden": [
+        {
+          "item": "hidden-factors",
+          "supplied": "mode set {+b, −b} (designer extension)",
+          "enabled": "mode tracking",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 24300,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 6,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [
+          "state values",
+          "mode probabilities"
+        ],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "twin update profile (seed 1): {\"stateValueUpdates\":299,\"parameterUpdates\":0,\"modeProbabilityUpdates\":299,\"variableStructureChanges\":0,\"observationStructureChanges\":0,\"meanNIS\":null}"
+      ]
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "viability-reachability",
+      "configuration": "viability-kernel safe controller (mode fixed at +)",
+      "role": "primary",
+      "representationSupplied": [
+        "constraint set |x| < 0.5",
+        "bounded disturbance |d| ≤ 0.3 (assumption)",
+        "dynamics",
+        "grid 0.005"
+      ],
+      "representationGenerated": [
+        "viability kernel (known mode)",
+        "robust kernel over both modes"
+      ],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "mode h (no representation)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 45.5,
+        "flipsWithoutBehaviouralRecovery": 5,
+        "meanLatencyAfterFlip": null,
+        "flipsNeverTracked": null,
+        "firstDetection": null,
+        "latencyKind": "not represented (framework has no mode estimate)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 3.48
+      },
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": null,
+        "modelChanged": false,
+        "apparatusChanged": false,
+        "detectionLatencyMean": null,
+        "behaviouralLatencyMean": 45.5,
+        "interventionSuccess": 0.538,
+        "interventionSuccessPerSeed": [
+          0.658,
+          0.512,
+          0.662,
+          0.345,
+          0.512
+        ],
+        "resourceCost": 3.48,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 0.606,
+        "kernelKnownMode": "[-0.495, 0.495]",
+        "kernelRobustOverModes": "empty"
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "nominal model x' = 0.9x + 0.4u (valid in the initial mode h=+1)",
+          "enabled": "immediate regulation in the initial mode",
+          "prevented": "nothing by itself; the mode is outside the model",
+          "wrongWhen": "after each flip the supplied gain has the wrong sign"
+        },
+        {
+          "item": "boundary",
+          "supplied": "safe set and disturbance bound",
+          "enabled": "guarantee statements",
+          "prevented": "Gaussian tails are outside the bound"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 900,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 401,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "exact set-valued guarantees under the stated bound"
+        ],
+        "merges": [],
+        "cannotExpress": [
+          "observation-apparatus change without an information-state extension"
+        ],
+        "detectsEarlier": [],
+        "detectsLater": [
+          "behavioural recovery after a flip (mean 45.5 vs Ziran adapter 11.8 steps)"
+        ],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "viability-reachability",
+      "configuration": "viability controller with information state (mode estimate from response)",
+      "role": "fairness",
+      "representationSupplied": [
+        "kernel + mode estimate from response sign"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [
+        "mode change registered in 5/5 runs"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 10.67,
+        "flipsWithoutBehaviouralRecovery": 0,
+        "meanLatencyAfterFlip": 3.6,
+        "flipsNeverTracked": 0,
+        "firstDetection": 97.6,
+        "latencyKind": "estimate-based (framework mode estimate correct 3 steps in a row)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 1.62
+      },
+      "reorganization": [],
+      "modelRevisions": [
+        "t=126: information state h → −",
+        "t=190: information state h → +",
+        "t=274: information state h → −"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": true,
+        "modelChanged": true,
+        "apparatusChanged": false,
+        "detectionLatencyMean": 3.6,
+        "behaviouralLatencyMean": 10.67,
+        "interventionSuccess": 0.98,
+        "interventionSuccessPerSeed": [
+          0.975,
+          0.993,
+          0.982,
+          0.972,
+          0.979
+        ],
+        "resourceCost": 1.62,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 1,
+        "kernelKnownMode": "[-0.495, 0.495]",
+        "kernelRobustOverModes": "empty"
+      },
+      "burden": [
+        {
+          "item": "other",
+          "supplied": "information-state extension",
+          "enabled": "mode-dependent safe action",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 900,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 401,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [
+          "behavioural recovery after a flip (mean 10.67 vs Ziran adapter 11.8 steps)"
+        ],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "ziran-xeno",
+      "configuration": "Ziran / Xeno adapter (aliasing → Pareto observation revision, policy pareto-min-loss)",
+      "role": "primary",
+      "representationSupplied": [
+        "nominal model (same as MPC)",
+        "shared MPC planner",
+        "candidate generators (sensor, constructed variable, resolution)",
+        "Pareto axes (v0.3.0)"
+      ],
+      "representationGenerated": [
+        "aliasing record",
+        "constructed or installed channel"
+      ],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [
+        "constructed channel response-sign (from memory)"
+      ],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [
+        "mode change registered in 5/5 runs"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 11.8,
+        "flipsWithoutBehaviouralRecovery": 0,
+        "meanLatencyAfterFlip": 4.13,
+        "flipsNeverTracked": 0,
+        "firstDetection": 99.2,
+        "latencyKind": "estimate-based (framework mode estimate correct 3 steps in a row)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 1.556
+      },
+      "reorganization": [],
+      "modelRevisions": [
+        "t=134: response-sign channel → h −",
+        "t=190: response-sign channel → h +",
+        "t=274: response-sign channel → h −"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": true,
+        "modelChanged": true,
+        "apparatusChanged": true,
+        "detectionLatencyMean": 4.13,
+        "behaviouralLatencyMean": 11.8,
+        "interventionSuccess": 0.981,
+        "interventionSuccessPerSeed": [
+          0.982,
+          0.993,
+          0.982,
+          0.972,
+          0.979
+        ],
+        "resourceCost": 1.556,
+        "lostObservability": [],
+        "newObservability": [
+          "response-sign"
+        ],
+        "downstreamReachability": 1
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "nominal model x' = 0.9x + 0.4u (valid in the initial mode h=+1)",
+          "enabled": "immediate regulation in the initial mode",
+          "prevented": "nothing by itself; the mode is outside the model",
+          "wrongWhen": "after each flip the supplied gain has the wrong sign"
+        },
+        {
+          "item": "observation-model",
+          "supplied": "candidate apparatus changes",
+          "enabled": "observation revision",
+          "prevented": "candidates outside the generator set"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 24600,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 897,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [
+          "behavioural recovery vs nominal-MPC (H=4, supplied model)",
+          "behavioural recovery vs tabular Q, fixed state (x bin)",
+          "behavioural recovery vs tabular Q, history-augmented state (x bin, last u, sign Δx)",
+          "behavioural recovery vs tabular Q with sensor-installation action",
+          "behavioural recovery vs discrete AIF without mode factor",
+          "behavioural recovery vs viability-kernel safe controller (mode fixed at +)",
+          "behavioural recovery vs ablation: no observation revision"
+        ],
+        "detectsLater": [
+          "behavioural recovery vs adaptive-MPC (RLS gain estimate, forgetting 0.85)",
+          "behavioural recovery vs discrete AIF with hidden mode factor h (EFE, 2-step policies)",
+          "behavioural recovery vs twin: Kalman sync + event-triggered parameter recalibration",
+          "behavioural recovery vs viability controller with information state (mode estimate from response)"
+        ],
+        "requiresPredefined": [
+          "candidate generators",
+          "Pareto axes",
+          "selection policy"
+        ],
+        "canRevise": [
+          "observation apparatus",
+          "mode estimate via the revised channel"
+        ],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "first revision record: {\"candidates\":[{\"description\":\"install h sensor\",\"resolves\":null,\"cost\":9.3,\"pareto\":true,\"selected\":false},{\"description\":\"constructed variable: sign of last response (x − a·x_prev)·u from memory\",\"resolves\":true,\"cost\":0,\"pareto\":true,\"selected\":true},{\"description\":\"increase x resolution\",\"resolves\":false,\"cost\":0.5,\"pareto\":true,\"selected\":false}],\"policy\":\"pareto-min-loss\",\"policyOrigin\":\"external\"}"
+      ]
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "ziran-xeno",
+      "configuration": "ablation: no observation revision",
+      "role": "ablation",
+      "representationSupplied": [
+        "as primary, reviser disabled"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [
+        "mode change registered in 5/5 runs"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 45.5,
+        "flipsWithoutBehaviouralRecovery": 5,
+        "meanLatencyAfterFlip": null,
+        "flipsNeverTracked": 15,
+        "firstDetection": 99.2,
+        "latencyKind": "not represented (framework has no mode estimate)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 3.472
+      },
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": true,
+        "modelChanged": false,
+        "apparatusChanged": false,
+        "detectionLatencyMean": null,
+        "behaviouralLatencyMean": 45.5,
+        "interventionSuccess": 0.54,
+        "interventionSuccessPerSeed": [
+          0.687,
+          0.491,
+          0.662,
+          0.345,
+          0.512
+        ],
+        "resourceCost": 3.472,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 0.606
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "nominal model x' = 0.9x + 0.4u (valid in the initial mode h=+1)",
+          "enabled": "immediate regulation in the initial mode",
+          "prevented": "nothing by itself; the mode is outside the model",
+          "wrongWhen": "after each flip the supplied gain has the wrong sign"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 24600,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 897,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [
+          "behavioural recovery after a flip (mean 45.5 vs Ziran adapter 11.8 steps)"
+        ],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "first revision record: null"
+      ]
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "ziran-xeno",
+      "configuration": "selection override: install h sensor (not a v0.3.0 policy)",
+      "role": "fairness",
+      "representationSupplied": [
+        "as primary; the untestable sensor candidate is selected by override"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [
+        "install h sensor"
+      ],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [
+        "mode change registered in 5/5 runs"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": 10.8,
+        "flipsWithoutBehaviouralRecovery": 0,
+        "meanLatencyAfterFlip": 2.07,
+        "flipsNeverTracked": 0,
+        "firstDetection": 99.2,
+        "latencyKind": "estimate-based (framework mode estimate correct 3 steps in a row)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 12.608
+      },
+      "reorganization": [
+        "h@134",
+        "h@76",
+        "h@101",
+        "h@83",
+        "h@102"
+      ],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": true,
+        "modelChanged": false,
+        "apparatusChanged": true,
+        "detectionLatencyMean": 2.07,
+        "behaviouralLatencyMean": 10.8,
+        "interventionSuccess": 0.985,
+        "interventionSuccessPerSeed": [
+          0.989,
+          0.986,
+          0.982,
+          0.982,
+          0.986
+        ],
+        "resourceCost": 12.608,
+        "lostObservability": [],
+        "newObservability": [
+          "h"
+        ],
+        "downstreamReachability": 1
+      },
+      "burden": [],
+      "cost": {
+        "modelEvaluations": 24600,
+        "dataSteps": 0,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 897,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "v0.3.0 selectFrom never selects candidates whose resolution is untestable on retained data; this override tests what that rule costs or saves.",
+        "first revision record: {\"candidates\":[{\"description\":\"install h sensor\",\"resolves\":null,\"cost\":9.3,\"pareto\":true,\"selected\":false},{\"description\":\"constructed variable: sign of last response (x − a·x_prev)·u from memory\",\"resolves\":true,\"cost\":0,\"pareto\":true,\"selected\":true},{\"description\":\"increase x resolution\",\"resolves\":false,\"cost\":0.5,\"pareto\":true,\"selected\":false}],\"policy\":\"pareto-min-loss\",\"policyOrigin\":\"external\"}"
+      ]
+    },
+    {
+      "world": "W1-observation-aliasing",
+      "framework": "reinforcement-learning",
+      "configuration": "tabular Q fixed state, 10× training data (unmatched)",
+      "role": "budget-sensitivity",
+      "representationSupplied": [
+        "as fixed-state RL"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "x (noise σ=0.02)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "u ∈ {−1,0,+1} each step"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "mode h (no representation)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "meanBehaviouralLatency": null,
+        "flipsWithoutBehaviouralRecovery": 15,
+        "meanLatencyAfterFlip": null,
+        "flipsNeverTracked": null,
+        "firstDetection": null,
+        "latencyKind": "not represented (framework has no mode estimate)"
+      },
+      "failures": [],
+      "resourceUse": {
+        "energyUsed": 0.024
+      },
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "aliasingDetected": null,
+        "modelChanged": false,
+        "apparatusChanged": false,
+        "detectionLatencyMean": null,
+        "behaviouralLatencyMean": null,
+        "interventionSuccess": 0.857,
+        "interventionSuccessPerSeed": [
+          0.851,
+          0.829,
+          0.776,
+          0.915,
+          0.915
+        ],
+        "resourceCost": 0.024,
+        "lostObservability": [],
+        "newObservability": [],
+        "downstreamReachability": 1
+      },
+      "burden": [],
+      "cost": {
+        "modelEvaluations": 300,
+        "dataSteps": 60000,
+        "observationsUsed": 300,
+        "interventionCount": 300,
+        "memoryItems": 27,
+        "representationComplexity": null,
+        "note": "per run (mean over seeds); computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "physical (x, h)",
+          "to": "observation x",
+          "retained": [
+            "x up to noise 0.02"
+          ],
+          "lost": [
+            "h"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        },
+        {
+          "from": "observation x",
+          "to": "state x-bin",
+          "retained": [
+            "coarse x"
+          ],
+          "lost": [
+            "x within bin",
+            "action-response history"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "Unmatched data budget: 10× the matched training steps. Reported only to show budget sensitivity."
+      ]
+    }
+  ],
+  "fairness": [
+    {
+      "distinction": "mode h tracked",
+      "firstConfiguration": "reinforcement-learning: tabular Q, fixed state (x bin)",
+      "alternativeConfiguration": "reinforcement-learning: tabular Q, history-augmented state (x bin, last u, sign Δx)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "RL has no mode estimate; compared by intervention success instead; intervention success 0.833 → 0.903"
+    },
+    {
+      "distinction": "mode h tracked",
+      "firstConfiguration": "active-inference: discrete AIF with hidden mode factor h (EFE, 2-step policies)",
+      "alternativeConfiguration": "active-inference: discrete AIF without mode factor",
+      "alternativeTested": true,
+      "retainedUnderAlternative": false,
+      "note": "reverse check: removing the factor; intervention success 0.983 → 0.534"
+    },
+    {
+      "distinction": "mode h tracked",
+      "firstConfiguration": "digital-twin: twin: Kalman sync + event-triggered parameter recalibration",
+      "alternativeConfiguration": "digital-twin: twin with interacting-multiple-model (two modes)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "standard IMM extension; intervention success 0.908 → 0.981"
+    },
+    {
+      "distinction": "mode h tracked",
+      "firstConfiguration": "viability-reachability: viability-kernel safe controller (mode fixed at +)",
+      "alternativeConfiguration": "viability-reachability: viability controller with information state (mode estimate from response)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "information-state extension; intervention success 0.538 → 0.98"
+    },
+    {
+      "distinction": "mode h tracked",
+      "firstConfiguration": "control-mpc: nominal-MPC (H=4, supplied model)",
+      "alternativeConfiguration": "control-mpc: adaptive-MPC (RLS gain estimate, forgetting 0.85)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "adaptive control is standard; intervention success 0.54 → 0.918"
+    }
+  ],
+  "statements": [
+    "under configuration nominal-MPC (H=4, supplied model) and implementation control-mpc, distinction \"hidden-mode distinction (aliasing)\" was not evaluable (intervention success 0.54, energy 3.472, mean latency n/a)",
+    "under configuration adaptive-MPC (RLS gain estimate, forgetting 0.85) and implementation control-mpc, distinction \"hidden-mode distinction (aliasing)\" was retained (intervention success 0.918, energy 2.08, mean latency 8.47)",
+    "under configuration tabular Q, fixed state (x bin) and implementation reinforcement-learning, distinction \"hidden-mode distinction (aliasing)\" was not evaluable (intervention success 0.833, energy 0.136, mean latency n/a)",
+    "under configuration tabular Q, history-augmented state (x bin, last u, sign Δx) and implementation reinforcement-learning, distinction \"hidden-mode distinction (aliasing)\" was not evaluable (intervention success 0.903, energy 1.44, mean latency n/a)",
+    "under configuration tabular Q with sensor-installation action and implementation reinforcement-learning, distinction \"hidden-mode distinction (aliasing)\" was not evaluable (intervention success 0.962, energy 13.27, mean latency n/a)",
+    "under configuration discrete AIF with hidden mode factor h (EFE, 2-step policies) and implementation active-inference, distinction \"hidden-mode distinction (aliasing)\" was retained (intervention success 0.983, energy 1.956, mean latency 2.93)",
+    "under configuration discrete AIF without mode factor and implementation active-inference, distinction \"hidden-mode distinction (aliasing)\" was not retained (intervention success 0.534, energy 3.324, mean latency n/a)",
+    "under configuration twin: Kalman sync + event-triggered parameter recalibration and implementation digital-twin, distinction \"hidden-mode distinction (aliasing)\" was retained (intervention success 0.908, energy 2.712, mean latency 8.47)",
+    "under configuration twin with interacting-multiple-model (two modes) and implementation digital-twin, distinction \"hidden-mode distinction (aliasing)\" was retained (intervention success 0.981, energy 1.54, mean latency 4.07)",
+    "under configuration viability-kernel safe controller (mode fixed at +) and implementation viability-reachability, distinction \"hidden-mode distinction (aliasing)\" was not evaluable (intervention success 0.538, energy 3.48, mean latency n/a)",
+    "under configuration viability controller with information state (mode estimate from response) and implementation viability-reachability, distinction \"hidden-mode distinction (aliasing)\" was retained (intervention success 0.98, energy 1.62, mean latency 3.6)",
+    "under configuration Ziran / Xeno adapter (aliasing → Pareto observation revision, policy pareto-min-loss) and implementation ziran-xeno, distinction \"hidden-mode distinction (aliasing)\" was retained (intervention success 0.981, energy 1.556, mean latency 4.13)",
+    "under configuration ablation: no observation revision and implementation ziran-xeno, distinction \"hidden-mode distinction (aliasing)\" was retained (intervention success 0.54, energy 3.472, mean latency n/a)",
+    "under configuration selection override: install h sensor (not a v0.3.0 policy) and implementation ziran-xeno, distinction \"hidden-mode distinction (aliasing)\" was retained (intervention success 0.985, energy 12.608, mean latency 2.07)",
+    "under configuration tabular Q fixed state, 10× training data (unmatched) and implementation reinforcement-learning, distinction \"hidden-mode distinction (aliasing)\" was not evaluable (intervention success 0.857, energy 0.024, mean latency n/a)"
+  ],
+  "distinctionTable": [
+    {
+      "distinction": "hidden mode represented",
+      "retainedBy": [
+        "control-mpc:adaptive-MPC (RLS gain estimate, forgetting 0.85)",
+        "active-inference:discrete AIF with hidden mode factor h (EFE, 2-step policies)",
+        "digital-twin:twin: Kalman sync + event-triggered parameter recalibration",
+        "digital-twin:twin with interacting-multiple-model (two modes)",
+        "viability-reachability:viability controller with information state (mode estimate from response)",
+        "ziran-xeno:Ziran / Xeno adapter (aliasing → Pareto observation revision, policy pareto-min-loss)",
+        "ziran-xeno:ablation: no observation revision",
+        "ziran-xeno:selection override: install h sensor (not a v0.3.0 policy)"
+      ],
+      "notRetainedBy": [
+        "control-mpc:nominal-MPC (H=4, supplied model)",
+        "reinforcement-learning:tabular Q, fixed state (x bin)",
+        "reinforcement-learning:tabular Q, history-augmented state (x bin, last u, sign Δx)",
+        "reinforcement-learning:tabular Q with sensor-installation action",
+        "active-inference:discrete AIF without mode factor",
+        "viability-reachability:viability-kernel safe controller (mode fixed at +)",
+        "reinforcement-learning:tabular Q fixed state, 10× training data (unmatched)"
+      ],
+      "notApplicable": []
+    },
+    {
+      "distinction": "observation apparatus revised",
+      "retainedBy": [
+        "reinforcement-learning:tabular Q with sensor-installation action",
+        "ziran-xeno:Ziran / Xeno adapter (aliasing → Pareto observation revision, policy pareto-min-loss)",
+        "ziran-xeno:selection override: install h sensor (not a v0.3.0 policy)"
+      ],
+      "notRetainedBy": [
+        "control-mpc:nominal-MPC (H=4, supplied model)",
+        "control-mpc:adaptive-MPC (RLS gain estimate, forgetting 0.85)",
+        "reinforcement-learning:tabular Q, fixed state (x bin)",
+        "reinforcement-learning:tabular Q, history-augmented state (x bin, last u, sign Δx)",
+        "active-inference:discrete AIF with hidden mode factor h (EFE, 2-step policies)",
+        "active-inference:discrete AIF without mode factor",
+        "digital-twin:twin: Kalman sync + event-triggered parameter recalibration",
+        "digital-twin:twin with interacting-multiple-model (two modes)",
+        "viability-reachability:viability-kernel safe controller (mode fixed at +)",
+        "viability-reachability:viability controller with information state (mode estimate from response)",
+        "ziran-xeno:ablation: no observation revision",
+        "reinforcement-learning:tabular Q fixed state, 10× training data (unmatched)"
+      ],
+      "notApplicable": []
+    },
+    {
+      "distinction": "model revised",
+      "retainedBy": [
+        "control-mpc:adaptive-MPC (RLS gain estimate, forgetting 0.85)",
+        "active-inference:discrete AIF with hidden mode factor h (EFE, 2-step policies)",
+        "digital-twin:twin: Kalman sync + event-triggered parameter recalibration",
+        "digital-twin:twin with interacting-multiple-model (two modes)",
+        "viability-reachability:viability controller with information state (mode estimate from response)",
+        "ziran-xeno:Ziran / Xeno adapter (aliasing → Pareto observation revision, policy pareto-min-loss)"
+      ],
+      "notRetainedBy": [
+        "control-mpc:nominal-MPC (H=4, supplied model)",
+        "reinforcement-learning:tabular Q, fixed state (x bin)",
+        "reinforcement-learning:tabular Q, history-augmented state (x bin, last u, sign Δx)",
+        "reinforcement-learning:tabular Q with sensor-installation action",
+        "active-inference:discrete AIF without mode factor",
+        "viability-reachability:viability-kernel safe controller (mode fixed at +)",
+        "ziran-xeno:ablation: no observation revision",
+        "ziran-xeno:selection override: install h sensor (not a v0.3.0 policy)",
+        "reinforcement-learning:tabular Q fixed state, 10× training data (unmatched)"
+      ],
+      "notApplicable": []
+    }
+  ],
+  "notApplicable": [
+    {
+      "framework": "agent-based-modeling",
+      "reason": "single regulated plant without a population or interaction network; an ABM formulation would reduce to one of the control or RL agents"
+    },
+    {
+      "framework": "dynamical-systems",
+      "reason": "covered by the control and twin formulations (same linear switched system)"
+    }
+  ],
+  "claimStatus": "synthetic-world result"
+}
