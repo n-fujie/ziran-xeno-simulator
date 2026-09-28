@@ -1,0 +1,57 @@
+{
+  "Q1": "see baseline-results.json and ziran-results.json (e_RMSt per model and mode)",
+  "Q2": {
+    "band": "y_test ≥ 9 V",
+    "samplesInBand": 105,
+    "samplesBelow": 919
+  },
+  "Q3": {
+    "claimStatus": "empirical observation",
+    "nearIdenticalPairs_estimation": 1229,
+    "withDivergentNextStep_gt_0_3V": 0,
+    "examples": [],
+    "perModelInsufficiencySignals": {
+      "M1-ARX": "residual lag-1 autocorrelation 0.011 (no signal)",
+      "M2-OE": "residual lag-1 autocorrelation 0.994 (signal)",
+      "M3-NARX": "residual lag-1 autocorrelation -0.093 (signal)",
+      "M4a-grey-box": "residual lag-1 autocorrelation 0.995 (signal)",
+      "M4b-grey-box-overflow": "residual lag-1 autocorrelation 0.992 (signal)",
+      "M5-twin": "residual lag-1 autocorrelation 0.887 (signal)",
+      "M6-MLP": "residual lag-1 autocorrelation 0.852 (signal)",
+      "M7-PWARX": "residual lag-1 autocorrelation -0.011 (no signal)",
+      "M5-twin NIS": "mean NIS on estimation 0.12 (≈ 1 expected when consistent)",
+      "Ziran aliasing records (v0.3.0 key, 1e-3 quantization)": "0"
+    }
+  },
+  "Q4": {
+    "generatedByFull": [
+      "diff(u)",
+      "step@v1(v1)",
+      "diff(y)"
+    ],
+    "fullVsFixedObservations": {
+      "full": 0.0763,
+      "fixedObservations": 0.0859
+    }
+  },
+  "Q5": {
+    "claimStatus": "empirical observation",
+    "lagOfMaxCrossCorrelation_samples": 25,
+    "lagSeconds": 100,
+    "maxCorrelation": 0.534,
+    "crossCorrelation_0_to_10": [
+      -0.262,
+      -0.217,
+      -0.169,
+      -0.118,
+      -0.066,
+      -0.014,
+      0.038,
+      0.089,
+      0.138,
+      0.184,
+      0.227
+    ],
+    "tooLateAnalysis": "not applicable: the dataset contains no recorded corrections"
+  }
+}

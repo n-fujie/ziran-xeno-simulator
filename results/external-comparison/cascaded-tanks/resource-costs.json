@@ -1,0 +1,114 @@
+[
+  {
+    "id": "M1-ARX",
+    "fitMs": 68.1,
+    "inferenceMs": 2.85,
+    "trainableParameters": 9,
+    "observationsUsed": 1024,
+    "adaptationSteps": 50
+  },
+  {
+    "id": "M2-OE",
+    "fitMs": 767.3,
+    "inferenceMs": 0.04,
+    "trainableParameters": 7,
+    "observationsUsed": 1024,
+    "adaptationSteps": 15680
+  },
+  {
+    "id": "M3-NARX",
+    "fitMs": 30.6,
+    "inferenceMs": 2.75,
+    "trainableParameters": 21,
+    "observationsUsed": 1024,
+    "adaptationSteps": 18
+  },
+  {
+    "id": "M4a-grey-box",
+    "fitMs": 832.3,
+    "inferenceMs": 0.08,
+    "trainableParameters": 7,
+    "observationsUsed": 1024,
+    "adaptationSteps": 7752
+  },
+  {
+    "id": "M4b-grey-box-overflow",
+    "fitMs": 976.9,
+    "inferenceMs": 0.07,
+    "trainableParameters": 9,
+    "observationsUsed": 1024,
+    "adaptationSteps": 13386
+  },
+  {
+    "id": "M5-twin",
+    "fitMs": 985.4,
+    "inferenceMs": 2.49,
+    "trainableParameters": 11,
+    "observationsUsed": 1024,
+    "adaptationSteps": 12
+  },
+  {
+    "id": "M6-MLP",
+    "fitMs": 5503.2,
+    "inferenceMs": 20.66,
+    "trainableParameters": 97,
+    "observationsUsed": 1024,
+    "adaptationSteps": 10000
+  },
+  {
+    "id": "M7-PWARX",
+    "fitMs": 185.3,
+    "inferenceMs": 2.07,
+    "trainableParameters": 13,
+    "observationsUsed": 1024,
+    "adaptationSteps": 150
+  },
+  {
+    "id": "Z-full",
+    "fitMs": 754.3,
+    "inferenceMs": null,
+    "trainableParameters": 16,
+    "observationsUsed": 1024,
+    "adaptationSteps": "morphogenesis 3 rounds"
+  },
+  {
+    "id": "Z-fixed-observations",
+    "fitMs": 87.1,
+    "inferenceMs": null,
+    "trainableParameters": 3,
+    "observationsUsed": 1024,
+    "adaptationSteps": "morphogenesis 3 rounds"
+  },
+  {
+    "id": "Z-no-grammar-revision",
+    "fitMs": 364.7,
+    "inferenceMs": null,
+    "trainableParameters": 14,
+    "observationsUsed": 1024,
+    "adaptationSteps": "morphogenesis 3 rounds"
+  },
+  {
+    "id": "Z-fixed-description-space",
+    "fitMs": 389.8,
+    "inferenceMs": null,
+    "trainableParameters": 14,
+    "observationsUsed": 1024,
+    "adaptationSteps": "morphogenesis 3 rounds"
+  },
+  {
+    "id": "Z-no-multiple-windows",
+    "fitMs": 606.4,
+    "inferenceMs": null,
+    "trainableParameters": 16,
+    "observationsUsed": 1024,
+    "adaptationSteps": "morphogenesis 3 rounds"
+  },
+  {
+    "id": "Z-no-meta",
+    "fitMs": 649.8,
+    "inferenceMs": null,
+    "trainableParameters": 16,
+    "observationsUsed": 1024,
+    "adaptationSteps": "morphogenesis 3 rounds"
+  }
+]
