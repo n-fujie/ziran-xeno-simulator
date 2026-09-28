@@ -1,0 +1,173 @@
+{
+ "status": "exploratory, after the pre-registered analysis; does not change the frozen decision",
+ "entries": {
+  "walker2d|xeno14|axis-maintenance\u2192lower-abdominal-continuity": {
+   "relMean": -0.0328,
+   "absMean": -0.0014506387108471279,
+   "controlMean": 0.013024259988011381,
+   "bootstrapP": 0.7304,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "walker2d|xeno14|axis-maintenance\u2192low-noise-movement": {
+   "relMean": 0.7145,
+   "absMean": 0.00144057989807186,
+   "controlMean": 0.0021455469612807225,
+   "bootstrapP": 0.0,
+   "bonferroni_p_within_matrixFamily": 0.0
+  },
+  "walker2d|xeno14|lower-abdominal-continuity\u2192axis-maintenance": {
+   "relMean": 0.2231,
+   "absMean": 0.011458825003275367,
+   "controlMean": 0.07009547302892953,
+   "bootstrapP": 0.1677,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "walker2d|xeno14|lower-abdominal-continuity\u2192low-noise-movement": {
+   "relMean": 2.0143,
+   "absMean": 0.00337229769920483,
+   "controlMean": 0.0021455469612807225,
+   "bootstrapP": 0.0,
+   "bonferroni_p_within_matrixFamily": 0.0
+  },
+  "walker2d|xeno14|low-noise-movement\u2192axis-maintenance": {
+   "relMean": -0.1208,
+   "absMean": -0.008525353067055735,
+   "controlMean": 0.07009547302892953,
+   "bootstrapP": 0.0424,
+   "bonferroni_p_within_matrixFamily": 0.5088
+  },
+  "walker2d|xeno14|low-noise-movement\u2192lower-abdominal-continuity": {
+   "relMean": -0.0866,
+   "absMean": -0.0016584090666602973,
+   "controlMean": 0.013024259988011381,
+   "bootstrapP": 0.2838,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "walker2d|tradeoff|axis-maintenance\u2192lower-abdominal-continuity": {
+   "relMean": 0.4442,
+   "absMean": 0.0019257035330381444,
+   "controlMean": 0.011226726882281018,
+   "bootstrapP": 0.0697,
+   "bonferroni_p_within_matrixFamily": 0.8364
+  },
+  "walker2d|tradeoff|axis-maintenance\u2192low-noise-movement": {
+   "relMean": -0.0024,
+   "absMean": -0.0011135753556764834,
+   "controlMean": 0.024315550336709076,
+   "bootstrapP": 0.9088,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "walker2d|tradeoff|lower-abdominal-continuity\u2192axis-maintenance": {
+   "relMean": 0.3627,
+   "absMean": 0.017889967170841528,
+   "controlMean": 0.08335320567578182,
+   "bootstrapP": 0.0078,
+   "bonferroni_p_within_matrixFamily": 0.0936
+  },
+  "walker2d|tradeoff|lower-abdominal-continuity\u2192low-noise-movement": {
+   "relMean": 0.4625,
+   "absMean": 0.009843680356579617,
+   "controlMean": 0.024315550336709076,
+   "bootstrapP": 0.0496,
+   "bonferroni_p_within_matrixFamily": 0.5952
+  },
+  "walker2d|tradeoff|low-noise-movement\u2192axis-maintenance": {
+   "relMean": 0.3198,
+   "absMean": 0.011424900208777834,
+   "controlMean": 0.08335320567578182,
+   "bootstrapP": 0.0509,
+   "bonferroni_p_within_matrixFamily": 0.6108
+  },
+  "walker2d|tradeoff|low-noise-movement\u2192lower-abdominal-continuity": {
+   "relMean": 0.3123,
+   "absMean": 0.0018086051040476926,
+   "controlMean": 0.011226726882281018,
+   "bootstrapP": 0.0302,
+   "bonferroni_p_within_matrixFamily": 0.3624
+  },
+  "hopper|xeno14|axis-maintenance\u2192lower-abdominal-continuity": {
+   "relMean": 0.1273,
+   "absMean": 0.00025896093943443744,
+   "controlMean": 0.0019642775333436483,
+   "bootstrapP": 0.1983,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "hopper|xeno14|axis-maintenance\u2192low-noise-movement": {
+   "relMean": 0.1425,
+   "absMean": -5.818394838440939e-05,
+   "controlMean": 0.0011702229500884487,
+   "bootstrapP": 0.4543,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "hopper|xeno14|lower-abdominal-continuity\u2192axis-maintenance": {
+   "relMean": 0.1132,
+   "absMean": 0.00023993834406015857,
+   "controlMean": 0.004339281890712723,
+   "bootstrapP": 0.6229,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "hopper|xeno14|lower-abdominal-continuity\u2192low-noise-movement": {
+   "relMean": 0.0911,
+   "absMean": -7.787639709948972e-05,
+   "controlMean": 0.0011702229500884487,
+   "bootstrapP": 0.6322,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "hopper|xeno14|low-noise-movement\u2192axis-maintenance": {
+   "relMean": 0.131,
+   "absMean": 0.0002054642079424534,
+   "controlMean": 0.004339281890712723,
+   "bootstrapP": 0.3148,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "hopper|xeno14|low-noise-movement\u2192lower-abdominal-continuity": {
+   "relMean": 0.0126,
+   "absMean": 2.3194707143080564e-05,
+   "controlMean": 0.0019642775333436483,
+   "bootstrapP": 0.38,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "hopper|tradeoff|axis-maintenance\u2192lower-abdominal-continuity": {
+   "relMean": -0.106,
+   "absMean": -0.00021935809318304414,
+   "controlMean": 0.0017335585670813613,
+   "bootstrapP": 0.2256,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "hopper|tradeoff|axis-maintenance\u2192low-noise-movement": {
+   "relMean": 3.4361,
+   "absMean": 0.0038672246275679736,
+   "controlMean": 0.004204328049369251,
+   "bootstrapP": 0.0001,
+   "bonferroni_p_within_matrixFamily": 0.0012
+  },
+  "hopper|tradeoff|lower-abdominal-continuity\u2192axis-maintenance": {
+   "relMean": -0.0027,
+   "absMean": -0.0005122075344714373,
+   "controlMean": 0.00730977800365414,
+   "bootstrapP": 0.9536,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "hopper|tradeoff|lower-abdominal-continuity\u2192low-noise-movement": {
+   "relMean": 3.3806,
+   "absMean": 0.00514464665529301,
+   "controlMean": 0.004204328049369251,
+   "bootstrapP": 0.0,
+   "bonferroni_p_within_matrixFamily": 0.0
+  },
+  "hopper|tradeoff|low-noise-movement\u2192axis-maintenance": {
+   "relMean": -0.0469,
+   "absMean": -0.0005453307478593629,
+   "controlMean": 0.00730977800365414,
+   "bootstrapP": 0.5003,
+   "bonferroni_p_within_matrixFamily": 1.0
+  },
+  "hopper|tradeoff|low-noise-movement\u2192lower-abdominal-continuity": {
+   "relMean": 0.3378,
+   "absMean": 0.0002492435576588118,
+   "controlMean": 0.0017335585670813613,
+   "bootstrapP": 0.0891,
+   "bonferroni_p_within_matrixFamily": 1.0
+  }
+ }
+}
