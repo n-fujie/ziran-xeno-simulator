@@ -1,0 +1,41 @@
+{
+  "protocol_id": "X14-1b",
+  "status": "frozen before any X14-1b run; this file is committed and pushed before the experiment code for X14-1b is run",
+  "purpose": "redesign of X14-1 after STOP: test Fragility Transfer only where the intervention verifiably improves its own organization, with uncapped metrics, 10 seeds and two embodiments",
+  "embodiments": { "walker2d": "Walker2d-v5, planar biped, 6 actuated joints", "hopper": "Hopper-v5, planar monopod, 3 actuated joints" },
+  "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  "organizations": ["axis-maintenance", "lower-abdominal-continuity", "low-noise-movement"],
+  "configurations": {
+    "xeno14": "module-wise training (round-robin, each module on survival − 0.5·normalized own metric), 48 ES iterations",
+    "xeno14-scalarized-training": "same architecture, all parameters on the scalarized objective, 48 iterations",
+    "xeno14-gates-off": "same architecture without ignition gates, module-wise training, 48 iterations",
+    "multiobjective-scalarized-mlp": "MLP on the scalarized objective, 48 iterations",
+    "standard-mlp": "MLP on survival, 48 iterations"
+  },
+  "optimizer": "antithetic ES, 8 pairs (16 episodes) per iteration, sigma 0.05, Adam lr 0.03 — identical for all",
+  "training_pushes": "0 / ±80 N on the torso, 5 steps from step 100 (same absolute force for both embodiments)",
+  "evaluation": "10 episodes per push level (0, ±80, ±140 N) on held-out seeds; metrics are raw (uncapped) organization metrics averaged over surviving steps, survival fraction, recovered fraction",
+  "interventions": {
+    "xeno14": "I_i: 24 ES iterations on module i with its own objective; control C: 24 iterations of the round-robin schedule (8 per module)",
+    "tradeoff": "scalarized MLP — I_i: 24 iterations on the emphasis objective (weight 3 on i, 1 on the others); control C: 24 iterations on the scalarized objective"
+  },
+  "ft_definition": "FT[i][j] = (m_j(I_i) − m_j(C)) / m_j(C) per seed; primary push 140 N, secondary 80 N; positive = organization j deteriorates",
+  "uncertainty": "bootstrap over seeds, 10 000 resamples (numpy default_rng(0)), 95% percentile interval",
+  "self_improvement_criterion": "row i is interpretable only if the 95% interval of FT[i][i] lies entirely below 0",
+  "transfer_declared": "in an interpretable row, FT[i][j] (j ≠ i) with a 95% interval entirely above 0 (deterioration) or entirely below 0 (co-improvement)",
+  "adds_information_beyond_tradeoff": "a declared Xeno-14 entry (i, j) for which the trade-off matrix does not declare the same sign for (i, j) (including a non-interpretable trade-off row)",
+  "hypotheses": {
+    "H1": "Walker2d, 140 N: FT[low-noise-movement][axis-maintenance] > 0 and FT[low-noise-movement][lower-abdominal-continuity] > 0 with row low-noise-movement interpretable (derived from the X14-1 exploratory analysis)",
+    "H2": "morphology dependence: at least one declared entry differs in sign or declaration between embodiments, or an ignition fraction differs (95% interval of the difference excludes 0)"
+  },
+  "paired_comparisons": "survival at 140 N, paired by seed, bootstrap 95% interval of the difference: xeno14 − xeno14-scalarized-training, xeno14 − xeno14-gates-off, xeno14 − multiobjective-scalarized-mlp, xeno14 − standard-mlp",
+  "ignition_consistency": "per module, the across-seed standard deviation of the ignition fraction (gate > 0.5) at 80 N; consistent if < 0.25",
+  "decision_rule": {
+    "GO": "(a) at least one declared transfer in an interpretable row in some embodiment, (b) at least one such entry adds information beyond the trade-off analysis, (c) the interval of xeno14 − xeno14-scalarized-training survival is not entirely below 0, and (d) at least one module has consistent ignition in each embodiment",
+    "CONDITIONAL GO": "(a) and (b) hold but (c) or (d) fails",
+    "STOP": "otherwise"
+  },
+  "not_repeated": "architecture repartition (X14-1 result inconclusive; deferred to a separate protocol)",
+  "known_biases": "organization metrics are averaged over surviving steps, so earlier falls shorten the averaging window; survival is reported alongside every metric",
+  "post_hoc": "any change after the run is an exploratory follow-up that does not replace these results"
+}

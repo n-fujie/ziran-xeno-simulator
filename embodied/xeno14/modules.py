@@ -9,13 +9,22 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-OBS, ACT = 17, 6
-SCALE = torch.tensor([1.0] * 8 + [0.1] * 9)          # shared fixed encoding: velocities scaled by 0.1 (not learned)
-PROPRIO_IDX = list(range(2, 8)) + list(range(11, 17))  # joint angles + joint velocities only
+from .env import EMBODIMENTS
+WALKER = EMBODIMENTS["walker2d"]
+OBS, ACT = WALKER["obs"], WALKER["act"]           # defaults (X14-1); other embodiments pass `emb`
 
 
-def encode(obs: np.ndarray) -> torch.Tensor:
-    return torch.as_tensor(obs, dtype=torch.float32) * SCALE
+def scale_for(emb) -> torch.Tensor:
+    """Shared fixed encoding: velocities scaled by 0.1 (not learned)."""
+    return torch.tensor([1.0] * emb["vel_start"] + [0.1] * (emb["obs"] - emb["vel_start"]))
+
+
+SCALE = scale_for(WALKER)
+PROPRIO_IDX = WALKER["joint_angles"] + WALKER["joint_vels"]   # joint angles + joint velocities only
+
+
+def encode(obs: np.ndarray, scale: torch.Tensor = SCALE) -> torch.Tensor:
+    return torch.as_tensor(obs, dtype=torch.float32) * scale
 
 
 class Policy(nn.Module):
@@ -37,26 +46,32 @@ class History:
 
 
 # gate features per organization: morphology-dependent ignition (which sensed quantities can ignite the module)
-GATE_FEATURES = {
-    "axis-maintenance": lambda x: torch.stack([x[1].abs(), x[10].abs()]),
-    "lower-abdominal-continuity": lambda x: torch.stack([x[0], x[2:8].abs().mean()]),
-    "low-noise-movement": lambda x: torch.stack([x[11:17].abs().mean(), x[10].abs()]),
-}
+def gate_features(emb):
+    ja, jv, pr = emb["joint_angles"], emb["joint_vels"], emb["pitch_rate"]
+    return {
+        "axis-maintenance": lambda x: torch.stack([x[emb["pitch"]].abs(), x[pr].abs()]),
+        "lower-abdominal-continuity": lambda x: torch.stack([x[emb["z"]], x[ja].abs().mean()]),
+        "low-noise-movement": lambda x: torch.stack([x[jv].abs().mean(), x[pr].abs()]),
+    }
+
+
+GATE_FEATURES = gate_features(WALKER)
 
 
 class OrganizationModule(nn.Module):
     """One operational organization: an ignition gate over its own sensed features and an action proposal."""
-    def __init__(self, name: str, n_in: int, hidden: int = 8, gated: bool = True, extra_gate_inputs: int = 0):
+    def __init__(self, name: str, n_in: int, hidden: int = 8, gated: bool = True, extra_gate_inputs: int = 0, emb=WALKER):
         super().__init__()
         self.name, self.gated = name, gated
+        self.gf = gate_features(emb)[name]
         self.gate = nn.Linear(2 + extra_gate_inputs, 1)
-        self.body = nn.Sequential(nn.Linear(n_in, hidden), nn.Tanh(), nn.Linear(hidden, ACT))
+        self.body = nn.Sequential(nn.Linear(n_in, hidden), nn.Tanh(), nn.Linear(hidden, emb["act"]))
         nn.init.zeros_(self.body[2].weight); nn.init.zeros_(self.body[2].bias)
         nn.init.zeros_(self.gate.weight); nn.init.constant_(self.gate.bias, 0.0)
         self.extra = extra_gate_inputs
 
     def forward(self, x_hist: torch.Tensor, x_now: torch.Tensor, gate_extra: torch.Tensor | None = None):
-        gf = GATE_FEATURES[self.name](x_now)
+        gf = self.gf(x_now)
         if self.extra: gf = torch.cat([gf, gate_extra])
         g = torch.sigmoid(self.gate(gf)).squeeze() if self.gated else torch.tensor(1.0)
         return g, self.body(x_hist)
@@ -65,13 +80,14 @@ class OrganizationModule(nn.Module):
 class Xeno14Controller(Policy):
     """Additive composition of gated organization modules; each module's contribution and pairwise conflicts are
     logged per step (conflict is preserved as a record, not averaged into a score)."""
-    def __init__(self, names: list[str], H: int = 3, gated: bool = True, shared_gates: dict[str, str] | None = None, accel_gate_inputs: bool = False):
+    def __init__(self, names: list[str], H: int = 3, gated: bool = True, shared_gates: dict[str, str] | None = None, accel_gate_inputs: bool = False, emb=WALKER):
         super().__init__()
-        self.names, self.H, self.gated = list(names), H, gated
+        self.names, self.H, self.gated, self.emb = list(names), H, gated, emb
+        self.scale = scale_for(emb); self.act_dim = emb["act"]
         self.hist = History(H)
-        n_in = OBS * (H + 1) if H else OBS
+        n_in = emb["obs"] * (H + 1) if H else emb["obs"]
         self.accel = accel_gate_inputs
-        self.mods = nn.ModuleDict({n: OrganizationModule(n, n_in, gated=gated, extra_gate_inputs=2 if accel_gate_inputs else 0) for n in names})
+        self.mods = nn.ModuleDict({n: OrganizationModule(n, n_in, gated=gated, extra_gate_inputs=2 if accel_gate_inputs else 0, emb=emb) for n in names})
         self.shared_gates = shared_gates or {}   # name -> name whose gate it uses (architecture repartition)
         self.prev_x: torch.Tensor | None = None
         self._info: dict = {}
@@ -81,11 +97,11 @@ class Xeno14Controller(Policy):
 
     @torch.no_grad()
     def act(self, obs):
-        x = encode(obs); xh = self.hist.push(x)
+        x = encode(obs, self.scale); xh = self.hist.push(x)
         extra = None
         if self.accel:
             dx = (x - self.prev_x) if self.prev_x is not None else torch.zeros_like(x)
-            extra = torch.stack([dx[10].abs(), dx[11:17].abs().mean()])
+            extra = torch.stack([dx[self.emb["pitch_rate"]].abs(), dx[self.emb["joint_vels"]].abs().mean()])
         self.prev_x = x
         gates, contrib = {}, {}
         for n, m in self.mods.items():
@@ -93,7 +109,7 @@ class Xeno14Controller(Policy):
             g, p = m(xh, x, extra); gates[n] = float(g); contrib[n] = p
         for n, src in self.shared_gates.items():
             if n in gates and src in gates: gates[n] = gates[src]
-        a = sum((torch.tensor(gates[n]) * contrib[n] for n in contrib), torch.zeros(ACT))
+        a = sum((torch.tensor(gates[n]) * contrib[n] for n in contrib), torch.zeros(self.act_dim))
         conf = {}
         ks = list(contrib)
         for i in range(len(ks)):
@@ -111,14 +127,15 @@ class Xeno14Controller(Policy):
 
 class MLPPolicy(Policy):
     """Standard policy network (obs → 32 tanh → 6); proprioceptive variant uses PROPRIO_IDX only."""
-    def __init__(self, proprio_only: bool = False, hidden: int = 32):
+    def __init__(self, proprio_only: bool = False, hidden: int = 32, emb=WALKER):
         super().__init__()
-        self.idx = PROPRIO_IDX if proprio_only else list(range(OBS))
-        self.net = nn.Sequential(nn.Linear(len(self.idx), hidden), nn.Tanh(), nn.Linear(hidden, ACT))
+        self.scale = scale_for(emb)
+        self.idx = (emb["joint_angles"] + emb["joint_vels"]) if proprio_only else list(range(emb["obs"]))
+        self.net = nn.Sequential(nn.Linear(len(self.idx), hidden), nn.Tanh(), nn.Linear(hidden, emb["act"]))
         nn.init.zeros_(self.net[2].weight); nn.init.zeros_(self.net[2].bias)
 
     @torch.no_grad()
-    def act(self, obs): return self.net(encode(obs)[self.idx]).numpy()
+    def act(self, obs): return self.net(encode(obs, self.scale)[self.idx]).numpy()
 
 
 class GRUPolicy(Policy):

@@ -13,9 +13,16 @@ PUSH_STEPS = 5
 TORSO = 1          # body index of the torso in Walker2d
 
 
-def make_env():
+# Embodiment specifications: observation layout (gymnasium v5 = qpos[1:] + qvel) and torso body index.
+EMBODIMENTS = {
+    "walker2d": {"id": "Walker2d-v5", "obs": 17, "act": 6, "z": 0, "pitch": 1, "joint_angles": list(range(2, 8)), "pitch_rate": 10, "joint_vels": list(range(11, 17)), "vel_start": 8, "torso": 1, "morphology": "planar biped, 6 actuated joints"},
+    "hopper": {"id": "Hopper-v5", "obs": 11, "act": 3, "z": 0, "pitch": 1, "joint_angles": list(range(2, 5)), "pitch_rate": 7, "joint_vels": list(range(8, 11)), "vel_start": 5, "torso": 1, "morphology": "planar monopod, 3 actuated joints"},
+}
+
+
+def make_env(embodiment: str = "walker2d"):
     # forward_reward_weight=0: the task is standing, not walking; healthy termination kept (falls end the episode)
-    return gym.make("Walker2d-v5", forward_reward_weight=0.0, reset_noise_scale=5e-3)
+    return gym.make(EMBODIMENTS[embodiment]["id"], forward_reward_weight=0.0, reset_noise_scale=5e-3)
 
 
 def run_episode(env, policy, seed: int, push: float = 0.0, record: bool = False):
@@ -23,6 +30,7 @@ def run_episode(env, policy, seed: int, push: float = 0.0, record: bool = False)
     Returns per-organization measurements; the controller never sees the push schedule."""
     obs, _ = env.reset(seed=seed)
     data = env.unwrapped.data
+    torso = getattr(policy, "emb", {}).get("torso", TORSO) if hasattr(policy, "emb") else TORSO
     policy.reset()
     z0 = float(data.qpos[1])
     prev_a = np.zeros(env.action_space.shape)
@@ -31,7 +39,7 @@ def run_episode(env, policy, seed: int, push: float = 0.0, record: bool = False)
     trace = [] if record else None
     for t in range(T):
         a = np.clip(policy.act(obs), -1.0, 1.0)
-        data.xfrc_applied[TORSO, 0] = push if (push and PUSH_T <= t < PUSH_T + PUSH_STEPS) else 0.0
+        data.xfrc_applied[torso, 0] = push if (push and PUSH_T <= t < PUSH_T + PUSH_STEPS) else 0.0
         obs, _r, term, trunc, _ = env.step(a)
         survived += 1
         pitch, z = float(data.qpos[2]), float(data.qpos[1])
@@ -43,7 +51,7 @@ def run_episode(env, policy, seed: int, push: float = 0.0, record: bool = False)
         prev_a = a
         if term or trunc:
             break
-    data.xfrc_applied[TORSO, 0] = 0.0
+    data.xfrc_applied[torso, 0] = 0.0
     return {
         "survival": survived / T,
         "axis": float(np.mean(pitch2)) if pitch2 else float("nan"),
