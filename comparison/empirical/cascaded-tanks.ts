@@ -124,7 +124,7 @@ function M4(d: Data, overflow: boolean): Model & { gb: GB } {
   return { id: overflow ? 'M4b-grey-box-overflow' : 'M4a-grey-box', family: overflow ? 'grey-box with documented overflow' : 'grey-box nonlinear state-space (documented physics)', simulate: (u) => gbSim(g, u), predict: null, seed: 0, params: overflow ? 9 : 7, adaptationSteps: evals, fitMs: performance.now() - t0, gb: g, describe: { stateVariables: ['x1 (upper tank)', 'x2 (lower tank)'], equations: 'documentation (1)–(3), forward Euler 4×1 s, states ≥ 0' + (overflow ? ', saturation at fitted maxima' : ''), k: g.k, offset: g.c, initialState: g.x0, maxima: g.max, validationSimRMSE: v, predictionMode: 'see M5 (EKF)' } };
 }
 /** Digital twin: M4b as the digital model, synchronized to the sensor by an extended Kalman filter (state updates only). */
-function ekfPredict(g: GB, u: number[], y: number[], q: number, r: number): { pred: number[]; nis: number[] } {
+export function ekfPredict(g: GB, u: number[], y: number[], q: number, r: number): { pred: number[]; nis: number[] } {
   let x = g.x0.slice(); let P = [[1, 0], [0, 1]]; const pred: number[] = [], nis: number[] = [];
   for (let t = 0; t < u.length; t++) {
     const yh = x[1] + g.c; pred.push(yh); const S = P[1][1] + r; const nu = y[t] - yh; nis.push((nu * nu) / S);
@@ -162,7 +162,8 @@ function M6(d: Data): Model & { perSeed: { seed: number; model: (u: number[], y:
 // ------------------------------------------------------------------ Ziran / Xeno adapter
 export interface ZiranOut { id: string; predict: number[]; generated: string[]; origins: string[]; retainedChanges: number; representationChanged: boolean; params: number; fitMs: number; replayRoundTrip: string; aliasingRecords: number; configuration: Record<string, string> }
 const REPR = ['discretize', 'sign', 'continuize'], TEMPORAL = ['delay', 'window', 'temporal-diff'];
-export function ziran(d: Data, variant: 'Z-full' | 'Z-fixed-observations' | 'Z-no-grammar-revision' | 'Z-fixed-description-space' | 'Z-no-multiple-windows' | 'Z-no-meta'): ZiranOut {
+/** `includeCurrentInput` exists only for the exploratory follow-up F2; the pre-registered adapter uses false. */
+export function ziran(d: Data, variant: 'Z-full' | 'Z-fixed-observations' | 'Z-no-grammar-revision' | 'Z-fixed-description-space' | 'Z-no-multiple-windows' | 'Z-no-meta', opts: { includeCurrentInput?: boolean } = {}): ZiranOut {
   const t0 = performance.now();
   // map both records into v0.3.0 observation sets and replay them through the external adapter
   const meta = { source: 'Cascaded Tanks benchmark, 4TU.ResearchData DOI 10.4121/12960104.v1', domain: 'physical-experiment', samplingRegime: 'uniform, Ts = 4 s (dataset documentation)', missingness: 'none (verified)', apparatus: 'uncalibrated capacitive level sensor; pump voltage input (dataset documentation)', timebase: 'sample index × 4 s', uncertainty: 'output SNR close to 40 dB (dataset documentation)', provenance: 'results/external-comparison/cascaded-tanks/provenance.json', preprocessing: 'parsing only (this project)', evidence: 'replayed-empirical' as const };
@@ -183,7 +184,7 @@ export function ziran(d: Data, variant: 'Z-full' | 'Z-fixed-observations' | 'Z-n
     retained = res.changes.filter((c) => c.retained).length; reprChanged = res.representationChanged; gsize = res.finalGrammar.length;
   }
   // one-step readout: ŷ(t+1) = w·[u(t), y(t), generated(t)], least squares on estimation rows
-  const f = (t: number) => [series.u[t], series.y[t], ...extra.map((v) => (Number.isFinite(v[t]) ? v[t] : 0))];
+  const f = (t: number) => [series.u[t], series.y[t], ...(opts.includeCurrentInput ? [series.u[t + 1]] : []), ...extra.map((v) => (Number.isFinite(v[t]) ? v[t] : 0))];
   const rows = range(0, N - 1).filter((t) => extra.every((v) => Number.isFinite(v[t])));
   const w = wls(rows.map(f), rows.map((t) => series.y[t + 1]));
   const pred = d.yTest.map((v, i) => { const t = N + i - 1; return predictLin(w, f(t)); });

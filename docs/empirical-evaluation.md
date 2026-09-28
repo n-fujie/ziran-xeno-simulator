@@ -1,7 +1,8 @@
 # Empirical evaluation — plan and first dataset selection
 
-Status: **dataset acquired and verified (2026-09-28); protocol CT-P1 frozen before any model was implemented or
-fitted.** The protocol-freeze commit is the commit that adds this section and
+Status: **dataset acquired and verified (2026-09-28); protocol CT-P1 frozen in `db3e622` before any model was implemented or
+fitted; adapters committed in `3f962cd`; pre-registered results in `d6ff468`; exploratory follow-ups separate.** Results:
+[cascaded-tanks-results.md](cascaded-tanks-results.md); limitations: [cascaded-tanks-limitations.md](cascaded-tanks-limitations.md). The protocol-freeze commit is the commit that adds this section and
 `results/external-comparison/cascaded-tanks/protocol.json`; its hash is recorded in
 [cascaded-tanks-results.md](cascaded-tanks-results.md). Results so far in this repository other than Cascaded Tanks
 are synthetic-world results.
