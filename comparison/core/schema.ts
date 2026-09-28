@@ -9,7 +9,9 @@ export type ClaimStatus =
 
 export type FrameworkFamily =
   | 'agent-based-modeling' | 'control-mpc' | 'reinforcement-learning' | 'active-inference'
-  | 'digital-twin' | 'dynamical-systems' | 'viability-reachability' | 'feature-learning' | 'ziran-xeno';
+  | 'digital-twin' | 'dynamical-systems' | 'viability-reachability' | 'feature-learning' | 'ziran-xeno'
+  /** Xeno-14 embodied layer (research branch research/xeno14-integration; records written by the Python layer). */
+  | 'xeno14-embodied';
 
 /** One conversion between representations, with what it keeps and loses (§22). */
 export interface Conversion {
