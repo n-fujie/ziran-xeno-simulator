@@ -1,5 +1,5 @@
 // Builds the static, read-only project site (Vercel) into site/dist/.
-// Every number on the page is read from committed result files or computed by the v0.3.0 benchmark code at build
+// Every number on the page is read from committed result files or computed by the core benchmark code at build
 // time; nothing is typed by hand. The interactive simulator is not hosted: its server is long-lived and keeps runs in
 // memory, which a static host cannot provide. Usage: node site/build.ts
 import { mkdirSync, writeFileSync, readFileSync, copyFileSync, readdirSync, existsSync } from 'node:fs';
@@ -23,6 +23,7 @@ const neg = J('results/external-comparison/negative-results.json') as string[] |
 const ct = J('results/external-comparison/cascaded-tanks/result-summary.json');
 const x14 = J('results/xeno14/x14-1/summary.json');
 const x14b = J('results/xeno14/x14-1b/analysis.json');
+const aim1 = J('results/xeno-body-ai/m1/summary.json');
 const commit = git(['rev-parse', '--short', 'HEAD']);
 
 const tag = (s: string, cls = '') => `<span class="tag ${cls}">${esc(s)}</span>`;
@@ -50,7 +51,7 @@ code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
 ul{padding-left:20px}li{margin:3px 0}footer{margin-top:40px;color:var(--muted);font-size:12.5px}
 </style></head><body><main>
 <h1>Ziran / Xeno Operational World Simulator</h1>
-<p class="sub">Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization · v0.3.0 · open research prototype · <a href="${REPO}">GitHub</a></p>
+<p class="sub">Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization · v0.4.0 · open research prototype with experimental research modules · <a href="${REPO}">GitHub</a></p>
 <div class="panel"><p>Ziran / Xeno Operational World Simulator is an experimental framework for studying how operational differences ignite under configuration-dependent conditions, alter downstream reachability, penetrate across coupled configurations, and reorganize observation and description systems.</p>
 <p>The current release supports explicit analysis of configuration reorganization, description-space transformation, and partially revisable meta-configuration. Its benchmark results are synthetic and are not empirical validation of the underlying theoretical framework.</p>
 <p class="small">Not a completed theory implementation, not an empirically validated theory, not an unrestricted autonomous-science system, not an ontology-free simulator, not a historical-person simulator. A/B/C/D are revisable analytical distinctions, not ontological strata. The framework exposes and partially revises some presuppositions; it does not eliminate them.</p></div>
@@ -61,7 +62,7 @@ ul{padding-left:20px}li{margin:3px 0}footer{margin-top:40px;color:var(--muted);f
 cd ziran-xeno-simulator
 npm start        # http://127.0.0.1:3010</pre>
 
-<h2>Benchmark suites (v0.3.0, computed at build time)</h2>
+<h2>Core benchmark suites (core engine unchanged since v0.3.0, computed at build time)</h2>
 <p>Implementation Conformance: <b>${nChecks} checks, ${nFail} failed</b> (claim status: implementation property). None of the suites is empirical validation.</p>
 <h3>Theory-Discriminating A–N</h3><div class="scroll"><table><tr><th>id</th><th>benchmark</th><th>outcome</th><th>claim status</th><th>result</th></tr>${theoryRows}</table></div>
 <h3>Meta-Boundedness MB1–MB7</h3><div class="scroll"><table><tr><th>id</th><th>question</th><th>result</th><th>statement</th></tr>${metaRows}</table></div>
@@ -69,15 +70,19 @@ npm start        # http://127.0.0.1:3010</pre>
 <h2>Negative and null results</h2>
 <p>The simulator is not designed to force Ziran / Xeno mechanisms to win. See <a href="${REPO}/blob/main/docs/negative-results.md">negative-results.md</a>.</p>
 
-<h2>Research branch: external model comparison (unreleased)</h2>
-<p class="small">Branch <a href="${REPO}/tree/research/external-comparison"><code>research/external-comparison</code></a>. Synthetic worlds W1–W5 against ABM, control/MPC, RL, active inference, digital twins, dynamical systems, viability and feature learning; no global ranking.</p>
+<h2>Research module: external comparison (research tool)</h2>
+<p class="small">External Framework Comparison is a reproducible research tool for matched-condition comparison across modelling frameworks. Current results do not establish field-wide superiority. Synthetic worlds W1–W5 against ABM, control/MPC, RL, active inference, digital twins, dynamical systems, viability and feature learning; no global ranking.</p>
 ${neg ? `<details class="panel"><summary>${neg.length} negative / null statements derived from the records</summary><ul>${neg.map((n) => `<li class="small">${esc(n)}</li>`).join('')}</ul></details>` : ''}
 ${ct ? `<h3>Cascaded Tanks (real data, replayed empirical result)</h3><p class="small">4TU.ResearchData DOI 10.4121/12960104.v1 (CC BY-SA 4.0); protocol ${esc(ct.protocol)} frozen in <code>${esc(String(ct.protocolFreezeCommit).slice(0, 7))}</code> before fitting. e_RMSt on the test record (V). ${esc(ct.fairnessVerdict)}.</p><div class="scroll"><table><tr><th>model</th><th>simulation</th><th>one-step prediction</th></tr>${ctRows}</table></div><p><b>No non-redundant Ziran / Xeno distinction was observed under this protocol.</b></p>` : ''}
 
-<h2>Research branch: Xeno-14 embodied experiment (unreleased)</h2>
-<p class="small">Branch <a href="${REPO}/tree/research/xeno14-integration"><code>research/xeno14-integration</code></a>. Walker2d-v5 (MuJoCo), three Xeno-14 organizations as removable PyTorch modules, Fragility Transfer by intervention.</p>
+<h2>Research module: Xeno-14 experimental integration (pilot study)</h2>
+<p class="small">Xeno-14 experimental integration and pilot study on simulated planar embodiments (MuJoCo Walker2d-v5, Hopper-v5): three Xeno-14 organizations as removable PyTorch modules, Fragility Transfer by intervention. This release does not validate Xeno-14 as a superior control architecture.</p>
 ${x14 ? `<p>Milestone X14-1 recommendation: <b>STOP (redesign required)</b> — no sign-consistent Fragility Transfer; scalarized training of the same architecture and gates-off controllers performed as well or better.</p><div class="scroll"><table><tr><th>configuration</th><th>role</th><th>survival at 140 N push (3 seeds)</th></tr>${x14Rows}</table></div>` : ''}
 ${x14bBlock}
+
+<h2>Research module: Active Inference (planar Xeno-Body prototype)</h2>
+<p>Experimental Active Inference research module for the planar Xeno-Body prototype (MuJoCo Walker2d). Milestone 1 established computational feasibility but did not demonstrate a control-performance advantage over the fixed baseline. Stability was unchanged, while corrective movement and motor effort increased. The baseline controller remains standing without perturbation in only 2 of 5 seeds. No real-time guarantee is claimed for the current full control loop.</p>
+${aim1 ? `<p class="small">Across ${Object.keys(aim1.table).length} conditions (Mode B − Mode A, paired by seed): fall rate — no difference established in ${aim1.interval_counts_over_conditions.fall_rate['no difference established']}; motor effort higher in ${aim1.interval_counts_over_conditions.motor_effort['B higher']}; corrective action higher in ${aim1.interval_counts_over_conditions.corrective_action_magnitude['B higher']}. Active Inference decision latency: median ${esc(aim1.latency.B.aif_decision_total.median_ms.toFixed(2))} ms, p95 ${esc(aim1.latency.B.aif_decision_total.p95_ms.toFixed(2))} ms, max ${esc(aim1.latency.B.aif_decision_total.max_ms.toFixed(1))} ms (${esc(aim1.meta.runtime_environment?.cpu ?? '')}).</p>` : ''}
 
 <h2>Screenshots</h2>
 <div class="grid">${shots.map((f) => `<figure><img src="screenshots/${esc(f)}" alt="${esc(f.replace('.png', '').replace(/-/g, ' '))}" loading="lazy"><figcaption>${esc(f.replace('.png', '').replace(/-/g, ' '))}</figcaption></figure>`).join('')}</div>

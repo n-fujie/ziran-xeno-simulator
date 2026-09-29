@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below. This is an open research prototype; its benchmark results are synthetic and are not empirical validation of the Ziran / Xeno framework."
 type: software
 title: "Ziran / Xeno Operational World Simulator: Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization"
-version: "0.3.0"
-date-released: "2026-09-28"
+version: "0.4.0"
+date-released: "2026-09-29"
 license: MIT
 authors:
   - family-names: "Fujie"
@@ -27,11 +27,11 @@ keywords:
 preferred-citation:
   type: software
   title: "Ziran / Xeno Operational World Simulator: Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization"
-  version: "0.3.0"
+  version: "0.4.0"
   year: 2026
   authors:
     - family-names: "Fujie"
       given-names: "Naoto"
   url: "https://github.com/n-fujie/ziran-xeno-simulator"
   repository-code: "https://github.com/n-fujie/ziran-xeno-simulator"
-  notes: "Open research prototype, v0.3.0. Synthetic benchmark results only."
+  notes: "Open research prototype, v0.4.0, with experimental research modules (external comparison, Xeno-14 pilot, planar Active Inference module). Results are synthetic or one replayed empirical dataset; negative and conditional findings are reported as such."

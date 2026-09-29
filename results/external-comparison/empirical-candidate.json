@@ -1,31 +1,31 @@
 {
-  "id": "cascaded-tanks-4tu-12960104",
-  "source": "4TU.ResearchData, DOI 10.4121/12960104 (landing page: nonlinearbenchmark.org/benchmarks/cascaded-tanks)",
+  "id": "cascaded-tanks-4tu-12960104-v1",
+  "source": "4TU.ResearchData, DOI 10.4121/12960104.v1",
   "version": "1 (published 2020-09-21)",
-  "acquisitionDate": "not acquired — download requires the maintainer's approval",
-  "measurementApparatus": "two cascaded tanks with free outlets fed by a pump; water levels measured (sensor type to verify from TanksBenchmark.pdf)",
-  "samplingFrequency": "to verify from TanksBenchmark.pdf",
+  "acquisitionDate": "2026-09-28",
+  "measurementApparatus": "two cascaded tanks fed by a pump; uncalibrated capacitive level sensors; Matlab A/D–D/A interface",
+  "samplingFrequency": "Ts = 4 s (0.25 Hz), 1024 samples per record",
   "units": {
-    "input": "pump input signal (unit to verify)",
-    "output": "water level (unit to verify)"
+    "u": "V (pump voltage)",
+    "y": "V (uncalibrated level sensor)"
   },
-  "preprocessing": "publisher: estimation / test split supplied; this project: none yet",
-  "missingness": "to verify",
-  "knownBiases": "hard nonlinearity from tank overflow and soft nonlinearity from outflow dynamics (stated by the publisher); short records",
-  "temporalBasis": "uniform sampling (period to verify)",
-  "uncertainty": "measurement noise level to verify",
-  "interventionRecord": "the pump input signal is the recorded excitation (estimation and test records)",
+  "preprocessing": "publisher: not documented in supplied source; this project: parsing only",
+  "missingness": "none",
+  "knownBiases": "short estimation record; uncalibrated sensors; unknown initial state; stochastic overflow; single setup",
+  "temporalBasis": "uniform sampling at 4 s; absolute start times not documented in supplied source",
+  "uncertainty": "output SNR close to 40 dB; overflow acts as input-dependent process noise",
+  "interventionRecord": "designed multisine excitation (estimation and test records); no randomized interventions",
   "license": "CC BY-SA 4.0",
   "selectionRationale": [
     "public, with a DOI, a version and a license",
-    "known measurement process and a documented physical setup (photos, video, report)",
-    "a recorded input (excitation) history, i.e. interventions are part of the data",
-    "temporal structure with separate estimation and test records",
-    "small (≈7.5 MB archive) and widely used, so established system-identification baselines exist for comparison"
+    "known measurement process and a documented physical setup",
+    "a recorded input (excitation) history",
+    "separate estimation and test records",
+    "small and widely used, so established system-identification baselines exist"
   ],
   "selectionRisks": [
-    "The overflow nonlinearity is a regime not captured by a simple linear-tank model; that could appear to favour description-space mechanisms. Mitigation: predicates are fixed before running, and established nonlinear system-identification baselines (e.g. NARX / nonlinear state-space) are included, so the comparison is against strong formulations, not a linear strawman.",
-    "Only one physical system; any result is a replayed empirical result for this dataset, not a generalization."
+    "The overflow nonlinearity could appear to favour description-space mechanisms; mitigated by a pre-registered protocol and strong conventional baselines (ARX, output-error, NARX, grey-box with overflow, switching ARX, twin, MLP).",
+    "One physical system: results are replayed empirical results for this dataset only."
   ],
   "claimStatusIfUsed": "replayed empirical result",
   "missingRequiredFields": []

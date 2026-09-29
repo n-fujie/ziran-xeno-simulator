@@ -1,8 +1,8 @@
 {
   "name": "ziran-xeno-simulator",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "Ziran / Xeno Operational World Simulator \u2014 Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization (open research prototype)",
+  "description": "Ziran / Xeno Operational World Simulator \u2014 Operational-Shape Dynamics, Observability Generation, and Description-Space Reorganization (open research prototype with experimental research modules)",
   "author": "Naoto Fujie",
   "homepage": "https://github.com/n-fujie/ziran-xeno-simulator#readme",
   "repository": {

@@ -1,5 +1,45 @@
 # Changelog
 
+## v0.4.0 — 2026-09-29 · research modules (release candidate; not yet tagged)
+
+Formal integration of reproducible external-comparison, Xeno-14 pilot, and planar Xeno-Body Active Inference research
+modules. The release preserves negative and conditional findings and does not claim superiority, production
+readiness, or full self-revision. The core simulator (`src/`, `public/`, `bin/`) is unchanged from v0.3.0; core engine
+version 0.3.0.
+
+### Added
+
+- **External Framework Comparison** (`comparison/`): framework-neutral comparison schema, five synthetic worlds,
+  conventional baselines with fairness configurations, Ziran / Xeno ablations, and the Cascaded Tanks replayed
+  empirical evaluation (protocol CT-P1 frozen before fitting). Result: no field-wide superiority; under CT-P1 no
+  non-redundant Ziran / Xeno distinction was observed.
+- **Xeno-14 experimental integration** (`embodied/xeno14/`): three principles as removable modules on planar MuJoCo
+  embodiments. X14-1: STOP. X14-1b: CONDITIONAL GO under its predefined rule; no non-redundant control advantage
+  demonstrated.
+- **Active Inference research module** (`embodied/active_inference/` and experiment harness): Milestone 1 for the
+  planar Xeno-Body prototype. Computationally viable; stability unchanged; corrective movement and motor effort
+  increased; the baseline controller stands without perturbation in only 2 of 5 seeds. No real-time guarantee is
+  claimed for the current full control loop. Runtime self-revision is not implemented.
+- Static read-only project page builder (`site/build.ts`).
+- Pinned, clean-environment-validated Python dependencies for `embodied/` (`embodied/requirements.txt`,
+  `embodied/requirements-lock.txt`).
+
+### Changed
+
+- README restructured into core simulator, research modules, released results, known limitations and future work.
+- Package version 0.4.0; `CITATION.cff` version 0.4.0. The release test now expects package version 0.4.0 and still
+  asserts core engine version 0.3.0.
+
+### Not included
+
+Active Inference Milestone 2 and later, Xeno-14 X14-2, 3D embodiments, further empirical datasets.
+
+### Git history note
+
+Older commits on the public research branches (`3ad2419`…`2f1e2e7`, `eec7a29`) contain Python bytecode caches with
+ordinary local filesystem paths (a local user directory); no secrets or credentials. They were untracked in
+`8c1a5e9` and `9bde9e2`. History is not rewritten; release tags are created only from clean commits.
+
 ## v0.3.0 — 2026-09-28 · first public release (open research prototype)
 
 Release tag `v0.3.0` · repository https://github.com/n-fujie/ziran-xeno-simulator · author Naoto Fujie · license MIT · no DOI.

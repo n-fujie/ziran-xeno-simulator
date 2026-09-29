@@ -64,6 +64,20 @@ be hidden.
 - **The `branch-mechanism` descriptor** is added when a rule is first observed to ignite stochastically, so the first
   stochastic ignition appears as a Level-C change.
 
+## Research modules (v0.4.0)
+
+- **External comparison:** synthetic worlds constructed and baselines implemented by the same author; small seed
+  counts (3–5); no third-party reproduction; one replayed empirical dataset (Cascaded Tanks). Results do not establish
+  field-wide superiority. See `docs/comparison-limitations.md` and `docs/cascaded-tanks-limitations.md`.
+- **Xeno-14:** three of fourteen principles; planar simulated embodiments only; ignition inconsistent across seeds;
+  no non-redundant control advantage; not a validation of Xeno-14.
+- **Active Inference:** planar Xeno-Body prototype (MuJoCo Walker2d), not the full Xeno-Body; no lateral perturbation;
+  latent states share the observation partition; likelihood A assumed; B learned from sparse calibration data; one
+  decision interval of planning; the base controller stands without perturbation in only 2 of 5 seeds, which weakens
+  the benchmark's ability to distinguish recovery improvements; timing measured in Python, where worst-case latency
+  is dominated by process scheduling; no real-time guarantee is claimed for the current full control loop; runtime
+  self-revision not implemented.
+
 ## Interface
 
 - The server has no authentication and binds to `127.0.0.1` by default. Runs are held in memory only.
