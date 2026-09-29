@@ -1,0 +1,25 @@
+{
+ "status": "context check after the Milestone 1 run (not part of the comparison): existing controller, no push, no noise",
+ "per_seed": {
+  "1": {
+   "fall_rate_no_push": 1.0,
+   "mean_steps": 198.5
+  },
+  "2": {
+   "fall_rate_no_push": 0.0,
+   "mean_steps": 250.0
+  },
+  "3": {
+   "fall_rate_no_push": 1.0,
+   "mean_steps": 176.2
+  },
+  "4": {
+   "fall_rate_no_push": 1.0,
+   "mean_steps": 188.8
+  },
+  "5": {
+   "fall_rate_no_push": 0.0,
+   "mean_steps": 250.0
+  }
+ }
+}

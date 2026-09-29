@@ -1,0 +1,13 @@
+{
+  "embodiment": "walker2d",
+  "seeds": [1, 2, 3, 4, 5],
+  "fast_controller": { "type": "Xeno14Controller (existing, module-wise ES training)", "train_iterations": 48 },
+  "timescales": { "layer0_control_step_ms": 8, "layer1_every_steps": 1, "layer2_every_steps": 25 },
+  "observation": { "pitch_edges": [-0.4, -0.15, -0.05, 0.05, 0.15, 0.4], "rate_edges": [-1.0, 1.0] },
+  "policies": { "pitch_offsets": [-0.1, 0.0, 0.1], "gains": [0.8, 1.0, 1.2] },
+  "generative_model": { "likelihood_precision": 0.85, "dirichlet_prior": 0.1, "calibration_episodes": 60, "calibration_seed_base": 70000 },
+  "preferences": { "neutral": 0.0, "mild": -1.0, "strong": -4.0, "extreme": -16.0, "fallen": -32.0 },
+  "policy_precision_gamma": 16.0,
+  "experiment": { "pushes_N": [80.0, 140.0, 200.0], "directions": ["forward", "backward"], "sensor_noise_sd": 0.05, "episodes_per_condition": 10, "eval_seed_base": 60000, "push_start_step": 100, "push_steps": 5, "episode_steps": 250 },
+  "recovery": { "pitch_threshold": 0.1, "hold_steps": 10 }
+}
