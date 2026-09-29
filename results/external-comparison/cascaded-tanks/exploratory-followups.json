@@ -1,0 +1,51 @@
+{
+  "status": "exploratory follow-up — not part of the pre-registered comparison; pre-registered results unchanged",
+  "determinism": {
+    "reproduced": {
+      "M1-ARX sim": 0.6421,
+      "M4b sim": 0.5701,
+      "Z-full pred": 0.0763
+    },
+    "preRegistered": {
+      "M1-ARX sim": 0.6421,
+      "M4b sim": 0.5701,
+      "Z-full pred": 0.0763
+    }
+  },
+  "F1_twin_extended_noise_grid": {
+    "oldModel": "M5 with q ∈ {1e-4…1e-1}, r ∈ {1e-4…1e-2}",
+    "observedProblem": "selected q at the grid boundary; mean NIS on estimation 0.12",
+    "change": "q ∈ {1e-2…100}, r ∈ {1e-5…1e-2}, selected on the same validation rows",
+    "benefits": "the twin only",
+    "evaluationRestarted": false,
+    "selected": {
+      "q": 100,
+      "r": 0.00001,
+      "validationPredRMSE": 0.1373
+    },
+    "testPredE_RMSt": 0.1062,
+    "preRegisteredTestPredE_RMSt": 0.1063
+  },
+  "F2_ziran_readout_with_current_input": {
+    "oldModel": "readout on u(t−1), y(t−1), generated(t−1)",
+    "observedProblem": "the adapter uses less information than ARX-type models with nk = 0",
+    "change": "add u(t) to the readout",
+    "benefits": "the Ziran adapter only",
+    "evaluationRestarted": false,
+    "testPredE_RMSt": {
+      "Z-full": 0.0871,
+      "Z-fixed-observations": 0.0729,
+      "Z-no-grammar-revision": 0.0864
+    },
+    "preRegistered": {
+      "Z-full": 0.0763,
+      "Z-fixed-observations": 0.0859,
+      "Z-no-grammar-revision": 0.0757
+    },
+    "conventionalForReference": {
+      "M1-ARX": 0.0522,
+      "M7-PWARX": 0.0515
+    }
+  },
+  "claimStatus": "replayed empirical result (exploratory)"
+}

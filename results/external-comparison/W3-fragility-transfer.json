@@ -1,0 +1,1785 @@
+{
+  "world": "W3-fragility-transfer",
+  "question": "A local optimization improves A. Which frameworks register the transferred dependency, delayed failure, resource displacement, observation loss and new closure it produces elsewhere?",
+  "design": "shared reservoir, B curtails below R = 20, scheduled C demand in [200, 230); matched candidate: A draw 1.8 and meter moved from C to A",
+  "matched": {
+    "world": "W3-fragility-transfer",
+    "inputData": "the same two pilot logs (t < 100) per seed and the same published schedule for every framework; RL evaluates in 5 training episodes from disjoint seeds",
+    "initialConditions": "R₀ = 80",
+    "interventionHistory": "one matched intervention (A draw 1.0 → 1.8, meter moved C → A)",
+    "temporalHorizon": "forecast/evaluation to t = 300",
+    "computationalBudget": "not equalized; recorded",
+    "observationAvailability": "baseline apparatus A, B, C, R; candidate apparatus A, B, R",
+    "measurementResolution": "exact meter values",
+    "resourceConstraints": "reservoir dynamics",
+    "evaluationWindow": "ground truth over [0, 300)",
+    "sameness": [
+      {
+        "framework": "all model-based",
+        "sameRawSource": true,
+        "samePreprocessing": true,
+        "sameObservation": true,
+        "sameStateRepresentation": false,
+        "sameIntervention": true,
+        "sameOperationalEffect": true,
+        "transformation": "ABM, centralized MPC, system AIF, twin, viability and the Ziran adapter use one shared identified model; local MPC and local AIF use a reduced model by design"
+      },
+      {
+        "framework": "ziran-xeno",
+        "sameRawSource": true,
+        "samePreprocessing": false,
+        "sameObservation": true,
+        "sameStateRepresentation": false,
+        "sameIntervention": true,
+        "sameOperationalEffect": true,
+        "transformation": "forecast rows exported as observation sets and replayed through the v0.3.0 external adapter; model-predicted channels marked pred_"
+      }
+    ]
+  },
+  "records": [
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "agent-based-modeling",
+      "configuration": "ABM (agents A, B, C; reservoir environment; scenario comparison)",
+      "role": "primary",
+      "representationSupplied": [
+        "agents",
+        "agent rules (structure)",
+        "interaction network (shared reservoir)",
+        "synchronous update schedule"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: A output +218",
+        "transferred dependency: C outcome differs between runs that differ only in A's rule",
+        "delayed failure: C shortfall 32.9 only from t=204",
+        "resource displacement: B draw −159.8"
+      ],
+      "inaccessibleDifferences": [
+        "observation apparatus (ABM simulates true states)",
+        "reachability of recovery"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": true,
+        "detects: delayed failure": "2/3 seeds",
+        "detects: resource displacement": true,
+        "detects: observation loss": false,
+        "detects: new closure": false,
+        "correct: local improvement": true,
+        "correct: transferred dependency": true,
+        "correct: delayed failure": false,
+        "correct: resource displacement": true,
+        "correct: observation loss": false,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "agents",
+          "supplied": "A, B, C as agents with rules",
+          "enabled": "per-unit outcomes",
+          "prevented": "—"
+        },
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        },
+        {
+          "item": "schedule",
+          "supplied": "published C demand schedule (same for every framework)",
+          "enabled": "anticipating the scheduled window",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [
+          "local improvement",
+          "transferred dependency",
+          "resource displacement"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "observation apparatus (ABM simulates true states)",
+          "reachability of recovery"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: per-agent time series; scenario comparison"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "agent-based-modeling",
+      "configuration": "ABM + intervention sweep (A reverts at t)",
+      "role": "fairness",
+      "representationSupplied": [
+        "as ABM",
+        "sweep over revert times"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: A output +218",
+        "transferred dependency: C outcome differs between runs that differ only in A's rule",
+        "delayed failure: C shortfall 32.9 only from t=204",
+        "resource displacement: B draw −159.8",
+        "new closure: intervention sweep: revert-to-baseline recovery lost after t=42; any-policy recovery lost after t=200"
+      ],
+      "inaccessibleDifferences": [
+        "observation apparatus (ABM simulates true states)"
+      ],
+      "branchChanges": [
+        "revert-to-baseline recovery lost after t=42; any-policy recovery lost after t=200"
+      ],
+      "timing": {
+        "closureReported_revertToBaseline": 42,
+        "closureReported_anyPolicy": 200,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": true,
+        "detects: delayed failure": "2/3 seeds",
+        "detects: resource displacement": true,
+        "detects: observation loss": false,
+        "detects: new closure": true,
+        "correct: local improvement": true,
+        "correct: transferred dependency": true,
+        "correct: delayed failure": false,
+        "correct: resource displacement": true,
+        "correct: observation loss": false,
+        "correct: new closure": true
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        },
+        {
+          "item": "schedule",
+          "supplied": "published C demand schedule (same for every framework)",
+          "enabled": "anticipating the scheduled window",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 204,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [
+          "local improvement",
+          "transferred dependency",
+          "resource displacement",
+          "new closure"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "observation apparatus (ABM simulates true states)"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: per-agent time series; scenario comparison"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "control-mpc",
+      "configuration": "local MPC for A (horizon 20, others lumped)",
+      "role": "primary",
+      "representationSupplied": [
+        "A and R",
+        "constant disturbance for others",
+        "constraint R ≥ 5"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: A objective +0.8/step"
+      ],
+      "inaccessibleDifferences": [
+        "units B and C (lumped into a constant disturbance)",
+        "events beyond the horizon",
+        "observation apparatus"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": false,
+        "detects: delayed failure": false,
+        "detects: resource displacement": false,
+        "detects: observation loss": false,
+        "detects: new closure": false,
+        "correct: local improvement": true,
+        "correct: transferred dependency": false,
+        "correct: delayed failure": false,
+        "correct: resource displacement": false,
+        "correct: observation loss": false,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "boundary",
+          "supplied": "controller boundary = unit A + reservoir",
+          "enabled": "decentralized control",
+          "prevented": "representing B and C",
+          "wrongWhen": "consequences arise outside the boundary"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 20,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [
+          "local improvement"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "units B and C (lumped into a constant disturbance)",
+          "events beyond the horizon",
+          "observation apparatus"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: predicted R over 20 steps (min 3); own constraint R ≥ 5 violated within horizon"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "control-mpc",
+      "configuration": "centralized MPC (full identified model, full horizon, C-shortfall constraint)",
+      "role": "fairness",
+      "representationSupplied": [
+        "full model",
+        "schedule",
+        "constraints for all units"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: A term of the objective increases",
+        "transferred dependency: C shortfall constraint becomes active under A's change",
+        "delayed failure: constraint violation predicted only inside the scheduled window",
+        "resource displacement: B draw lower in the predicted trajectory",
+        "new closure: feasibility analysis from t=100: revert-to-baseline recovery lost after t=start; any-policy recovery lost after t=200"
+      ],
+      "inaccessibleDifferences": [
+        "observation apparatus (state assumed available)"
+      ],
+      "branchChanges": [
+        "revert-to-baseline recovery lost after t=start; any-policy recovery lost after t=200"
+      ],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": 200,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": true,
+        "detects: delayed failure": "2/3 seeds",
+        "detects: resource displacement": true,
+        "detects: observation loss": false,
+        "detects: new closure": true,
+        "correct: local improvement": true,
+        "correct: transferred dependency": true,
+        "correct: delayed failure": false,
+        "correct: resource displacement": true,
+        "correct: observation loss": false,
+        "correct: new closure": true
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        },
+        {
+          "item": "schedule",
+          "supplied": "published C demand schedule (same for every framework)",
+          "enabled": "anticipating the scheduled window",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 105,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [
+          "local improvement",
+          "transferred dependency",
+          "resource displacement",
+          "new closure"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "observation apparatus (state assumed available)"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: full-horizon predicted trajectory; best achievable C shortfall from t=100: 0; feasibility over switch times"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "reinforcement-learning",
+      "configuration": "RL policy evaluation, local reward (A output)",
+      "role": "primary",
+      "representationSupplied": [
+        "reward = A output",
+        "training episodes"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: return 300 → 516"
+      ],
+      "inaccessibleDifferences": [
+        "B, C, R (outside the reward)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": false,
+        "detects: delayed failure": false,
+        "detects: resource displacement": false,
+        "detects: observation loss": false,
+        "detects: new closure": false,
+        "correct: local improvement": true,
+        "correct: transferred dependency": false,
+        "correct: delayed failure": false,
+        "correct: resource displacement": false,
+        "correct: observation loss": false,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "reward",
+          "supplied": "A output",
+          "enabled": "evaluating A's change",
+          "prevented": "anything outside the reward"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 10,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [
+          "local improvement"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "B, C, R (outside the reward)"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: local return: base 300, candidate 516"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "reinforcement-learning",
+      "configuration": "RL policy evaluation, team reward (all outputs − 10·C shortfall)",
+      "role": "fairness",
+      "representationSupplied": [
+        "team reward"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "which unit or event caused the return change (merged into one scalar)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": false,
+        "detects: transferred dependency": false,
+        "detects: delayed failure": false,
+        "detects: resource displacement": false,
+        "detects: observation loss": false,
+        "detects: new closure": false,
+        "correct: local improvement": false,
+        "correct: transferred dependency": false,
+        "correct: delayed failure": false,
+        "correct: resource displacement": false,
+        "correct: observation loss": false,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "reward",
+          "supplied": "team reward incl. C shortfall penalty",
+          "enabled": "a return that falls under the candidate",
+          "prevented": "localizing why"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 10,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "which unit or event caused the return change (merged into one scalar)"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: team return: base 957.5, candidate 632.2"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "active-inference",
+      "configuration": "AIF, local preferences (A output, R ≥ 5, 20 steps)",
+      "role": "primary",
+      "representationSupplied": [
+        "generative model (A, R)",
+        "local preferences"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: pragmatic value of A output"
+      ],
+      "inaccessibleDifferences": [
+        "B, C",
+        "events beyond 20 steps after the pilot"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": false,
+        "detects: delayed failure": false,
+        "detects: resource displacement": false,
+        "detects: observation loss": false,
+        "detects: new closure": false,
+        "correct: local improvement": true,
+        "correct: transferred dependency": false,
+        "correct: delayed failure": false,
+        "correct: resource displacement": false,
+        "correct: observation loss": false,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "preferences",
+          "supplied": "A output, R ≥ 5",
+          "enabled": "local evaluation",
+          "prevented": "other units"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [
+          "local improvement"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "B, C",
+          "events beyond 20 steps after the pilot"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: G(base) = -120, G(candidate) = -216 → prefers candidate"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "active-inference",
+      "configuration": "AIF, system preferences + observation model (full horizon)",
+      "role": "fairness",
+      "representationSupplied": [
+        "generative model (all units)",
+        "system preferences",
+        "observation modalities per line"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: pragmatic value of A output",
+        "transferred dependency: predicted C outcomes violate preferences only under the candidate",
+        "delayed failure: preference violation inside the scheduled window",
+        "resource displacement: predicted B outcome lower",
+        "observation loss: ambiguity term increases: C line no longer an outcome modality"
+      ],
+      "inaccessibleDifferences": [
+        "reachability of recovery"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": true,
+        "detects: delayed failure": "2/3 seeds",
+        "detects: resource displacement": true,
+        "detects: observation loss": true,
+        "detects: new closure": false,
+        "correct: local improvement": true,
+        "correct: transferred dependency": true,
+        "correct: delayed failure": false,
+        "correct: resource displacement": true,
+        "correct: observation loss": true,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        },
+        {
+          "item": "schedule",
+          "supplied": "published C demand schedule (same for every framework)",
+          "enabled": "anticipating the scheduled window",
+          "prevented": "—"
+        },
+        {
+          "item": "preferences",
+          "supplied": "all outputs − 10·C shortfall",
+          "enabled": "system evaluation",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [
+          "local improvement",
+          "transferred dependency",
+          "resource displacement",
+          "observation loss"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "reachability of recovery"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: G(base) = -960, G(candidate) = 417.1 → prefers base"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "digital-twin",
+      "configuration": "system twin (sync from meters, forecast with identified model)",
+      "role": "primary",
+      "representationSupplied": [
+        "physical ↔ digital mapping per line",
+        "identified model",
+        "sync-gap monitoring"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: twin forecast",
+        "transferred dependency: twin forecast of C (last synchronized value carried forward)",
+        "delayed failure: forecast shortfall in the scheduled window",
+        "resource displacement: twin forecast of B",
+        "observation loss: synchronization lost for line(s) C under the candidate"
+      ],
+      "inaccessibleDifferences": [
+        "reachability of recovery"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": true,
+        "detects: delayed failure": "2/3 seeds",
+        "detects: resource displacement": true,
+        "detects: observation loss": true,
+        "detects: new closure": false,
+        "correct: local improvement": true,
+        "correct: transferred dependency": true,
+        "correct: delayed failure": false,
+        "correct: resource displacement": true,
+        "correct: observation loss": true,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        },
+        {
+          "item": "schedule",
+          "supplied": "published C demand schedule (same for every framework)",
+          "enabled": "anticipating the scheduled window",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [
+          "local improvement",
+          "transferred dependency",
+          "resource displacement",
+          "observation loss"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "reachability of recovery"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: synchronized state; forecast to t=300; sync-gap log"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "viability-reachability",
+      "configuration": "viability kernel over (t, R) for \"no C shortfall\"",
+      "role": "primary",
+      "representationSupplied": [
+        "constraint",
+        "identified dynamics",
+        "A as control in [0, 1.8]"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "transferred dependency: kernel membership depends on A's control",
+        "delayed failure: outside the [0, 1.8] kernel every admissible A policy leads to C shortfall in the scheduled window",
+        "new closure: candidate trajectory leaves the kernel for control set {1.0} at t≈44 and for [0, 1.8] at t≈200"
+      ],
+      "inaccessibleDifferences": [
+        "objectives (no local improvement notion)",
+        "B's outcome as a separate quantity",
+        "observation apparatus"
+      ],
+      "branchChanges": [
+        "revert-to-baseline recovery lost after t=42; any-policy recovery lost after t=198"
+      ],
+      "timing": {
+        "closureReported_revertToBaseline": 42,
+        "closureReported_anyPolicy": 198,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": false,
+        "detects: transferred dependency": true,
+        "detects: delayed failure": true,
+        "detects: resource displacement": false,
+        "detects: observation loss": false,
+        "detects: new closure": true,
+        "correct: local improvement": false,
+        "correct: transferred dependency": true,
+        "correct: delayed failure": true,
+        "correct: resource displacement": false,
+        "correct: observation loss": false,
+        "correct: new closure": true
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        },
+        {
+          "item": "schedule",
+          "supplied": "published C demand schedule (same for every framework)",
+          "enabled": "anticipating the scheduled window",
+          "prevented": "—"
+        },
+        {
+          "item": "boundary",
+          "supplied": "constraint \"no C shortfall\"",
+          "enabled": "closure time",
+          "prevented": "objectives"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 118,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [],
+      "profile": {
+        "preserves": [
+          "transferred dependency",
+          "delayed failure",
+          "new closure"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "objectives (no local improvement notion)",
+          "B's outcome as a separate quantity",
+          "observation apparatus"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: viability kernels over (t, R) for two control sets; exit times 44 / 200"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "ziran-xeno",
+      "configuration": "Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+      "role": "primary",
+      "representationSupplied": [
+        "identified model (same as ABM)",
+        "regions A, B, C, R with limits",
+        "apparatus per scenario"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: fragilityTransfer: target A improved",
+        "transferred dependency: risk-moved, margin-reduced, delayed-instability",
+        "delayed failure: delayed-instability",
+        "resource displacement: risk-moved",
+        "observation loss: Level-C description-space diff: −channel external/obs_C"
+      ],
+      "inaccessibleDifferences": [
+        "closure of the recovery branch (no probe declared)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [
+        "−channel obs_C (Level C)"
+      ],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": true,
+        "detects: delayed failure": true,
+        "detects: resource displacement": "1/3 seeds",
+        "detects: observation loss": true,
+        "detects: new closure": false,
+        "correct: local improvement": true,
+        "correct: transferred dependency": true,
+        "correct: delayed failure": true,
+        "correct: resource displacement": false,
+        "correct: observation loss": true,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        },
+        {
+          "item": "schedule",
+          "supplied": "published C demand schedule (same for every framework)",
+          "enabled": "anticipating the scheduled window",
+          "prevented": "—"
+        },
+        {
+          "item": "boundary",
+          "supplied": "regions and limits",
+          "enabled": "per-region transfer kinds",
+          "prevented": "consequences in undeclared regions"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [
+        {
+          "from": "forecast rows",
+          "to": "v0.3.0 replayed trace",
+          "retained": [
+            "per-channel values"
+          ],
+          "lost": [
+            "distinct writers (each sample is its own intervention)"
+          ],
+          "newlyAvailable": [
+            "description-space facets of the apparatus"
+          ],
+          "unresolved": [
+            "new-dependency kind (artefact, discarded)"
+          ]
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "local improvement",
+          "transferred dependency",
+          "delayed failure",
+          "observation loss"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "closure of the recovery branch (no probe declared)"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: fragilityTransfer report; description-space diff",
+        "v0.3.0 report (seed 1): {\"verdict\":\"local-improvement-with-fragility-transfer\",\"fates\":[\"moves\",\"delays\"],\"transfers\":[\"B:risk-moved\",\"B:new-dependency\",\"C:risk-moved\",\"C:margin-reduced\",\"C:new-dependency\",\"C:delayed-instability\",\"R:margin-reduced\"],\"discarded\":[\"B:new-dependency (replay artefact)\",\"C:new-dependency (replay artefact)\"]}"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "ziran-xeno",
+      "configuration": "Ziran / Xeno adapter + probe-relative reachability sweep",
+      "role": "fairness",
+      "representationSupplied": [
+        "as primary",
+        "probe \"no C shortfall\"",
+        "option menu: revert times"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: fragilityTransfer: target A improved",
+        "transferred dependency: risk-moved, margin-reduced, delayed-instability",
+        "delayed failure: delayed-instability",
+        "resource displacement: risk-moved",
+        "observation loss: Level-C description-space diff: −channel external/obs_C",
+        "new closure: probe-relative reachability (probe \"no C shortfall\", option menu: revert time × revert level): revert-to-baseline recovery lost after t=42; any-policy recovery lost after t=200"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [
+        "revert-to-baseline recovery lost after t=42; any-policy recovery lost after t=200"
+      ],
+      "timing": {
+        "closureReported_revertToBaseline": 42,
+        "closureReported_anyPolicy": 200,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [
+        "−channel obs_C (Level C)"
+      ],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": true,
+        "detects: delayed failure": true,
+        "detects: resource displacement": "1/3 seeds",
+        "detects: observation loss": true,
+        "detects: new closure": true,
+        "correct: local improvement": true,
+        "correct: transferred dependency": true,
+        "correct: delayed failure": true,
+        "correct: resource displacement": false,
+        "correct: observation loss": true,
+        "correct: new closure": true
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        },
+        {
+          "item": "schedule",
+          "supplied": "published C demand schedule (same for every framework)",
+          "enabled": "anticipating the scheduled window",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 204,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [
+        {
+          "from": "forecast rows",
+          "to": "v0.3.0 replayed trace",
+          "retained": [
+            "per-channel values"
+          ],
+          "lost": [
+            "distinct writers (each sample is its own intervention)"
+          ],
+          "newlyAvailable": [
+            "description-space facets of the apparatus"
+          ],
+          "unresolved": [
+            "new-dependency kind (artefact, discarded)"
+          ]
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "local improvement",
+          "transferred dependency",
+          "delayed failure",
+          "observation loss",
+          "new closure"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: fragilityTransfer report; description-space diff; probe-relative reachability sweep",
+        "v0.3.0 report (seed 1): {\"verdict\":\"local-improvement-with-fragility-transfer\",\"fates\":[\"moves\",\"delays\"],\"transfers\":[\"B:risk-moved\",\"B:new-dependency\",\"C:risk-moved\",\"C:margin-reduced\",\"C:new-dependency\",\"C:delayed-instability\",\"R:margin-reduced\"],\"discarded\":[\"B:new-dependency (replay artefact)\",\"C:new-dependency (replay artefact)\"]}"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "ziran-xeno",
+      "configuration": "ablation: no fragility transfer analysis",
+      "role": "ablation",
+      "representationSupplied": [
+        "as primary, target region only"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: target region only (fragility analysis disabled)",
+        "observation loss: Level-C description-space diff: −channel external/obs_C"
+      ],
+      "inaccessibleDifferences": [
+        "closure of the recovery branch (no probe declared)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [
+        "−channel obs_C (Level C)"
+      ],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": false,
+        "detects: delayed failure": false,
+        "detects: resource displacement": false,
+        "detects: observation loss": true,
+        "detects: new closure": false,
+        "correct: local improvement": true,
+        "correct: transferred dependency": false,
+        "correct: delayed failure": false,
+        "correct: resource displacement": false,
+        "correct: observation loss": true,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [
+        {
+          "from": "forecast rows",
+          "to": "v0.3.0 replayed trace",
+          "retained": [
+            "per-channel values"
+          ],
+          "lost": [
+            "distinct writers (each sample is its own intervention)"
+          ],
+          "newlyAvailable": [
+            "description-space facets of the apparatus"
+          ],
+          "unresolved": [
+            "new-dependency kind (artefact, discarded)"
+          ]
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "local improvement",
+          "observation loss"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "closure of the recovery branch (no probe declared)"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: fragilityTransfer report; description-space diff"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "framework": "ziran-xeno",
+      "configuration": "ablation: fixed operational values (per-unit channels collapsed to totals)",
+      "role": "ablation",
+      "representationSupplied": [
+        "as primary, aggregate channels"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "pilot logs t < 100 (baseline: A, B, C, R; candidate: A, B, R)",
+        "published schedule"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "matched: A draw 1.0 → 1.8 and meter moved from C to A"
+      ],
+      "detectedDifferences": [
+        "local improvement: fragilityTransfer: target all-units improved"
+      ],
+      "inaccessibleDifferences": [
+        "closure of the recovery branch (no probe declared)",
+        "per-unit channels (collapsed to totals)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "closureReported_revertToBaseline": null,
+        "closureReported_anyPolicy": null,
+        "closureTrue_revertToBaseline": 42,
+        "closureTrue_anyPolicy": 200,
+        "seed": 1
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "detects: local improvement": true,
+        "detects: transferred dependency": false,
+        "detects: delayed failure": false,
+        "detects: resource displacement": false,
+        "detects: observation loss": false,
+        "detects: new closure": false,
+        "correct: local improvement": true,
+        "correct: transferred dependency": false,
+        "correct: delayed failure": false,
+        "correct: resource displacement": false,
+        "correct: observation loss": false,
+        "correct: new closure": false
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "model structure (reservoir, unit draw rules) with parameters identified from the pilots",
+          "enabled": "forecasts to the scheduled event",
+          "prevented": "nothing observed in the pilots is excluded",
+          "wrongWhen": "B's rule is only identifiable because the candidate pilot drove R below 20"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2,
+        "dataSteps": 200,
+        "observationsUsed": 200,
+        "interventionCount": 1,
+        "memoryItems": null,
+        "representationComplexity": null
+      },
+      "conversions": [
+        {
+          "from": "per-unit draws",
+          "to": "total draw",
+          "retained": [
+            "total demand on R"
+          ],
+          "lost": [
+            "which unit bears the shortfall",
+            "B's curtailment"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "local improvement"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [
+          "closure of the recovery branch (no probe declared)",
+          "per-unit channels (collapsed to totals)"
+        ],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "outputs: fragilityTransfer report; description-space diff",
+        "v0.3.0 report (seed 1): {\"verdict\":\"local-improvement-with-fragility-transfer\",\"fates\":[\"moves\"],\"transfers\":[\"R:margin-reduced\"],\"discarded\":[]}"
+      ]
+    }
+  ],
+  "fairness": [
+    {
+      "distinction": "new closure",
+      "firstConfiguration": "ABM (agents A, B, C; reservoir environment; scenario comparison)",
+      "alternativeConfiguration": "ABM + intervention sweep (A reverts at t)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "ABM needs an explicit intervention sweep; a standard ABM study design"
+    },
+    {
+      "distinction": "transferred dependency / delayed failure",
+      "firstConfiguration": "local MPC for A (horizon 20, others lumped)",
+      "alternativeConfiguration": "centralized MPC (full identified model, full horizon, C-shortfall constraint)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": false,
+      "note": "local MPC is decentralized by design; the centralized formulation represents all units"
+    },
+    {
+      "distinction": "observation loss",
+      "firstConfiguration": "AIF, local preferences (A output, R ≥ 5, 20 steps)",
+      "alternativeConfiguration": "AIF, system preferences + observation model (full horizon)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "AIF represents observation modalities explicitly once the model includes them"
+    },
+    {
+      "distinction": "new closure",
+      "firstConfiguration": "Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+      "alternativeConfiguration": "Ziran / Xeno adapter + probe-relative reachability sweep",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "v0.3.0 fragilityTransfer does not compute closure; a declared probe and option menu are needed"
+    },
+    {
+      "distinction": "observation loss",
+      "firstConfiguration": "local MPC for A (horizon 20, others lumped)",
+      "alternativeConfiguration": "MPC with an explicit measurement model and estimator",
+      "alternativeTested": false,
+      "retainedUnderAlternative": null,
+      "note": "Not run. With a measurement model, loss of the C meter would appear as reduced observability of C; this is standard and should not be counted as a limitation of control theory."
+    }
+  ],
+  "statements": [
+    "under configuration ABM (agents A, B, C; reservoir environment; scenario comparison) and implementation agent-based-modeling, distinction \"local improvement\" was retained",
+    "under configuration ABM (agents A, B, C; reservoir environment; scenario comparison) and implementation agent-based-modeling, distinction \"transferred dependency\" was retained",
+    "under configuration ABM (agents A, B, C; reservoir environment; scenario comparison) and implementation agent-based-modeling, distinction \"delayed failure\" was not evaluable",
+    "under configuration ABM (agents A, B, C; reservoir environment; scenario comparison) and implementation agent-based-modeling, distinction \"resource displacement\" was retained",
+    "under configuration ABM (agents A, B, C; reservoir environment; scenario comparison) and implementation agent-based-modeling, distinction \"observation loss\" was not retained",
+    "under configuration ABM (agents A, B, C; reservoir environment; scenario comparison) and implementation agent-based-modeling, distinction \"new closure\" was not retained",
+    "under configuration ABM + intervention sweep (A reverts at t) and implementation agent-based-modeling, distinction \"local improvement\" was retained",
+    "under configuration ABM + intervention sweep (A reverts at t) and implementation agent-based-modeling, distinction \"transferred dependency\" was retained",
+    "under configuration ABM + intervention sweep (A reverts at t) and implementation agent-based-modeling, distinction \"delayed failure\" was not evaluable",
+    "under configuration ABM + intervention sweep (A reverts at t) and implementation agent-based-modeling, distinction \"resource displacement\" was retained",
+    "under configuration ABM + intervention sweep (A reverts at t) and implementation agent-based-modeling, distinction \"observation loss\" was not retained",
+    "under configuration ABM + intervention sweep (A reverts at t) and implementation agent-based-modeling, distinction \"new closure\" was retained",
+    "under configuration local MPC for A (horizon 20, others lumped) and implementation control-mpc, distinction \"local improvement\" was retained",
+    "under configuration local MPC for A (horizon 20, others lumped) and implementation control-mpc, distinction \"transferred dependency\" was not retained",
+    "under configuration local MPC for A (horizon 20, others lumped) and implementation control-mpc, distinction \"delayed failure\" was not retained",
+    "under configuration local MPC for A (horizon 20, others lumped) and implementation control-mpc, distinction \"resource displacement\" was not retained",
+    "under configuration local MPC for A (horizon 20, others lumped) and implementation control-mpc, distinction \"observation loss\" was not retained",
+    "under configuration local MPC for A (horizon 20, others lumped) and implementation control-mpc, distinction \"new closure\" was not retained",
+    "under configuration centralized MPC (full identified model, full horizon, C-shortfall constraint) and implementation control-mpc, distinction \"local improvement\" was retained",
+    "under configuration centralized MPC (full identified model, full horizon, C-shortfall constraint) and implementation control-mpc, distinction \"transferred dependency\" was retained",
+    "under configuration centralized MPC (full identified model, full horizon, C-shortfall constraint) and implementation control-mpc, distinction \"delayed failure\" was not evaluable",
+    "under configuration centralized MPC (full identified model, full horizon, C-shortfall constraint) and implementation control-mpc, distinction \"resource displacement\" was retained",
+    "under configuration centralized MPC (full identified model, full horizon, C-shortfall constraint) and implementation control-mpc, distinction \"observation loss\" was not retained",
+    "under configuration centralized MPC (full identified model, full horizon, C-shortfall constraint) and implementation control-mpc, distinction \"new closure\" was retained",
+    "under configuration RL policy evaluation, local reward (A output) and implementation reinforcement-learning, distinction \"local improvement\" was retained",
+    "under configuration RL policy evaluation, local reward (A output) and implementation reinforcement-learning, distinction \"transferred dependency\" was not retained",
+    "under configuration RL policy evaluation, local reward (A output) and implementation reinforcement-learning, distinction \"delayed failure\" was not retained",
+    "under configuration RL policy evaluation, local reward (A output) and implementation reinforcement-learning, distinction \"resource displacement\" was not retained",
+    "under configuration RL policy evaluation, local reward (A output) and implementation reinforcement-learning, distinction \"observation loss\" was not retained",
+    "under configuration RL policy evaluation, local reward (A output) and implementation reinforcement-learning, distinction \"new closure\" was not retained",
+    "under configuration RL policy evaluation, team reward (all outputs − 10·C shortfall) and implementation reinforcement-learning, distinction \"local improvement\" was not retained",
+    "under configuration RL policy evaluation, team reward (all outputs − 10·C shortfall) and implementation reinforcement-learning, distinction \"transferred dependency\" was not retained",
+    "under configuration RL policy evaluation, team reward (all outputs − 10·C shortfall) and implementation reinforcement-learning, distinction \"delayed failure\" was not retained",
+    "under configuration RL policy evaluation, team reward (all outputs − 10·C shortfall) and implementation reinforcement-learning, distinction \"resource displacement\" was not retained",
+    "under configuration RL policy evaluation, team reward (all outputs − 10·C shortfall) and implementation reinforcement-learning, distinction \"observation loss\" was not retained",
+    "under configuration RL policy evaluation, team reward (all outputs − 10·C shortfall) and implementation reinforcement-learning, distinction \"new closure\" was not retained",
+    "under configuration AIF, local preferences (A output, R ≥ 5, 20 steps) and implementation active-inference, distinction \"local improvement\" was retained",
+    "under configuration AIF, local preferences (A output, R ≥ 5, 20 steps) and implementation active-inference, distinction \"transferred dependency\" was not retained",
+    "under configuration AIF, local preferences (A output, R ≥ 5, 20 steps) and implementation active-inference, distinction \"delayed failure\" was not retained",
+    "under configuration AIF, local preferences (A output, R ≥ 5, 20 steps) and implementation active-inference, distinction \"resource displacement\" was not retained",
+    "under configuration AIF, local preferences (A output, R ≥ 5, 20 steps) and implementation active-inference, distinction \"observation loss\" was not retained",
+    "under configuration AIF, local preferences (A output, R ≥ 5, 20 steps) and implementation active-inference, distinction \"new closure\" was not retained",
+    "under configuration AIF, system preferences + observation model (full horizon) and implementation active-inference, distinction \"local improvement\" was retained",
+    "under configuration AIF, system preferences + observation model (full horizon) and implementation active-inference, distinction \"transferred dependency\" was retained",
+    "under configuration AIF, system preferences + observation model (full horizon) and implementation active-inference, distinction \"delayed failure\" was not evaluable",
+    "under configuration AIF, system preferences + observation model (full horizon) and implementation active-inference, distinction \"resource displacement\" was retained",
+    "under configuration AIF, system preferences + observation model (full horizon) and implementation active-inference, distinction \"observation loss\" was retained",
+    "under configuration AIF, system preferences + observation model (full horizon) and implementation active-inference, distinction \"new closure\" was not retained",
+    "under configuration system twin (sync from meters, forecast with identified model) and implementation digital-twin, distinction \"local improvement\" was retained",
+    "under configuration system twin (sync from meters, forecast with identified model) and implementation digital-twin, distinction \"transferred dependency\" was retained",
+    "under configuration system twin (sync from meters, forecast with identified model) and implementation digital-twin, distinction \"delayed failure\" was not evaluable",
+    "under configuration system twin (sync from meters, forecast with identified model) and implementation digital-twin, distinction \"resource displacement\" was retained",
+    "under configuration system twin (sync from meters, forecast with identified model) and implementation digital-twin, distinction \"observation loss\" was retained",
+    "under configuration system twin (sync from meters, forecast with identified model) and implementation digital-twin, distinction \"new closure\" was not retained",
+    "under configuration viability kernel over (t, R) for \"no C shortfall\" and implementation viability-reachability, distinction \"local improvement\" was not retained",
+    "under configuration viability kernel over (t, R) for \"no C shortfall\" and implementation viability-reachability, distinction \"transferred dependency\" was retained",
+    "under configuration viability kernel over (t, R) for \"no C shortfall\" and implementation viability-reachability, distinction \"delayed failure\" was retained",
+    "under configuration viability kernel over (t, R) for \"no C shortfall\" and implementation viability-reachability, distinction \"resource displacement\" was not retained",
+    "under configuration viability kernel over (t, R) for \"no C shortfall\" and implementation viability-reachability, distinction \"observation loss\" was not retained",
+    "under configuration viability kernel over (t, R) for \"no C shortfall\" and implementation viability-reachability, distinction \"new closure\" was retained",
+    "under configuration Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts) and implementation ziran-xeno, distinction \"local improvement\" was retained",
+    "under configuration Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts) and implementation ziran-xeno, distinction \"transferred dependency\" was retained",
+    "under configuration Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts) and implementation ziran-xeno, distinction \"delayed failure\" was retained",
+    "under configuration Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts) and implementation ziran-xeno, distinction \"resource displacement\" was not evaluable",
+    "under configuration Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts) and implementation ziran-xeno, distinction \"observation loss\" was retained",
+    "under configuration Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts) and implementation ziran-xeno, distinction \"new closure\" was not retained",
+    "under configuration Ziran / Xeno adapter + probe-relative reachability sweep and implementation ziran-xeno, distinction \"local improvement\" was retained",
+    "under configuration Ziran / Xeno adapter + probe-relative reachability sweep and implementation ziran-xeno, distinction \"transferred dependency\" was retained",
+    "under configuration Ziran / Xeno adapter + probe-relative reachability sweep and implementation ziran-xeno, distinction \"delayed failure\" was retained",
+    "under configuration Ziran / Xeno adapter + probe-relative reachability sweep and implementation ziran-xeno, distinction \"resource displacement\" was not evaluable",
+    "under configuration Ziran / Xeno adapter + probe-relative reachability sweep and implementation ziran-xeno, distinction \"observation loss\" was retained",
+    "under configuration Ziran / Xeno adapter + probe-relative reachability sweep and implementation ziran-xeno, distinction \"new closure\" was retained",
+    "under configuration ablation: no fragility transfer analysis and implementation ziran-xeno, distinction \"local improvement\" was retained",
+    "under configuration ablation: no fragility transfer analysis and implementation ziran-xeno, distinction \"transferred dependency\" was not retained",
+    "under configuration ablation: no fragility transfer analysis and implementation ziran-xeno, distinction \"delayed failure\" was not retained",
+    "under configuration ablation: no fragility transfer analysis and implementation ziran-xeno, distinction \"resource displacement\" was not retained",
+    "under configuration ablation: no fragility transfer analysis and implementation ziran-xeno, distinction \"observation loss\" was retained",
+    "under configuration ablation: no fragility transfer analysis and implementation ziran-xeno, distinction \"new closure\" was not retained",
+    "under configuration ablation: fixed operational values (per-unit channels collapsed to totals) and implementation ziran-xeno, distinction \"local improvement\" was retained",
+    "under configuration ablation: fixed operational values (per-unit channels collapsed to totals) and implementation ziran-xeno, distinction \"transferred dependency\" was not retained",
+    "under configuration ablation: fixed operational values (per-unit channels collapsed to totals) and implementation ziran-xeno, distinction \"delayed failure\" was not retained",
+    "under configuration ablation: fixed operational values (per-unit channels collapsed to totals) and implementation ziran-xeno, distinction \"resource displacement\" was not retained",
+    "under configuration ablation: fixed operational values (per-unit channels collapsed to totals) and implementation ziran-xeno, distinction \"observation loss\" was not retained",
+    "under configuration ablation: fixed operational values (per-unit channels collapsed to totals) and implementation ziran-xeno, distinction \"new closure\" was not retained"
+  ],
+  "distinctionTable": [
+    {
+      "distinction": "local improvement",
+      "retainedBy": [
+        "agent-based-modeling:ABM (agents A, B, C; reservoir environment; scenario comparison)",
+        "agent-based-modeling:ABM + intervention sweep (A reverts at t)",
+        "control-mpc:local MPC for A (horizon 20, others lumped)",
+        "control-mpc:centralized MPC (full identified model, full horizon, C-shortfall constraint)",
+        "reinforcement-learning:RL policy evaluation, local reward (A output)",
+        "active-inference:AIF, local preferences (A output, R ≥ 5, 20 steps)",
+        "active-inference:AIF, system preferences + observation model (full horizon)",
+        "digital-twin:system twin (sync from meters, forecast with identified model)",
+        "ziran-xeno:Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+        "ziran-xeno:Ziran / Xeno adapter + probe-relative reachability sweep",
+        "ziran-xeno:ablation: no fragility transfer analysis",
+        "ziran-xeno:ablation: fixed operational values (per-unit channels collapsed to totals)"
+      ],
+      "notRetainedBy": [
+        "reinforcement-learning:RL policy evaluation, team reward (all outputs − 10·C shortfall)",
+        "viability-reachability:viability kernel over (t, R) for \"no C shortfall\""
+      ],
+      "notApplicable": []
+    },
+    {
+      "distinction": "transferred dependency",
+      "retainedBy": [
+        "agent-based-modeling:ABM (agents A, B, C; reservoir environment; scenario comparison)",
+        "agent-based-modeling:ABM + intervention sweep (A reverts at t)",
+        "control-mpc:centralized MPC (full identified model, full horizon, C-shortfall constraint)",
+        "active-inference:AIF, system preferences + observation model (full horizon)",
+        "digital-twin:system twin (sync from meters, forecast with identified model)",
+        "viability-reachability:viability kernel over (t, R) for \"no C shortfall\"",
+        "ziran-xeno:Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+        "ziran-xeno:Ziran / Xeno adapter + probe-relative reachability sweep"
+      ],
+      "notRetainedBy": [
+        "control-mpc:local MPC for A (horizon 20, others lumped)",
+        "reinforcement-learning:RL policy evaluation, local reward (A output)",
+        "reinforcement-learning:RL policy evaluation, team reward (all outputs − 10·C shortfall)",
+        "active-inference:AIF, local preferences (A output, R ≥ 5, 20 steps)",
+        "ziran-xeno:ablation: no fragility transfer analysis",
+        "ziran-xeno:ablation: fixed operational values (per-unit channels collapsed to totals)"
+      ],
+      "notApplicable": []
+    },
+    {
+      "distinction": "delayed failure",
+      "retainedBy": [
+        "viability-reachability:viability kernel over (t, R) for \"no C shortfall\"",
+        "ziran-xeno:Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+        "ziran-xeno:Ziran / Xeno adapter + probe-relative reachability sweep"
+      ],
+      "notRetainedBy": [
+        "control-mpc:local MPC for A (horizon 20, others lumped)",
+        "reinforcement-learning:RL policy evaluation, local reward (A output)",
+        "reinforcement-learning:RL policy evaluation, team reward (all outputs − 10·C shortfall)",
+        "active-inference:AIF, local preferences (A output, R ≥ 5, 20 steps)",
+        "ziran-xeno:ablation: no fragility transfer analysis",
+        "ziran-xeno:ablation: fixed operational values (per-unit channels collapsed to totals)"
+      ],
+      "notApplicable": [
+        "agent-based-modeling:ABM (agents A, B, C; reservoir environment; scenario comparison)",
+        "agent-based-modeling:ABM + intervention sweep (A reverts at t)",
+        "control-mpc:centralized MPC (full identified model, full horizon, C-shortfall constraint)",
+        "active-inference:AIF, system preferences + observation model (full horizon)",
+        "digital-twin:system twin (sync from meters, forecast with identified model)"
+      ]
+    },
+    {
+      "distinction": "resource displacement",
+      "retainedBy": [
+        "agent-based-modeling:ABM (agents A, B, C; reservoir environment; scenario comparison)",
+        "agent-based-modeling:ABM + intervention sweep (A reverts at t)",
+        "control-mpc:centralized MPC (full identified model, full horizon, C-shortfall constraint)",
+        "active-inference:AIF, system preferences + observation model (full horizon)",
+        "digital-twin:system twin (sync from meters, forecast with identified model)"
+      ],
+      "notRetainedBy": [
+        "control-mpc:local MPC for A (horizon 20, others lumped)",
+        "reinforcement-learning:RL policy evaluation, local reward (A output)",
+        "reinforcement-learning:RL policy evaluation, team reward (all outputs − 10·C shortfall)",
+        "active-inference:AIF, local preferences (A output, R ≥ 5, 20 steps)",
+        "viability-reachability:viability kernel over (t, R) for \"no C shortfall\"",
+        "ziran-xeno:ablation: no fragility transfer analysis",
+        "ziran-xeno:ablation: fixed operational values (per-unit channels collapsed to totals)"
+      ],
+      "notApplicable": [
+        "ziran-xeno:Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+        "ziran-xeno:Ziran / Xeno adapter + probe-relative reachability sweep"
+      ]
+    },
+    {
+      "distinction": "observation loss",
+      "retainedBy": [
+        "active-inference:AIF, system preferences + observation model (full horizon)",
+        "digital-twin:system twin (sync from meters, forecast with identified model)",
+        "ziran-xeno:Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+        "ziran-xeno:Ziran / Xeno adapter + probe-relative reachability sweep",
+        "ziran-xeno:ablation: no fragility transfer analysis"
+      ],
+      "notRetainedBy": [
+        "agent-based-modeling:ABM (agents A, B, C; reservoir environment; scenario comparison)",
+        "agent-based-modeling:ABM + intervention sweep (A reverts at t)",
+        "control-mpc:local MPC for A (horizon 20, others lumped)",
+        "control-mpc:centralized MPC (full identified model, full horizon, C-shortfall constraint)",
+        "reinforcement-learning:RL policy evaluation, local reward (A output)",
+        "reinforcement-learning:RL policy evaluation, team reward (all outputs − 10·C shortfall)",
+        "active-inference:AIF, local preferences (A output, R ≥ 5, 20 steps)",
+        "viability-reachability:viability kernel over (t, R) for \"no C shortfall\"",
+        "ziran-xeno:ablation: fixed operational values (per-unit channels collapsed to totals)"
+      ],
+      "notApplicable": []
+    },
+    {
+      "distinction": "new closure",
+      "retainedBy": [
+        "agent-based-modeling:ABM + intervention sweep (A reverts at t)",
+        "control-mpc:centralized MPC (full identified model, full horizon, C-shortfall constraint)",
+        "viability-reachability:viability kernel over (t, R) for \"no C shortfall\"",
+        "ziran-xeno:Ziran / Xeno adapter + probe-relative reachability sweep"
+      ],
+      "notRetainedBy": [
+        "agent-based-modeling:ABM (agents A, B, C; reservoir environment; scenario comparison)",
+        "control-mpc:local MPC for A (horizon 20, others lumped)",
+        "reinforcement-learning:RL policy evaluation, local reward (A output)",
+        "reinforcement-learning:RL policy evaluation, team reward (all outputs − 10·C shortfall)",
+        "active-inference:AIF, local preferences (A output, R ≥ 5, 20 steps)",
+        "active-inference:AIF, system preferences + observation model (full horizon)",
+        "digital-twin:system twin (sync from meters, forecast with identified model)",
+        "ziran-xeno:Ziran / Xeno adapter (v0.3.0 fragilityTransfer + description-space diff on replayed forecasts)",
+        "ziran-xeno:ablation: no fragility transfer analysis",
+        "ziran-xeno:ablation: fixed operational values (per-unit channels collapsed to totals)"
+      ],
+      "notApplicable": []
+    }
+  ],
+  "notApplicable": [
+    {
+      "framework": "dynamical-systems",
+      "reason": "the shared identified model is itself the dynamical-systems formulation; its consequences are reported through the frameworks that use it"
+    }
+  ],
+  "references": {
+    "truth seed1 A_gain": 216.56,
+    "truth seed1 B_loss": 161.41,
+    "truth seed1 C_shortfall_candidate": 33.33,
+    "truth seed1 C_shortfall_base": 0,
+    "truthItems": "local improvement, transferred dependency, delayed failure, resource displacement, observation loss, new closure",
+    "closureAnyPolicy": "200,198,196",
+    "closureRevertToBaseline": "42,36,28"
+  },
+  "claimStatus": "synthetic-world result"
+}

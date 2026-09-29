@@ -1,0 +1,39 @@
+{
+  "id": "Z-full",
+  "simulation": "not evaluable: generated variables are functions of measured series; the adapter has no generative simulation of y",
+  "prediction": {
+    "e_RMSt": 0.0763,
+    "mae": 0.0364,
+    "fitPct": 96.3656,
+    "rmse_band_y_ge_9": 0.052,
+    "rmse_band_y_lt_9": 0.0786
+  },
+  "generatedVariables": [
+    "diff(u)",
+    "step@v1(v1)",
+    "diff(y)"
+  ],
+  "operatorOrigins": [
+    "diff:supplied",
+    "diff:supplied",
+    "step@v1:representation-change",
+    "diff:supplied"
+  ],
+  "retainedGrammarChanges": 1,
+  "representationChanged": true,
+  "aliasingRecords_v030Key": 0,
+  "replayRoundTrip": "replayed series identical to the source (reading offset 0)",
+  "configuration": {
+    "suppliedByDatasetMetadata": "sampling regime, apparatus, uncertainty, missingness, units (V)",
+    "suppliedByResearcher": "channel ids u and y, readout form, mutation registry variant, rounds (3), train/test boundary",
+    "generatedBySimulator": "variables diff(u), step@v1(v1), diff(y)"
+  },
+  "cost": {
+    "fitMs": 754.3,
+    "trainableParameters": 16,
+    "observationsUsed": 1024
+  },
+  "predictionInformation": "ŷ(t) from u(t−1), y(t−1) and generated variables at t−1 (the current input u(t) is not used)",
+  "protocolInterpretation": "the adapter has no validation-selected hyperparameters, so the final fit uses all 1024 estimation rows (trainUntil = 1024); test rows are never used for selection",
+  "claimStatus": "replayed empirical result"
+}

@@ -26,7 +26,9 @@
     "bench:meta": "node bin/zx.ts bench --suite meta",
     "check:presets": "node bin/zx.ts check-presets",
     "check:api": "node scripts/check-api.ts",
-    "docs:benchmarks": "node scripts/benchmark-results.ts"
+    "docs:benchmarks": "node scripts/benchmark-results.ts",
+    "compare": "node comparison/run.ts",
+    "test:comparison": "node --test \"comparison/test/*.test.ts\""
   },
   "devDependencies": {
     "@types/node": "^24.19.0",
