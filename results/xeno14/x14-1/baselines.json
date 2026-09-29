@@ -1,0 +1,686 @@
+{
+ "standard-mlp": {
+  "role": "baseline",
+  "family": "standard embodied RL (ES)",
+  "objective": "survival",
+  "params": 774,
+  "trainSteps": {
+   "mean": 152971.3333,
+   "sd": 5647.4812,
+   "n": 3,
+   "perSeed": [
+    155533,
+    146497,
+    156884
+   ]
+  },
+  "eval": {
+   "0": {
+    "survival": {
+     "mean": 0.9575,
+     "sd": 0.0736,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      0.8725,
+      1.0
+     ]
+    },
+    "axis": {
+     "mean": 0.0334,
+     "sd": 0.0252,
+     "n": 3,
+     "perSeed": [
+      0.0254,
+      0.0617,
+      0.0131
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0064,
+     "sd": 0.005,
+     "n": 3,
+     "perSeed": [
+      0.0036,
+      0.0122,
+      0.0034
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0156,
+     "sd": 0.0019,
+     "n": 3,
+     "perSeed": [
+      0.0136,
+      0.0174,
+      0.0158
+     ]
+    },
+    "recovered_fraction": {
+     "mean": null,
+     "sd": null,
+     "n": 0,
+     "perSeed": []
+    }
+   },
+   "80": {
+    "survival": {
+     "mean": 0.9338,
+     "sd": 0.0583,
+     "n": 3,
+     "perSeed": [
+      0.9115,
+      0.89,
+      1.0
+     ]
+    },
+    "axis": {
+     "mean": 0.0705,
+     "sd": 0.0035,
+     "n": 3,
+     "perSeed": [
+      0.0736,
+      0.0667,
+      0.0712
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0102,
+     "sd": 0.0028,
+     "n": 3,
+     "perSeed": [
+      0.0102,
+      0.0131,
+      0.0074
+     ]
+    },
+    "low_noise": {
+     "mean": 0.016,
+     "sd": 0.001,
+     "n": 3,
+     "perSeed": [
+      0.0151,
+      0.0171,
+      0.0158
+     ]
+    },
+    "recovered_fraction": {
+     "mean": 0.9167,
+     "sd": 0.1443,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      0.75,
+      1.0
+     ]
+    }
+   },
+   "140": {
+    "survival": {
+     "mean": 0.8535,
+     "sd": 0.0798,
+     "n": 3,
+     "perSeed": [
+      0.7915,
+      0.8255,
+      0.9435
+     ]
+    },
+    "axis": {
+     "mean": 0.1111,
+     "sd": 0.0525,
+     "n": 3,
+     "perSeed": [
+      0.1029,
+      0.0632,
+      0.1673
+     ]
+    },
+    "lower_center": {
+     "mean": 0.013,
+     "sd": 0.0025,
+     "n": 3,
+     "perSeed": [
+      0.0109,
+      0.0124,
+      0.0158
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0176,
+     "sd": 0.0009,
+     "n": 3,
+     "perSeed": [
+      0.0174,
+      0.0185,
+      0.0169
+     ]
+    },
+    "recovered_fraction": {
+     "mean": 0.9167,
+     "sd": 0.1443,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      0.75,
+      1.0
+     ]
+    }
+   }
+  },
+  "xeno": {}
+ },
+ "proprioceptive-mlp": {
+  "role": "baseline",
+  "family": "standard embodied RL (ES)",
+  "objective": "survival (joint angles/velocities only)",
+  "params": 614,
+  "trainSteps": {
+   "mean": 152621.3333,
+   "sd": 3237.3882,
+   "n": 3,
+   "perSeed": [
+    152315,
+    149548,
+    156001
+   ]
+  },
+  "eval": {
+   "0": {
+    "survival": {
+     "mean": 0.9812,
+     "sd": 0.0326,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      1.0,
+      0.9435
+     ]
+    },
+    "axis": {
+     "mean": 0.1198,
+     "sd": 0.1023,
+     "n": 3,
+     "perSeed": [
+      0.2379,
+      0.0606,
+      0.0609
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0137,
+     "sd": 0.0082,
+     "n": 3,
+     "perSeed": [
+      0.0227,
+      0.0066,
+      0.0119
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0136,
+     "sd": 0.0043,
+     "n": 3,
+     "perSeed": [
+      0.0087,
+      0.0154,
+      0.0167
+     ]
+    },
+    "recovered_fraction": {
+     "mean": null,
+     "sd": null,
+     "n": 0,
+     "perSeed": []
+    }
+   },
+   "80": {
+    "survival": {
+     "mean": 0.9577,
+     "sd": 0.0733,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      1.0,
+      0.873
+     ]
+    },
+    "axis": {
+     "mean": 0.1199,
+     "sd": 0.1017,
+     "n": 3,
+     "perSeed": [
+      0.2372,
+      0.0596,
+      0.0627
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0136,
+     "sd": 0.0083,
+     "n": 3,
+     "perSeed": [
+      0.0225,
+      0.0061,
+      0.0123
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0141,
+     "sd": 0.0049,
+     "n": 3,
+     "perSeed": [
+      0.0087,
+      0.0154,
+      0.0182
+     ]
+    },
+    "recovered_fraction": {
+     "mean": 0.3333,
+     "sd": 0.5774,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.0,
+      1.0
+     ]
+    }
+   },
+   "140": {
+    "survival": {
+     "mean": 0.925,
+     "sd": 0.1299,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      1.0,
+      0.775
+     ]
+    },
+    "axis": {
+     "mean": 0.1317,
+     "sd": 0.0885,
+     "n": 3,
+     "perSeed": [
+      0.2338,
+      0.0849,
+      0.0763
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0151,
+     "sd": 0.0066,
+     "n": 3,
+     "perSeed": [
+      0.0218,
+      0.0085,
+      0.0151
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0148,
+     "sd": 0.0058,
+     "n": 3,
+     "perSeed": [
+      0.0087,
+      0.0154,
+      0.0204
+     ]
+    },
+    "recovered_fraction": {
+     "mean": 0.5,
+     "sd": 0.5,
+     "n": 3,
+     "perSeed": [
+      0.0,
+      0.5,
+      1.0
+     ]
+    }
+   }
+  },
+  "xeno": {}
+ },
+ "recurrent-gru": {
+  "role": "baseline",
+  "family": "standard embodied RL (ES)",
+  "objective": "survival",
+  "params": 1782,
+  "trainSteps": {
+   "mean": 145834.3333,
+   "sd": 17033.1824,
+   "n": 3,
+   "perSeed": [
+    126269,
+    153877,
+    157357
+   ]
+  },
+  "eval": {
+   "0": {
+    "survival": {
+     "mean": 0.9605,
+     "sd": 0.0369,
+     "n": 3,
+     "perSeed": [
+      0.927,
+      1.0,
+      0.9545
+     ]
+    },
+    "axis": {
+     "mean": 0.0505,
+     "sd": 0.0144,
+     "n": 3,
+     "perSeed": [
+      0.0646,
+      0.0357,
+      0.0511
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0089,
+     "sd": 0.0034,
+     "n": 3,
+     "perSeed": [
+      0.0114,
+      0.005,
+      0.0102
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0075,
+     "sd": 0.0014,
+     "n": 3,
+     "perSeed": [
+      0.0091,
+      0.0067,
+      0.0067
+     ]
+    },
+    "recovered_fraction": {
+     "mean": null,
+     "sd": null,
+     "n": 0,
+     "perSeed": []
+    }
+   },
+   "80": {
+    "survival": {
+     "mean": 0.8858,
+     "sd": 0.0088,
+     "n": 3,
+     "perSeed": [
+      0.8815,
+      0.896,
+      0.88
+     ]
+    },
+    "axis": {
+     "mean": 0.0638,
+     "sd": 0.0077,
+     "n": 3,
+     "perSeed": [
+      0.0567,
+      0.0719,
+      0.0629
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0108,
+     "sd": 0.0014,
+     "n": 3,
+     "perSeed": [
+      0.0107,
+      0.0095,
+      0.0123
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0081,
+     "sd": 0.001,
+     "n": 3,
+     "perSeed": [
+      0.0092,
+      0.0077,
+      0.0073
+     ]
+    },
+    "recovered_fraction": {
+     "mean": 1.0,
+     "sd": 0.0,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "140": {
+    "survival": {
+     "mean": 0.789,
+     "sd": 0.0088,
+     "n": 3,
+     "perSeed": [
+      0.7975,
+      0.7895,
+      0.78
+     ]
+    },
+    "axis": {
+     "mean": 0.0842,
+     "sd": 0.0118,
+     "n": 3,
+     "perSeed": [
+      0.0788,
+      0.0976,
+      0.076
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0134,
+     "sd": 0.0029,
+     "n": 3,
+     "perSeed": [
+      0.0149,
+      0.0101,
+      0.0152
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0089,
+     "sd": 0.0008,
+     "n": 3,
+     "perSeed": [
+      0.0097,
+      0.0088,
+      0.0082
+     ]
+    },
+    "recovered_fraction": {
+     "mean": 1.0,
+     "sd": 0.0,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    }
+   }
+  },
+  "xeno": {}
+ },
+ "multiobjective-scalarized-mlp": {
+  "role": "baseline",
+  "family": "multi-objective (scalarized)",
+  "objective": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+  "params": 774,
+  "trainSteps": {
+   "mean": 145089.0,
+   "sd": 2922.1545,
+   "n": 3,
+   "perSeed": [
+    148460,
+    143531,
+    143276
+   ]
+  },
+  "eval": {
+   "0": {
+    "survival": {
+     "mean": 0.9507,
+     "sd": 0.0233,
+     "n": 3,
+     "perSeed": [
+      0.967,
+      0.924,
+      0.961
+     ]
+    },
+    "axis": {
+     "mean": 0.0345,
+     "sd": 0.0141,
+     "n": 3,
+     "perSeed": [
+      0.0193,
+      0.0471,
+      0.037
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0067,
+     "sd": 0.0033,
+     "n": 3,
+     "perSeed": [
+      0.0031,
+      0.0096,
+      0.0074
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0159,
+     "sd": 0.0035,
+     "n": 3,
+     "perSeed": [
+      0.0198,
+      0.0131,
+      0.0149
+     ]
+    },
+    "recovered_fraction": {
+     "mean": null,
+     "sd": null,
+     "n": 0,
+     "perSeed": []
+    }
+   },
+   "80": {
+    "survival": {
+     "mean": 0.8982,
+     "sd": 0.0297,
+     "n": 3,
+     "perSeed": [
+      0.9315,
+      0.8745,
+      0.8885
+     ]
+    },
+    "axis": {
+     "mean": 0.0676,
+     "sd": 0.0036,
+     "n": 3,
+     "perSeed": [
+      0.0689,
+      0.0704,
+      0.0636
+     ]
+    },
+    "lower_center": {
+     "mean": 0.012,
+     "sd": 0.0021,
+     "n": 3,
+     "perSeed": [
+      0.0097,
+      0.0138,
+      0.0125
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0167,
+     "sd": 0.003,
+     "n": 3,
+     "perSeed": [
+      0.0199,
+      0.0139,
+      0.0162
+     ]
+    },
+    "recovered_fraction": {
+     "mean": 0.9583,
+     "sd": 0.0722,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      0.875,
+      1.0
+     ]
+    }
+   },
+   "140": {
+    "survival": {
+     "mean": 0.7783,
+     "sd": 0.0254,
+     "n": 3,
+     "perSeed": [
+      0.749,
+      0.7915,
+      0.7945
+     ]
+    },
+    "axis": {
+     "mean": 0.0821,
+     "sd": 0.0109,
+     "n": 3,
+     "perSeed": [
+      0.0946,
+      0.0744,
+      0.0774
+     ]
+    },
+    "lower_center": {
+     "mean": 0.0138,
+     "sd": 0.0017,
+     "n": 3,
+     "perSeed": [
+      0.0118,
+      0.0144,
+      0.015
+     ]
+    },
+    "low_noise": {
+     "mean": 0.0194,
+     "sd": 0.0049,
+     "n": 3,
+     "perSeed": [
+      0.0248,
+      0.0154,
+      0.0181
+     ]
+    },
+    "recovered_fraction": {
+     "mean": 0.9583,
+     "sd": 0.0722,
+     "n": 3,
+     "perSeed": [
+      1.0,
+      0.875,
+      1.0
+     ]
+    }
+   }
+  },
+  "xeno": {}
+ }
+}

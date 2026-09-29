@@ -1,0 +1,626 @@
+[
+ {
+  "world": "X14-1-walker2d-push",
+  "framework": "xeno14-embodied",
+  "configuration": "xeno14",
+  "role": "primary",
+  "representationSupplied": [
+   "xeno14",
+   "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)"
+  ],
+  "representationGenerated": [
+   "ES-optimized parameters"
+  ],
+  "observationsSupplied": [
+   "Walker2d-v5 17-dim observation"
+  ],
+  "observationsRevised": [],
+  "interventions": [
+   "torso push \u00b180 N (training), 0 / \u00b180 / \u00b1140 N (evaluation)"
+  ],
+  "detectedDifferences": [],
+  "inaccessibleDifferences": [
+   "push timing and force (no controller observes them)"
+  ],
+  "branchChanges": [],
+  "timing": {},
+  "failures": [
+   "falls at 140 N: survival 0.8188"
+  ],
+  "resourceUse": {
+   "trainSteps": 140001.3333
+  },
+  "reorganization": [],
+  "modelRevisions": [],
+  "descriptionRevisions": [],
+  "measurements": {
+   "0:survival": 0.9583,
+   "0:axis": 0.0379,
+   "0:lower_center": 0.0072,
+   "0:low_noise": 0.001,
+   "0:recovered_fraction": null,
+   "80:survival": 0.9077,
+   "80:axis": 0.0598,
+   "80:lower_center": 0.0107,
+   "80:low_noise": 0.0011,
+   "80:recovered_fraction": 1.0,
+   "140:survival": 0.8188,
+   "140:axis": 0.075,
+   "140:lower_center": 0.0152,
+   "140:low_noise": 0.0013,
+   "140:recovered_fraction": 1.0
+  },
+  "burden": [],
+  "cost": {
+   "computeMs": 0,
+   "modelEvaluations": null,
+   "dataSteps": 140001.3333,
+   "observationsUsed": 0,
+   "interventionCount": 0,
+   "memoryItems": null,
+   "representationComplexity": 1827
+  },
+  "conversions": [],
+  "profile": {
+   "preserves": [],
+   "merges": [],
+   "cannotExpress": [],
+   "detectsEarlier": [],
+   "detectsLater": [],
+   "requiresPredefined": [],
+   "canRevise": [],
+   "inaccessible": [],
+   "interventionDifferences": []
+  },
+  "claimStatus": "synthetic-world result",
+  "notes": [
+   "baselines are policies trained by the same evolution-strategy optimizer (policy search), filed under reinforcement-learning"
+  ]
+ },
+ {
+  "world": "X14-1-walker2d-push",
+  "framework": "reinforcement-learning",
+  "configuration": "standard-mlp",
+  "role": "baseline",
+  "representationSupplied": [
+   "standard embodied RL (ES)",
+   "survival"
+  ],
+  "representationGenerated": [
+   "ES-optimized parameters"
+  ],
+  "observationsSupplied": [
+   "Walker2d-v5 17-dim observation"
+  ],
+  "observationsRevised": [],
+  "interventions": [
+   "torso push \u00b180 N (training), 0 / \u00b180 / \u00b1140 N (evaluation)"
+  ],
+  "detectedDifferences": [],
+  "inaccessibleDifferences": [
+   "push timing and force (no controller observes them)"
+  ],
+  "branchChanges": [],
+  "timing": {},
+  "failures": [
+   "falls at 140 N: survival 0.8535"
+  ],
+  "resourceUse": {
+   "trainSteps": 152971.3333
+  },
+  "reorganization": [],
+  "modelRevisions": [],
+  "descriptionRevisions": [],
+  "measurements": {
+   "0:survival": 0.9575,
+   "0:axis": 0.0334,
+   "0:lower_center": 0.0064,
+   "0:low_noise": 0.0156,
+   "0:recovered_fraction": null,
+   "80:survival": 0.9338,
+   "80:axis": 0.0705,
+   "80:lower_center": 0.0102,
+   "80:low_noise": 0.016,
+   "80:recovered_fraction": 0.9167,
+   "140:survival": 0.8535,
+   "140:axis": 0.1111,
+   "140:lower_center": 0.013,
+   "140:low_noise": 0.0176,
+   "140:recovered_fraction": 0.9167
+  },
+  "burden": [],
+  "cost": {
+   "computeMs": 0,
+   "modelEvaluations": null,
+   "dataSteps": 152971.3333,
+   "observationsUsed": 0,
+   "interventionCount": 0,
+   "memoryItems": null,
+   "representationComplexity": 774
+  },
+  "conversions": [],
+  "profile": {
+   "preserves": [],
+   "merges": [],
+   "cannotExpress": [],
+   "detectsEarlier": [],
+   "detectsLater": [],
+   "requiresPredefined": [],
+   "canRevise": [],
+   "inaccessible": [],
+   "interventionDifferences": []
+  },
+  "claimStatus": "synthetic-world result",
+  "notes": [
+   "baselines are policies trained by the same evolution-strategy optimizer (policy search), filed under reinforcement-learning"
+  ]
+ },
+ {
+  "world": "X14-1-walker2d-push",
+  "framework": "reinforcement-learning",
+  "configuration": "proprioceptive-mlp",
+  "role": "baseline",
+  "representationSupplied": [
+   "standard embodied RL (ES)",
+   "survival (joint angles/velocities only)"
+  ],
+  "representationGenerated": [
+   "ES-optimized parameters"
+  ],
+  "observationsSupplied": [
+   "joint angles and velocities (12)"
+  ],
+  "observationsRevised": [],
+  "interventions": [
+   "torso push \u00b180 N (training), 0 / \u00b180 / \u00b1140 N (evaluation)"
+  ],
+  "detectedDifferences": [],
+  "inaccessibleDifferences": [
+   "push timing and force (no controller observes them)"
+  ],
+  "branchChanges": [],
+  "timing": {},
+  "failures": [
+   "falls at 140 N: survival 0.925"
+  ],
+  "resourceUse": {
+   "trainSteps": 152621.3333
+  },
+  "reorganization": [],
+  "modelRevisions": [],
+  "descriptionRevisions": [],
+  "measurements": {
+   "0:survival": 0.9812,
+   "0:axis": 0.1198,
+   "0:lower_center": 0.0137,
+   "0:low_noise": 0.0136,
+   "0:recovered_fraction": null,
+   "80:survival": 0.9577,
+   "80:axis": 0.1199,
+   "80:lower_center": 0.0136,
+   "80:low_noise": 0.0141,
+   "80:recovered_fraction": 0.3333,
+   "140:survival": 0.925,
+   "140:axis": 0.1317,
+   "140:lower_center": 0.0151,
+   "140:low_noise": 0.0148,
+   "140:recovered_fraction": 0.5
+  },
+  "burden": [],
+  "cost": {
+   "computeMs": 0,
+   "modelEvaluations": null,
+   "dataSteps": 152621.3333,
+   "observationsUsed": 0,
+   "interventionCount": 0,
+   "memoryItems": null,
+   "representationComplexity": 614
+  },
+  "conversions": [],
+  "profile": {
+   "preserves": [],
+   "merges": [],
+   "cannotExpress": [],
+   "detectsEarlier": [],
+   "detectsLater": [],
+   "requiresPredefined": [],
+   "canRevise": [],
+   "inaccessible": [],
+   "interventionDifferences": []
+  },
+  "claimStatus": "synthetic-world result",
+  "notes": [
+   "baselines are policies trained by the same evolution-strategy optimizer (policy search), filed under reinforcement-learning"
+  ]
+ },
+ {
+  "world": "X14-1-walker2d-push",
+  "framework": "reinforcement-learning",
+  "configuration": "recurrent-gru",
+  "role": "baseline",
+  "representationSupplied": [
+   "standard embodied RL (ES)",
+   "survival"
+  ],
+  "representationGenerated": [
+   "ES-optimized parameters"
+  ],
+  "observationsSupplied": [
+   "Walker2d-v5 17-dim observation"
+  ],
+  "observationsRevised": [],
+  "interventions": [
+   "torso push \u00b180 N (training), 0 / \u00b180 / \u00b1140 N (evaluation)"
+  ],
+  "detectedDifferences": [],
+  "inaccessibleDifferences": [
+   "push timing and force (no controller observes them)"
+  ],
+  "branchChanges": [],
+  "timing": {},
+  "failures": [
+   "falls at 140 N: survival 0.789"
+  ],
+  "resourceUse": {
+   "trainSteps": 145834.3333
+  },
+  "reorganization": [],
+  "modelRevisions": [],
+  "descriptionRevisions": [],
+  "measurements": {
+   "0:survival": 0.9605,
+   "0:axis": 0.0505,
+   "0:lower_center": 0.0089,
+   "0:low_noise": 0.0075,
+   "0:recovered_fraction": null,
+   "80:survival": 0.8858,
+   "80:axis": 0.0638,
+   "80:lower_center": 0.0108,
+   "80:low_noise": 0.0081,
+   "80:recovered_fraction": 1.0,
+   "140:survival": 0.789,
+   "140:axis": 0.0842,
+   "140:lower_center": 0.0134,
+   "140:low_noise": 0.0089,
+   "140:recovered_fraction": 1.0
+  },
+  "burden": [],
+  "cost": {
+   "computeMs": 0,
+   "modelEvaluations": null,
+   "dataSteps": 145834.3333,
+   "observationsUsed": 0,
+   "interventionCount": 0,
+   "memoryItems": null,
+   "representationComplexity": 1782
+  },
+  "conversions": [],
+  "profile": {
+   "preserves": [],
+   "merges": [],
+   "cannotExpress": [],
+   "detectsEarlier": [],
+   "detectsLater": [],
+   "requiresPredefined": [],
+   "canRevise": [],
+   "inaccessible": [],
+   "interventionDifferences": []
+  },
+  "claimStatus": "synthetic-world result",
+  "notes": [
+   "baselines are policies trained by the same evolution-strategy optimizer (policy search), filed under reinforcement-learning"
+  ]
+ },
+ {
+  "world": "X14-1-walker2d-push",
+  "framework": "reinforcement-learning",
+  "configuration": "multiobjective-scalarized-mlp",
+  "role": "baseline",
+  "representationSupplied": [
+   "multi-objective (scalarized)",
+   "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics"
+  ],
+  "representationGenerated": [
+   "ES-optimized parameters"
+  ],
+  "observationsSupplied": [
+   "Walker2d-v5 17-dim observation"
+  ],
+  "observationsRevised": [],
+  "interventions": [
+   "torso push \u00b180 N (training), 0 / \u00b180 / \u00b1140 N (evaluation)"
+  ],
+  "detectedDifferences": [],
+  "inaccessibleDifferences": [
+   "push timing and force (no controller observes them)"
+  ],
+  "branchChanges": [],
+  "timing": {},
+  "failures": [
+   "falls at 140 N: survival 0.7783"
+  ],
+  "resourceUse": {
+   "trainSteps": 145089.0
+  },
+  "reorganization": [],
+  "modelRevisions": [],
+  "descriptionRevisions": [],
+  "measurements": {
+   "0:survival": 0.9507,
+   "0:axis": 0.0345,
+   "0:lower_center": 0.0067,
+   "0:low_noise": 0.0159,
+   "0:recovered_fraction": null,
+   "80:survival": 0.8982,
+   "80:axis": 0.0676,
+   "80:lower_center": 0.012,
+   "80:low_noise": 0.0167,
+   "80:recovered_fraction": 0.9583,
+   "140:survival": 0.7783,
+   "140:axis": 0.0821,
+   "140:lower_center": 0.0138,
+   "140:low_noise": 0.0194,
+   "140:recovered_fraction": 0.9583
+  },
+  "burden": [],
+  "cost": {
+   "computeMs": 0,
+   "modelEvaluations": null,
+   "dataSteps": 145089.0,
+   "observationsUsed": 0,
+   "interventionCount": 0,
+   "memoryItems": null,
+   "representationComplexity": 774
+  },
+  "conversions": [],
+  "profile": {
+   "preserves": [],
+   "merges": [],
+   "cannotExpress": [],
+   "detectsEarlier": [],
+   "detectsLater": [],
+   "requiresPredefined": [],
+   "canRevise": [],
+   "inaccessible": [],
+   "interventionDifferences": []
+  },
+  "claimStatus": "synthetic-world result",
+  "notes": [
+   "baselines are policies trained by the same evolution-strategy optimizer (policy search), filed under reinforcement-learning"
+  ]
+ },
+ {
+  "world": "X14-1-walker2d-push",
+  "framework": "xeno14-embodied",
+  "configuration": "xeno14-no-history",
+  "role": "ablation",
+  "representationSupplied": [
+   "xeno14",
+   "as xeno14"
+  ],
+  "representationGenerated": [
+   "ES-optimized parameters"
+  ],
+  "observationsSupplied": [
+   "Walker2d-v5 17-dim observation"
+  ],
+  "observationsRevised": [],
+  "interventions": [
+   "torso push \u00b180 N (training), 0 / \u00b180 / \u00b1140 N (evaluation)"
+  ],
+  "detectedDifferences": [],
+  "inaccessibleDifferences": [
+   "push timing and force (no controller observes them)"
+  ],
+  "branchChanges": [],
+  "timing": {},
+  "failures": [
+   "falls at 140 N: survival 0.7665"
+  ],
+  "resourceUse": {
+   "trainSteps": 130270.6667
+  },
+  "reorganization": [],
+  "modelRevisions": [],
+  "descriptionRevisions": [],
+  "measurements": {
+   "0:survival": 0.8583,
+   "0:axis": 0.0487,
+   "0:lower_center": 0.009,
+   "0:low_noise": 0.0005,
+   "0:recovered_fraction": null,
+   "80:survival": 0.8085,
+   "80:axis": 0.0706,
+   "80:lower_center": 0.0128,
+   "80:low_noise": 0.0006,
+   "80:recovered_fraction": 0.6667,
+   "140:survival": 0.7665,
+   "140:axis": 0.0828,
+   "140:lower_center": 0.014,
+   "140:low_noise": 0.0006,
+   "140:recovered_fraction": 0.6667
+  },
+  "burden": [],
+  "cost": {
+   "computeMs": 0,
+   "modelEvaluations": null,
+   "dataSteps": 130270.6667,
+   "observationsUsed": 0,
+   "interventionCount": 0,
+   "memoryItems": null,
+   "representationComplexity": 603
+  },
+  "conversions": [],
+  "profile": {
+   "preserves": [],
+   "merges": [],
+   "cannotExpress": [],
+   "detectsEarlier": [],
+   "detectsLater": [],
+   "requiresPredefined": [],
+   "canRevise": [],
+   "inaccessible": [],
+   "interventionDifferences": []
+  },
+  "claimStatus": "synthetic-world result",
+  "notes": [
+   "baselines are policies trained by the same evolution-strategy optimizer (policy search), filed under reinforcement-learning"
+  ]
+ },
+ {
+  "world": "X14-1-walker2d-push",
+  "framework": "xeno14-embodied",
+  "configuration": "xeno14-gates-off",
+  "role": "ablation",
+  "representationSupplied": [
+   "xeno14",
+   "as xeno14"
+  ],
+  "representationGenerated": [
+   "ES-optimized parameters"
+  ],
+  "observationsSupplied": [
+   "Walker2d-v5 17-dim observation"
+  ],
+  "observationsRevised": [],
+  "interventions": [
+   "torso push \u00b180 N (training), 0 / \u00b180 / \u00b1140 N (evaluation)"
+  ],
+  "detectedDifferences": [],
+  "inaccessibleDifferences": [
+   "push timing and force (no controller observes them)"
+  ],
+  "branchChanges": [],
+  "timing": {},
+  "failures": [
+   "falls at 140 N: survival 0.854"
+  ],
+  "resourceUse": {
+   "trainSteps": 140471.0
+  },
+  "reorganization": [],
+  "modelRevisions": [],
+  "descriptionRevisions": [],
+  "measurements": {
+   "0:survival": 0.9627,
+   "0:axis": 0.0343,
+   "0:lower_center": 0.0069,
+   "0:low_noise": 0.0069,
+   "0:recovered_fraction": null,
+   "80:survival": 0.9103,
+   "80:axis": 0.0545,
+   "80:lower_center": 0.01,
+   "80:low_noise": 0.0073,
+   "80:recovered_fraction": 0.875,
+   "140:survival": 0.854,
+   "140:axis": 0.0595,
+   "140:lower_center": 0.0106,
+   "140:low_noise": 0.0079,
+   "140:recovered_fraction": 0.875
+  },
+  "burden": [],
+  "cost": {
+   "computeMs": 0,
+   "modelEvaluations": null,
+   "dataSteps": 140471.0,
+   "observationsUsed": 0,
+   "interventionCount": 0,
+   "memoryItems": null,
+   "representationComplexity": 1827
+  },
+  "conversions": [],
+  "profile": {
+   "preserves": [],
+   "merges": [],
+   "cannotExpress": [],
+   "detectsEarlier": [],
+   "detectsLater": [],
+   "requiresPredefined": [],
+   "canRevise": [],
+   "inaccessible": [],
+   "interventionDifferences": []
+  },
+  "claimStatus": "synthetic-world result",
+  "notes": [
+   "baselines are policies trained by the same evolution-strategy optimizer (policy search), filed under reinforcement-learning"
+  ]
+ },
+ {
+  "world": "X14-1-walker2d-push",
+  "framework": "xeno14-embodied",
+  "configuration": "xeno14-scalarized-training",
+  "role": "ablation",
+  "representationSupplied": [
+   "xeno14 architecture, scalarized objective",
+   "all module parameters jointly on the scalarized objective"
+  ],
+  "representationGenerated": [
+   "ES-optimized parameters"
+  ],
+  "observationsSupplied": [
+   "Walker2d-v5 17-dim observation"
+  ],
+  "observationsRevised": [],
+  "interventions": [
+   "torso push \u00b180 N (training), 0 / \u00b180 / \u00b1140 N (evaluation)"
+  ],
+  "detectedDifferences": [],
+  "inaccessibleDifferences": [
+   "push timing and force (no controller observes them)"
+  ],
+  "branchChanges": [],
+  "timing": {},
+  "failures": [
+   "falls at 140 N: survival 0.8987"
+  ],
+  "resourceUse": {
+   "trainSteps": 154194.3333
+  },
+  "reorganization": [],
+  "modelRevisions": [],
+  "descriptionRevisions": [],
+  "measurements": {
+   "0:survival": 0.9837,
+   "0:axis": 0.0178,
+   "0:lower_center": 0.0043,
+   "0:low_noise": 0.0079,
+   "0:recovered_fraction": null,
+   "80:survival": 0.9507,
+   "80:axis": 0.0334,
+   "80:lower_center": 0.0067,
+   "80:low_noise": 0.0083,
+   "80:recovered_fraction": 1.0,
+   "140:survival": 0.8987,
+   "140:axis": 0.0556,
+   "140:lower_center": 0.0096,
+   "140:low_noise": 0.0089,
+   "140:recovered_fraction": 0.9583
+  },
+  "burden": [],
+  "cost": {
+   "computeMs": 0,
+   "modelEvaluations": null,
+   "dataSteps": 154194.3333,
+   "observationsUsed": 0,
+   "interventionCount": 0,
+   "memoryItems": null,
+   "representationComplexity": 1827
+  },
+  "conversions": [],
+  "profile": {
+   "preserves": [],
+   "merges": [],
+   "cannotExpress": [],
+   "detectsEarlier": [],
+   "detectsLater": [],
+   "requiresPredefined": [],
+   "canRevise": [],
+   "inaccessible": [],
+   "interventionDifferences": []
+  },
+  "claimStatus": "synthetic-world result",
+  "notes": [
+   "baselines are policies trained by the same evolution-strategy optimizer (policy search), filed under reinforcement-learning"
+  ]
+ }
+]

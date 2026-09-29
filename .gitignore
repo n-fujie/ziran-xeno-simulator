@@ -9,3 +9,7 @@ results.json
 *.zip
 data/external/**/raw/
 data/external/**/derived/
+site/dist/
+__pycache__/
+*.pyc
+.pytest_cache/
