@@ -1,0 +1,14 @@
+{
+  "rule": "if a Ziran / Xeno variant improves over the best conventional model on one-step prediction, conventional extensions are compared on the same metric",
+  "bestConventionalOneStep": {
+    "id": "M7-PWARX",
+    "v": 0.0515
+  },
+  "bestZiranOneStep": {
+    "id": "Z-no-grammar-revision",
+    "v": 0.0757
+  },
+  "ziranImproves": false,
+  "extensionsAtLeastAsGood": "not triggered",
+  "verdict": "not triggered: no Ziran variant improved over the best conventional one-step model"
+}

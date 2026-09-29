@@ -1,0 +1,22 @@
+{
+  "input": "test input × 1.2",
+  "claimStatus": "unvalidated model output — no recorded outcome exists for this input",
+  "results": [
+    {
+      "model": "M1-ARX",
+      "maxPredicted": 14.155,
+      "fractionAbove9V": 0.325
+    },
+    {
+      "model": "M4b-grey-box-overflow",
+      "maxPredicted": 9.602,
+      "fractionAbove9V": 0.339
+    },
+    {
+      "model": "M5-twin",
+      "maxPredicted": 9.602,
+      "fractionAbove9V": 0.339
+    }
+  ],
+  "measuredTestFractionAbove9V": 0.103
+}

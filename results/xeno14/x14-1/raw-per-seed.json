@@ -1,0 +1,6679 @@
+{
+ "meta": {
+  "milestone": "X14-1",
+  "embodiment": "Walker2d-v5",
+  "organizations": [
+   "axis-maintenance",
+   "lower-abdominal-continuity",
+   "low-noise-movement"
+  ],
+  "principles": [
+   {
+    "canonical": "lower-abdominal-continuity",
+    "alias": "lower-center persistence",
+    "status": "implemented-X14-1",
+    "source_definition": "maintains a lower-abdominal tension \u2265 0.6 that is coupled to the tension (stiffness) of every segment; tonic, slow clock; costs energy",
+    "walker2d_operationalization": "tonic module proposing joint torques from torso height deviation and joint angles (lower-body stiffness)",
+    "ignition": "learned sigmoid gate with a tonic bias term (may stay on)",
+    "organization_metric": "mean (torso height \u2212 initial height)\u00b2 over surviving steps",
+    "transfer_note": "changes operationalization: 'tension' becomes torque-level stiffness; there is no abdominal state in Walker2d",
+    "extra": {}
+   },
+   {
+    "canonical": "whole-skin-sensing",
+    "alias": "whole-surface sensing",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "axis-maintenance",
+    "alias": "axial maintenance",
+    "status": "implemented-X14-1",
+    "source_definition": "ignites when |body axis| > 0.02; adds a lean correction proportional to the axis to every segment; costs energy",
+    "walker2d_operationalization": "module proposing joint torques from torso pitch and pitch rate",
+    "ignition": "learned sigmoid gate on |torso pitch| and |pitch rate|",
+    "organization_metric": "mean torso pitch\u00b2 over surviving steps (lower = better axis maintenance)",
+    "transfer_note": "changes operationalization: the 5-segment lean stack becomes a single torso pitch plus hip/knee/ankle joints",
+    "extra": {}
+   },
+   {
+    "canonical": "endpoint-removal",
+    "alias": "terminal-point removal",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "low-noise-movement",
+    "alias": "low-noise movement",
+    "status": "implemented-X14-1",
+    "source_definition": "ignites when an external push is registered; damps the push and reduces lean",
+    "walker2d_operationalization": "module proposing damping torques from joint velocities",
+    "ignition": "learned sigmoid gate on the magnitude of joint and torso angular velocities (disturbance proxy)",
+    "organization_metric": "mean squared action change \u2016a_t \u2212 a_{t\u22121}\u2016\u00b2 (jerk proxy)",
+    "transfer_note": "changes operationalization: 'push registered' becomes a velocity-magnitude proxy; no push sensor is given to any controller",
+    "extra": {}
+   },
+   {
+    "canonical": "minimal-approach-distance",
+    "alias": "upward abdominal organization / minimum-distance action (alias mapping uncertain)",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "zero-run-up-transition",
+    "alias": "minimum-distance / zero-run-up action",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "tensegrity",
+    "alias": "tensegrity-like distributed organization",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "slow-movement",
+    "alias": "slow-control / locomotor coordination",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "narrow-step-balance",
+    "alias": "narrow-step balance",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "fingertip-tension",
+    "alias": "distal / fingertip tension",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "breathing-synchronization",
+    "alias": "respiration-action synchronization",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "anti-collapse-posture",
+    "alias": "anti-slouch / postural organization",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   },
+   {
+    "canonical": "long-duration-sedimentation",
+    "alias": "long-horizon bodily deposition",
+    "status": "not-implemented",
+    "source_definition": "",
+    "walker2d_operationalization": "",
+    "ignition": "",
+    "organization_metric": "",
+    "transfer_note": "",
+    "extra": {}
+   }
+  ],
+  "constants": {
+   "REF": {
+    "axis": 0.01,
+    "lower_center": 0.0025,
+    "low_noise": 0.1
+   },
+   "LAM": 0.5,
+   "F_TRAIN": 80.0,
+   "F_EVAL": [
+    0.0,
+    80.0,
+    140.0
+   ],
+   "iters": 48,
+   "k_int": 12,
+   "eval_eps": 8,
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "block": 8,
+   "T": 250
+  },
+  "versions": {
+   "python": "3.12.13",
+   "torch": "2.13.0",
+   "numpy": "2.5.1"
+  },
+  "claimStatus": "synthetic-world result (simulated embodiment)",
+  "wall_s": 764.4
+ },
+ "seeds": [
+  {
+   "seed": 1,
+   "configs": {
+    "xeno14": {
+     "role": "primary",
+     "family": "xeno14",
+     "supplied": [
+      "3 organization modules",
+      "gates on organization-specific features",
+      "history H=3"
+     ],
+     "objective": "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)",
+     "eval": {
+      "0": {
+       "survival": 0.8855,
+       "axis": 0.08310446867196222,
+       "lower_center": 0.013740327888996914,
+       "low_noise": 0.0007399920555201743,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.824,
+        0.856,
+        0.868,
+        0.916,
+        0.92,
+        0.996,
+        0.896,
+        0.808
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.4558762897338186,
+        "lower-abdominal-continuity": 0.4472121803533463,
+        "low-noise-movement": 0.41655818749041784
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.4405649118835018,
+        "axis-maintenance|low-noise-movement": 0.7560790507566362,
+        "lower-abdominal-continuity|low-noise-movement": -0.5149866648373149
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.9714285714285714,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.9809523809523809
+       }
+      },
+      "80": {
+       "survival": 0.8865000000000001,
+       "axis": 0.05762957480194784,
+       "lower_center": 0.0098839698725089,
+       "low_noise": 0.0007483072213371953,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.756,
+        1.0,
+        0.788,
+        1.0,
+        0.82,
+        1.0,
+        0.728
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.45649597211687876,
+        "lower-abdominal-continuity": 0.44712813317368405,
+        "low-noise-movement": 0.4165360889565157
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.44285567291505246,
+        "axis-maintenance|low-noise-movement": 0.7585584275543282,
+        "lower-abdominal-continuity|low-noise-movement": -0.5176956557874528
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.9726651480637813,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.9817767653758542
+       }
+      },
+      "140": {
+       "survival": 0.8285,
+       "axis": 0.06295978484806174,
+       "lower_center": 0.014783022216835355,
+       "low_noise": 0.0008286613302308683,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.708,
+        0.96,
+        0.732,
+        0.88,
+        0.752,
+        0.908,
+        0.688
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.45976804779620023,
+        "lower-abdominal-continuity": 0.4463774117987943,
+        "low-noise-movement": 0.416556931421405
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.46844202911686283,
+        "axis-maintenance|low-noise-movement": 0.7853620190531085,
+        "lower-abdominal-continuity|low-noise-movement": -0.5384053778452952
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.9718969555035128,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.9812646370023419
+       }
+      }
+     },
+     "train_steps": 119448,
+     "params": 1827,
+     "eval_ms": 2869
+    },
+    "standard-mlp": {
+     "role": "baseline",
+     "family": "standard embodied RL (ES)",
+     "supplied": [
+      "MLPPolicy"
+     ],
+     "objective": "survival",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.02539152974490269,
+       "lower_center": 0.0035950369083104423,
+       "low_noise": 0.013592367770253643,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "80": {
+       "survival": 0.9115,
+       "axis": 0.07355770004162142,
+       "lower_center": 0.010159035920871742,
+       "low_noise": 0.015099624204718432,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.928,
+        1.0,
+        0.836,
+        0.896,
+        0.808,
+        1.0,
+        0.824,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.7915000000000001,
+       "axis": 0.1028675217647639,
+       "lower_center": 0.010920319124080632,
+       "low_noise": 0.01735441894514568,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.812,
+        0.772,
+        0.752,
+        0.756,
+        0.732,
+        0.916,
+        0.74,
+        0.852
+       ]
+      }
+     },
+     "train_steps": 155533,
+     "params": 774,
+     "eval_ms": 2142
+    },
+    "proprioceptive-mlp": {
+     "role": "baseline",
+     "family": "standard embodied RL (ES)",
+     "supplied": [
+      "MLPPolicy"
+     ],
+     "objective": "survival (joint angles/velocities only)",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.23789023964290207,
+       "lower_center": 0.022680321248513123,
+       "low_noise": 0.008731090192661833,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.2372294614457615,
+       "lower_center": 0.022524905036886568,
+       "low_noise": 0.00872231791557226,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 1.0,
+       "axis": 0.23375189858161027,
+       "lower_center": 0.021810263313727818,
+       "low_noise": 0.008728689303330369,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      }
+     },
+     "train_steps": 152315,
+     "params": 614,
+     "eval_ms": 1619
+    },
+    "recurrent-gru": {
+     "role": "baseline",
+     "family": "standard embodied RL (ES)",
+     "supplied": [
+      "GRUPolicy"
+     ],
+     "objective": "survival",
+     "eval": {
+      "0": {
+       "survival": 0.927,
+       "axis": 0.06460708803579827,
+       "lower_center": 0.011371557960428961,
+       "low_noise": 0.009141220588229089,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        0.96,
+        0.928,
+        0.9,
+        0.856,
+        0.86,
+        0.912,
+        1.0
+       ]
+      },
+      "80": {
+       "survival": 0.8815000000000001,
+       "axis": 0.05665854597671047,
+       "lower_center": 0.010659013950068331,
+       "low_noise": 0.009164165640394939,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.824,
+        1.0,
+        0.78,
+        1.0,
+        0.748,
+        1.0,
+        0.776,
+        0.924
+       ]
+      },
+      "140": {
+       "survival": 0.7975000000000001,
+       "axis": 0.07879007444426925,
+       "lower_center": 0.014925799256898794,
+       "low_noise": 0.009676857614418036,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.748,
+        0.852,
+        0.724,
+        0.888,
+        0.7,
+        0.944,
+        0.72,
+        0.804
+       ]
+      }
+     },
+     "train_steps": 126269,
+     "params": 1782,
+     "eval_ms": 1367
+    },
+    "multiobjective-scalarized-mlp": {
+     "role": "baseline",
+     "family": "multi-objective (scalarized)",
+     "supplied": [
+      "MLPPolicy"
+     ],
+     "objective": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+     "eval": {
+      "0": {
+       "survival": 0.967,
+       "axis": 0.01927087202516651,
+       "lower_center": 0.003097393871248171,
+       "low_noise": 0.019813541729982023,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.924,
+        0.924,
+        0.932,
+        0.956
+       ]
+      },
+      "80": {
+       "survival": 0.9315,
+       "axis": 0.06889124086603361,
+       "lower_center": 0.009731307744465359,
+       "low_noise": 0.019942495960032093,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.764,
+        0.984,
+        0.792,
+        0.936,
+        1.0,
+        0.976,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.749,
+       "axis": 0.09456565568058474,
+       "lower_center": 0.011848305387957355,
+       "low_noise": 0.024826722584467577,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.868,
+        0.644,
+        0.808,
+        0.652,
+        0.78,
+        0.744,
+        0.796,
+        0.7
+       ]
+      }
+     },
+     "train_steps": 148460,
+     "params": 774,
+     "eval_ms": 1431
+    },
+    "xeno14-no-history": {
+     "role": "ablation",
+     "family": "xeno14",
+     "supplied": [
+      "xeno14-no-history"
+     ],
+     "objective": "as xeno14",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.001608908788006944,
+       "lower_center": 0.0020248144174980463,
+       "low_noise": 0.0006908796281824671,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.5582099064588547,
+        "lower-abdominal-continuity": 0.4098888959288597,
+        "low-noise-movement": 0.5012899780273438
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.908
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.4207248482704163,
+        "axis-maintenance|low-noise-movement": -0.8227292541265487,
+        "lower-abdominal-continuity|low-noise-movement": -0.3474027963578701
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 1.0,
+        "lower-abdominal-continuity|low-noise-movement": 1.0
+       }
+      },
+      "80": {
+       "survival": 0.9309999999999999,
+       "axis": 0.04068929313990318,
+       "lower_center": 0.00859390082450664,
+       "low_noise": 0.000753829000357784,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.856,
+        1.0,
+        0.848,
+        1.0,
+        0.896,
+        1.0,
+        0.848,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.5599822965932304,
+        "lower-abdominal-continuity": 0.4109465003912819,
+        "low-noise-movement": 0.5020463338186001
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.9008620689655172
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.41111972767474325,
+        "axis-maintenance|low-noise-movement": -0.8187012904933815,
+        "lower-abdominal-continuity|low-noise-movement": -0.3625539801693682
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 1.0,
+        "lower-abdominal-continuity|low-noise-movement": 1.0
+       }
+      },
+      "140": {
+       "survival": 0.8855,
+       "axis": 0.06492333657315932,
+       "lower_center": 0.01000900251296412,
+       "low_noise": 0.000797104899653065,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.768,
+        1.0,
+        0.764,
+        1.0,
+        0.788,
+        1.0,
+        0.764,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.5613124520260824,
+        "lower-abdominal-continuity": 0.4110228591240369,
+        "low-noise-movement": 0.5023600573723133
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.8959276018099548
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.40845355054372035,
+        "axis-maintenance|low-noise-movement": -0.820146117005413,
+        "lower-abdominal-continuity|low-noise-movement": -0.33511964545260725
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 1.0,
+        "lower-abdominal-continuity|low-noise-movement": 1.0
+       }
+      }
+     },
+     "train_steps": 149599,
+     "params": 603,
+     "eval_ms": 3081
+    },
+    "xeno14-gates-off": {
+     "role": "ablation",
+     "family": "xeno14",
+     "supplied": [
+      "xeno14-gates-off"
+     ],
+     "objective": "as xeno14",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.015055658864199767,
+       "lower_center": 0.0026950654539276593,
+       "low_noise": 0.007508064198244683,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.1310659852558747,
+        "axis-maintenance|low-noise-movement": -0.22131273516453803,
+        "lower-abdominal-continuity|low-noise-movement": 0.3358398791495711
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.096,
+        "axis-maintenance|low-noise-movement": 0.718,
+        "lower-abdominal-continuity|low-noise-movement": 0.02
+       }
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.021470928006116108,
+       "lower_center": 0.0029333252251225682,
+       "low_noise": 0.007306321078209843,
+       "recovered_fraction": 0.75,
+       "recovery_steps_mean": 31.333333333333332,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.14228790934290736,
+        "axis-maintenance|low-noise-movement": -0.2258998475521803,
+        "lower-abdominal-continuity|low-noise-movement": 0.34637654610467145
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.096,
+        "axis-maintenance|low-noise-movement": 0.774,
+        "lower-abdominal-continuity|low-noise-movement": 0.02
+       }
+      },
+      "140": {
+       "survival": 1.0,
+       "axis": 0.027546055640445394,
+       "lower_center": 0.002647571951150438,
+       "low_noise": 0.00761470415078263,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 52.285714285714285,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.11305014285328797,
+        "axis-maintenance|low-noise-movement": -0.22240193415619433,
+        "lower-abdominal-continuity|low-noise-movement": 0.3424929654409643
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.096,
+        "axis-maintenance|low-noise-movement": 0.736,
+        "lower-abdominal-continuity|low-noise-movement": 0.02
+       }
+      }
+     },
+     "train_steps": 139552,
+     "params": 1827,
+     "eval_ms": 3058
+    },
+    "xeno14-scalarized-training": {
+     "role": "ablation",
+     "family": "xeno14 architecture, scalarized objective",
+     "supplied": [
+      "same modules and gates"
+     ],
+     "objective": "all module parameters jointly on the scalarized objective",
+     "eval": {
+      "0": {
+       "survival": 0.951,
+       "axis": 0.040191062719196605,
+       "lower_center": 0.00838341805242768,
+       "low_noise": 0.007879841917297258,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.864,
+        0.944,
+        1.0,
+        1.0,
+        0.948,
+        1.0,
+        1.0,
+        0.852
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.4939595337594505,
+        "lower-abdominal-continuity": 0.5636572290574555,
+        "low-noise-movement": 0.5790849291117846
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.02096521562216206,
+        "axis-maintenance|low-noise-movement": -0.10258155695430057,
+        "lower-abdominal-continuity|low-noise-movement": -0.00094735425002193
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.09734513274336283,
+        "axis-maintenance|low-noise-movement": 0.24336283185840707,
+        "lower-abdominal-continuity|low-noise-movement": 0.05309734513274336
+       }
+      },
+      "80": {
+       "survival": 0.8520000000000001,
+       "axis": 0.06868355817722402,
+       "lower_center": 0.013449356034090556,
+       "low_noise": 0.008852593451972087,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.78,
+        0.908,
+        0.836,
+        0.8,
+        0.864,
+        0.888,
+        0.74
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.4944266999705454,
+        "lower-abdominal-continuity": 0.5650792239757066,
+        "low-noise-movement": 0.580090673585956
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.023103967694738315,
+        "axis-maintenance|low-noise-movement": -0.07543922738339542,
+        "lower-abdominal-continuity|low-noise-movement": 0.006963217397170728
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.09887640449438202,
+        "axis-maintenance|low-noise-movement": 0.1842696629213483,
+        "lower-abdominal-continuity|low-noise-movement": 0.05393258426966292
+       }
+      },
+      "140": {
+       "survival": 0.7735000000000001,
+       "axis": 0.08150422918759709,
+       "lower_center": 0.015749739194349882,
+       "low_noise": 0.009749978332808237,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.904,
+        0.72,
+        0.808,
+        0.752,
+        0.744,
+        0.772,
+        0.796,
+        0.692
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.49397376818316324,
+        "lower-abdominal-continuity": 0.5640107666330384,
+        "low-noise-movement": 0.5784644850075539
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.02350374607325863,
+        "axis-maintenance|low-noise-movement": -0.04723335723243562,
+        "lower-abdominal-continuity|low-noise-movement": -0.00226185348776933
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.10837438423645321,
+        "axis-maintenance|low-noise-movement": 0.21921182266009853,
+        "lower-abdominal-continuity|low-noise-movement": 0.059113300492610835
+       }
+      }
+     },
+     "train_steps": 144165,
+     "params": 1827,
+     "eval_ms": 2706
+    }
+   },
+   "ops": [
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "8c51e670effd63de",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)",
+      "steps": 119448
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.8855,
+       "axis": 0.08310446867196222,
+       "lower_center": 0.013740327888996914,
+       "low_noise": 0.0007399920555201743,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.8865000000000001,
+       "axis": 0.05762957480194784,
+       "lower_center": 0.0098839698725089,
+       "low_noise": 0.0007483072213371953,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.8285,
+       "axis": 0.06295978484806174,
+       "lower_center": 0.014783022216835355,
+       "low_noise": 0.0008286613302308683,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "standard-mlp",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "1d3a6b209d9ce833",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival",
+      "steps": 155533
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.02539152974490269,
+       "lower_center": 0.0035950369083104423,
+       "low_noise": 0.013592367770253643,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.9115,
+       "axis": 0.07355770004162142,
+       "lower_center": 0.010159035920871742,
+       "low_noise": 0.015099624204718432,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.7915000000000001,
+       "axis": 0.1028675217647639,
+       "lower_center": 0.010920319124080632,
+       "low_noise": 0.01735441894514568,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "proprioceptive-mlp",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "4f077e8be421221f",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival (joint angles/velocities only)",
+      "steps": 152315
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.23789023964290207,
+       "lower_center": 0.022680321248513123,
+       "low_noise": 0.008731090192661833,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.2372294614457615,
+       "lower_center": 0.022524905036886568,
+       "low_noise": 0.00872231791557226,
+       "recovered_fraction": 0.0
+      },
+      "140": {
+       "survival": 1.0,
+       "axis": 0.23375189858161027,
+       "lower_center": 0.021810263313727818,
+       "low_noise": 0.008728689303330369,
+       "recovered_fraction": 0.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "recurrent-gru",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "4ba7b71ea38e93b9",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival",
+      "steps": 126269
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.927,
+       "axis": 0.06460708803579827,
+       "lower_center": 0.011371557960428961,
+       "low_noise": 0.009141220588229089,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.8815000000000001,
+       "axis": 0.05665854597671047,
+       "lower_center": 0.010659013950068331,
+       "low_noise": 0.009164165640394939,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.7975000000000001,
+       "axis": 0.07879007444426925,
+       "lower_center": 0.014925799256898794,
+       "low_noise": 0.009676857614418036,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "multiobjective-scalarized-mlp",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "375d533d8c237f9b",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+      "steps": 148460
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.967,
+       "axis": 0.01927087202516651,
+       "lower_center": 0.003097393871248171,
+       "low_noise": 0.019813541729982023,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.9315,
+       "axis": 0.06889124086603361,
+       "lower_center": 0.009731307744465359,
+       "low_noise": 0.019942495960032093,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.749,
+       "axis": 0.09456565568058474,
+       "lower_center": 0.011848305387957355,
+       "low_noise": 0.024826722584467577,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14-no-history",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "a575e192bf7d655c",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "as xeno14",
+      "steps": 149599
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.001608908788006944,
+       "lower_center": 0.0020248144174980463,
+       "low_noise": 0.0006908796281824671,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.9309999999999999,
+       "axis": 0.04068929313990318,
+       "lower_center": 0.00859390082450664,
+       "low_noise": 0.000753829000357784,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.8855,
+       "axis": 0.06492333657315932,
+       "lower_center": 0.01000900251296412,
+       "low_noise": 0.000797104899653065,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14-gates-off",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "565fe211dad0d1de",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "as xeno14",
+      "steps": 139552
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.015055658864199767,
+       "lower_center": 0.0026950654539276593,
+       "low_noise": 0.007508064198244683,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.021470928006116108,
+       "lower_center": 0.0029333252251225682,
+       "low_noise": 0.007306321078209843,
+       "recovered_fraction": 0.75
+      },
+      "140": {
+       "survival": 1.0,
+       "axis": 0.027546055640445394,
+       "lower_center": 0.002647571951150438,
+       "low_noise": 0.00761470415078263,
+       "recovered_fraction": 0.875
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14-scalarized-training",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "cec5d15dc8a34f5a",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "all module parameters jointly on the scalarized objective",
+      "steps": 144165
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.951,
+       "axis": 0.040191062719196605,
+       "lower_center": 0.00838341805242768,
+       "low_noise": 0.007879841917297258,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.8520000000000001,
+       "axis": 0.06868355817722402,
+       "lower_center": 0.013449356034090556,
+       "low_noise": 0.008852593451972087,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.7735000000000001,
+       "axis": 0.08150422918759709,
+       "lower_center": 0.015749739194349882,
+       "low_noise": 0.009749978332808237,
+       "recovered_fraction": 0.875
+      }
+     }
+    },
+    {
+     "kind": "intervention",
+     "configuration": "xeno14:improve:axis-maintenance",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "5985943455e3e436",
+     "history": {
+      "parent": "8c51e670effd63de"
+     },
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "improve": "axis-maintenance",
+      "iterations": 12
+     },
+     "realized_effect": {
+      "80": {
+       "survival": 0.6955,
+       "axis": 0.08964493208587551,
+       "lower_center": 0.016954517766958804,
+       "low_noise": 0.0015995695597542132,
+       "recovered_fraction": 0.125,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.64,
+        0.724,
+        0.652,
+        0.688,
+        0.648,
+        0.708,
+        0.636,
+        0.868
+       ]
+      },
+      "140": {
+       "survival": 0.719,
+       "axis": 0.08069197843963957,
+       "lower_center": 0.015167363850060648,
+       "low_noise": 0.0015896976901668544,
+       "recovered_fraction": 0.125,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.616,
+        0.78,
+        0.624,
+        0.736,
+        0.624,
+        0.76,
+        0.612,
+        1.0
+       ]
+      }
+     }
+    },
+    {
+     "kind": "intervention",
+     "configuration": "xeno14:improve:lower-abdominal-continuity",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "d1634d1c43cc041d",
+     "history": {
+      "parent": "8c51e670effd63de"
+     },
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "improve": "lower-abdominal-continuity",
+      "iterations": 12
+     },
+     "realized_effect": {
+      "80": {
+       "survival": 0.9125,
+       "axis": 0.07205109849478089,
+       "lower_center": 0.014583306755626316,
+       "low_noise": 0.001764662851558945,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.9,
+        0.94,
+        0.888,
+        1.0,
+        0.904,
+        0.968,
+        0.856,
+        0.844
+       ]
+      },
+      "140": {
+       "survival": 0.7985,
+       "axis": 0.07697749589913488,
+       "lower_center": 0.015646107416325303,
+       "low_noise": 0.0020190684618303376,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.788,
+        0.82,
+        0.78,
+        0.852,
+        0.788,
+        0.836,
+        0.764,
+        0.76
+       ]
+      }
+     }
+    },
+    {
+     "kind": "intervention",
+     "configuration": "xeno14:improve:low-noise-movement",
+     "seed": 1,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "93d379884a01978f",
+     "history": {
+      "parent": "8c51e670effd63de"
+     },
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "improve": "low-noise-movement",
+      "iterations": 12
+     },
+     "realized_effect": {
+      "80": {
+       "survival": 0.6435,
+       "axis": 0.0399567199946571,
+       "lower_center": 0.020919371784639974,
+       "low_noise": 0.00202910336964514,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.632,
+        0.676,
+        0.612,
+        0.652,
+        0.588,
+        0.648,
+        0.6,
+        0.74
+       ]
+      },
+      "140": {
+       "survival": 0.6575,
+       "axis": 0.0453302462904575,
+       "lower_center": 0.021042199825559646,
+       "low_noise": 0.0020190177849038283,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.612,
+        0.708,
+        0.596,
+        0.684,
+        0.576,
+        0.672,
+        0.584,
+        0.828
+       ]
+      }
+     }
+    }
+   ],
+   "removal": {
+    "remove:axis-maintenance": {
+     "0": {
+      "survival": 0.825,
+      "axis": 0.3871502580483957,
+      "lower_center": 0.017689800531845656,
+      "low_noise": 0.0005006352888973482,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.668,
+       0.98,
+       0.916,
+       0.816,
+       0.848,
+       0.828,
+       0.88,
+       0.664
+      ]
+     },
+     "80": {
+      "survival": 0.6964999999999999,
+      "axis": 0.31142646848877553,
+      "lower_center": 0.013790530435290202,
+      "low_noise": 0.0005962207744078721,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.848,
+       0.608,
+       0.788,
+       0.584,
+       0.76,
+       0.6,
+       0.776,
+       0.608
+      ]
+     }
+    },
+    "remove:lower-abdominal-continuity": {
+     "0": {
+      "survival": 0.4025,
+      "axis": 0.11883760774224414,
+      "lower_center": 0.022697606838880946,
+      "low_noise": 0.0016782714102503427,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.396,
+       0.4,
+       0.404,
+       0.404,
+       0.408,
+       0.408,
+       0.404,
+       0.396
+      ]
+     },
+     "80": {
+      "survival": 0.4025,
+      "axis": 0.11883699449113769,
+      "lower_center": 0.02269745515917075,
+      "low_noise": 0.0016782697494238511,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.396,
+       0.4,
+       0.404,
+       0.404,
+       0.408,
+       0.408,
+       0.404,
+       0.396
+      ]
+     }
+    },
+    "remove:low-noise-movement": {
+     "0": {
+      "survival": 0.40900000000000003,
+      "axis": 0.33328454594827894,
+      "lower_center": 0.020633539254824664,
+      "low_noise": 0.0014576255766459172,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.392,
+       0.404,
+       0.416,
+       0.396,
+       0.412,
+       0.42,
+       0.416,
+       0.416
+      ]
+     },
+     "80": {
+      "survival": 0.40900000000000003,
+      "axis": 0.33331171637539614,
+      "lower_center": 0.020635130343328582,
+      "low_noise": 0.0014570833769093174,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.392,
+       0.404,
+       0.416,
+       0.396,
+       0.412,
+       0.42,
+       0.416,
+       0.416
+      ]
+     }
+    },
+    "remove:axis-maintenance+lower-abdominal-continuity": {
+     "0": {
+      "survival": 0.424,
+      "axis": 0.11575112572662358,
+      "lower_center": 0.021689164050153538,
+      "low_noise": 0.0006244106265417238,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.416,
+       0.42,
+       0.424,
+       0.428,
+       0.432,
+       0.428,
+       0.428,
+       0.416
+      ]
+     },
+     "80": {
+      "survival": 0.4245,
+      "axis": 0.11656605964281026,
+      "lower_center": 0.021902980585229433,
+      "low_noise": 0.0006241328176138163,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.42,
+       0.42,
+       0.424,
+       0.424,
+       0.436,
+       0.428,
+       0.428,
+       0.416
+      ]
+     }
+    },
+    "remove:axis-maintenance+low-noise-movement": {
+     "0": {
+      "survival": 0.076,
+      "axis": 0.21085033231019085,
+      "lower_center": 0.004561044676383196,
+      "low_noise": 0.0043830070093826504,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.076,
+       0.076,
+       0.076,
+       0.076,
+       0.076,
+       0.076,
+       0.076,
+       0.076
+      ]
+     },
+     "80": {
+      "survival": 0.076,
+      "axis": 0.21085033231019085,
+      "lower_center": 0.004561044676383196,
+      "low_noise": 0.0043830070093826504,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.076,
+       0.076,
+       0.076,
+       0.076,
+       0.076,
+       0.076,
+       0.076,
+       0.076
+      ]
+     }
+    },
+    "remove:lower-abdominal-continuity+low-noise-movement": {
+     "0": {
+      "survival": 0.7555000000000001,
+      "axis": 0.09456070816010123,
+      "lower_center": 0.01573151844660442,
+      "low_noise": 0.0003250789991024234,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.7,
+       0.74,
+       0.748,
+       0.776,
+       0.8,
+       0.816,
+       0.776,
+       0.688
+      ]
+     },
+     "80": {
+      "survival": 0.784,
+      "axis": 0.09127144012709239,
+      "lower_center": 0.015306907219270263,
+      "low_noise": 0.0003267952618733581,
+      "recovered_fraction": 0.625,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       0.776,
+       0.68,
+       0.856,
+       0.704,
+       0.968,
+       0.728,
+       0.912,
+       0.648
+      ]
+     }
+    }
+   },
+   "ft": {
+    "xeno14": {
+     "control": {
+      "80": {
+       "survival": 0.801,
+       "axis": 0.013274487736515201,
+       "lower_center": 0.014699190511828606,
+       "low_noise": 0.0013979305451705388,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.78,
+        1.0,
+        0.736,
+        0.868,
+        0.684,
+        0.856,
+        0.724,
+        0.76
+       ]
+      },
+      "140": {
+       "survival": 0.7965,
+       "axis": 0.02290228856151279,
+       "lower_center": 0.012664643841066907,
+       "low_noise": 0.0014220791261528533,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.728,
+        0.904,
+        0.696,
+        1.0,
+        0.656,
+        1.0,
+        0.688,
+        0.7
+       ]
+      }
+     },
+     "axis-maintenance": {
+      "80": {
+       "survival": 0.6955,
+       "axis": 0.08964493208587551,
+       "lower_center": 0.016954517766958804,
+       "low_noise": 0.0015995695597542132,
+       "recovered_fraction": 0.125,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.64,
+        0.724,
+        0.652,
+        0.688,
+        0.648,
+        0.708,
+        0.636,
+        0.868
+       ]
+      },
+      "140": {
+       "survival": 0.719,
+       "axis": 0.08069197843963957,
+       "lower_center": 0.015167363850060648,
+       "low_noise": 0.0015896976901668544,
+       "recovered_fraction": 0.125,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.616,
+        0.78,
+        0.624,
+        0.736,
+        0.624,
+        0.76,
+        0.612,
+        1.0
+       ]
+      }
+     },
+     "lower-abdominal-continuity": {
+      "80": {
+       "survival": 0.9125,
+       "axis": 0.07205109849478089,
+       "lower_center": 0.014583306755626316,
+       "low_noise": 0.001764662851558945,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.9,
+        0.94,
+        0.888,
+        1.0,
+        0.904,
+        0.968,
+        0.856,
+        0.844
+       ]
+      },
+      "140": {
+       "survival": 0.7985,
+       "axis": 0.07697749589913488,
+       "lower_center": 0.015646107416325303,
+       "low_noise": 0.0020190684618303376,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.788,
+        0.82,
+        0.78,
+        0.852,
+        0.788,
+        0.836,
+        0.764,
+        0.76
+       ]
+      }
+     },
+     "low-noise-movement": {
+      "80": {
+       "survival": 0.6435,
+       "axis": 0.0399567199946571,
+       "lower_center": 0.020919371784639974,
+       "low_noise": 0.00202910336964514,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.632,
+        0.676,
+        0.612,
+        0.652,
+        0.588,
+        0.648,
+        0.6,
+        0.74
+       ]
+      },
+      "140": {
+       "survival": 0.6575,
+       "axis": 0.0453302462904575,
+       "lower_center": 0.021042199825559646,
+       "low_noise": 0.0020190177849038283,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.612,
+        0.708,
+        0.596,
+        0.684,
+        0.576,
+        0.672,
+        0.584,
+        0.828
+       ]
+      }
+     }
+    },
+    "tradeoff-scalarized-mlp": {
+     "control": {
+      "80": {
+       "survival": 0.8,
+       "axis": 0.07251981539370544,
+       "lower_center": 0.008748510860219638,
+       "low_noise": 0.02527604979111292,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.604,
+        0.94,
+        0.652,
+        0.8,
+        0.876,
+        0.868,
+        0.66
+       ]
+      },
+      "140": {
+       "survival": 0.7084999999999999,
+       "axis": 0.0802137838816196,
+       "lower_center": 0.009991753419841749,
+       "low_noise": 0.028256451758542134,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.888,
+        0.58,
+        0.812,
+        0.608,
+        0.728,
+        0.672,
+        0.768,
+        0.612
+       ]
+      }
+     },
+     "axis-maintenance": {
+      "80": {
+       "survival": 0.7525,
+       "axis": 0.03231670234544966,
+       "lower_center": 0.004191707429064911,
+       "low_noise": 0.028538093896981954,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.5,
+        0.636,
+        0.776,
+        0.664,
+        0.704,
+        1.0,
+        0.74,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.724,
+       "axis": 0.07298455151984848,
+       "lower_center": 0.008268325024618361,
+       "low_noise": 0.030457777920897246,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.504,
+        0.588,
+        0.972,
+        0.6,
+        0.88,
+        0.664,
+        0.952,
+        0.632
+       ]
+      }
+     },
+     "lower-abdominal-continuity": {
+      "80": {
+       "survival": 0.8200000000000001,
+       "axis": 0.07703750432419201,
+       "lower_center": 0.00883231614134531,
+       "low_noise": 0.018211720694945796,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.712,
+        0.88,
+        0.744,
+        0.756,
+        0.908,
+        0.844,
+        0.716
+       ]
+      },
+      "140": {
+       "survival": 0.742,
+       "axis": 0.08852057767205448,
+       "lower_center": 0.011159551611758052,
+       "low_noise": 0.020059994573027012,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.908,
+        0.664,
+        0.788,
+        0.684,
+        0.704,
+        0.76,
+        0.764,
+        0.664
+       ]
+      }
+     },
+     "low-noise-movement": {
+      "80": {
+       "survival": 0.8935,
+       "axis": 0.06719905867553465,
+       "lower_center": 0.010007762985461969,
+       "low_noise": 0.021707317687358757,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.7,
+        0.912,
+        0.792,
+        0.848,
+        1.0,
+        0.896,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.725,
+       "axis": 0.084617278660657,
+       "lower_center": 0.0108063314000282,
+       "low_noise": 0.026669408667021735,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.848,
+        0.624,
+        0.788,
+        0.648,
+        0.748,
+        0.712,
+        0.768,
+        0.664
+       ]
+      }
+     }
+    }
+   },
+   "repartition": {
+    "candidates": [
+     {
+      "id": "R0-retrain-model",
+      "validation": {
+       "survival": 0.7869999999999999,
+       "axis": 0.06749991554460466,
+       "lower_center": 0.015847875609679995,
+       "low_noise": 0.0010332554598779958,
+       "recovered_fraction": 0.5,
+       "recovery_steps_mean": 3.5,
+       "per_episode_survival": [
+        0.672,
+        0.9,
+        0.704,
+        0.808,
+        0.684,
+        0.828,
+        0.7,
+        1.0
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 0.8330000000000001,
+        "axis": 0.05443350146267304,
+        "lower_center": 0.01700075900032389,
+        "low_noise": 0.0010003410486630335,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         1.0,
+         0.74,
+         0.82,
+         0.784,
+         0.764,
+         0.948,
+         0.788,
+         0.82
+        ]
+       },
+       "140": {
+        "survival": 0.8165,
+        "axis": 0.057305542155114145,
+        "lower_center": 0.014431678751432683,
+        "low_noise": 0.0010219674883243201,
+        "recovered_fraction": 0.375,
+        "recovery_steps_mean": 7.0,
+        "per_episode_survival": [
+         0.732,
+         1.0,
+         0.68,
+         1.0,
+         0.656,
+         0.848,
+         0.668,
+         0.948
+        ]
+       }
+      },
+      "addedParams": 0
+     },
+     {
+      "id": "R1-longer-history",
+      "validation": {
+       "survival": 0.7835000000000001,
+       "axis": 0.06237253581704846,
+       "lower_center": 0.0155515796661514,
+       "low_noise": 0.0017229136012191326,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.772,
+        0.764,
+        0.792,
+        0.732,
+        0.88,
+        0.74,
+        0.808,
+        0.78
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 0.989,
+        "axis": 0.034144544675445296,
+        "lower_center": 0.00636151313696494,
+        "low_noise": 0.0013607117994877454,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         0.912,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0
+        ]
+       },
+       "140": {
+        "survival": 0.7909999999999999,
+        "axis": 0.0605778657909566,
+        "lower_center": 0.015776133203978603,
+        "low_noise": 0.001757902356218297,
+        "recovered_fraction": 1.0,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         0.892,
+         0.844,
+         0.784,
+         0.796,
+         0.756,
+         0.752,
+         0.744,
+         0.76
+        ]
+       }
+      },
+      "addedParams": 1224
+     },
+     {
+      "id": "R2-repartition-shared-gate",
+      "validation": {
+       "survival": 0.524,
+       "axis": 0.13158775279274537,
+       "lower_center": 0.011302707732336815,
+       "low_noise": 0.0018940571658611876,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.552,
+        0.496,
+        0.528,
+        0.496,
+        0.564,
+        0.496,
+        0.548,
+        0.512
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 0.523,
+        "axis": 0.1324559849990416,
+        "lower_center": 0.01190468014729288,
+        "low_noise": 0.001932418065530915,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         0.52,
+         0.532,
+         0.532,
+         0.504,
+         0.54,
+         0.512,
+         0.516,
+         0.528
+        ]
+       },
+       "140": {
+        "survival": 0.5255000000000001,
+        "axis": 0.12921871224101572,
+        "lower_center": 0.011501151010148324,
+        "low_noise": 0.0019340766917030424,
+        "recovered_fraction": 0.0,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         0.54,
+         0.508,
+         0.556,
+         0.488,
+         0.572,
+         0.492,
+         0.544,
+         0.504
+        ]
+       }
+      },
+      "addedParams": 0
+     },
+     {
+      "id": "R3-encoding-accel-gates",
+      "validation": {
+       "survival": 0.8325,
+       "axis": 0.06776600831316407,
+       "lower_center": 0.013951445617434376,
+       "low_noise": 0.001646839272883846,
+       "recovered_fraction": 0.75,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.964,
+        0.688,
+        1.0,
+        0.684,
+        1.0,
+        0.684,
+        0.944,
+        0.696
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 0.889,
+        "axis": 0.07724559291117439,
+        "lower_center": 0.013365728149517812,
+        "low_noise": 0.0016395491211100154,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         0.84,
+         1.0,
+         0.884,
+         0.872,
+         0.908,
+         0.856,
+         0.92,
+         0.832
+        ]
+       },
+       "140": {
+        "survival": 0.8245,
+        "axis": 0.06709393701419356,
+        "lower_center": 0.014142353980217407,
+        "low_noise": 0.0016563340887760262,
+        "recovered_fraction": 0.75,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         1.0,
+         0.732,
+         0.968,
+         0.688,
+         0.932,
+         0.68,
+         0.924,
+         0.672
+        ]
+       }
+      },
+      "addedParams": 6
+     }
+    ],
+    "ziran": {
+     "pareto": [
+      "R0-retrain-model",
+      "R1-longer-history",
+      "R2-repartition-shared-gate",
+      "R3-encoding-accel-gates"
+     ],
+     "selected": [
+      "R3-encoding-accel-gates"
+     ],
+     "axisValues": {
+      "R0-retrain-model": {
+       "survival": 0.7869999999999999,
+       "recovered": 0.5,
+       "axis": 0.06749991554460466,
+       "lower_center": 0.015847875609679995,
+       "low_noise": 0.0010332554598779958,
+       "addedParams": 0
+      },
+      "R1-longer-history": {
+       "survival": 0.7835000000000001,
+       "recovered": 1,
+       "axis": 0.06237253581704846,
+       "lower_center": 0.0155515796661514,
+       "low_noise": 0.0017229136012191326,
+       "addedParams": 1224
+      },
+      "R2-repartition-shared-gate": {
+       "survival": 0.524,
+       "recovered": 0,
+       "axis": 0.13158775279274537,
+       "lower_center": 0.011302707732336815,
+       "low_noise": 0.0018940571658611876,
+       "addedParams": 0
+      },
+      "R3-encoding-accel-gates": {
+       "survival": 0.8325,
+       "recovered": 0.75,
+       "axis": 0.06776600831316407,
+       "lower_center": 0.013951445617434376,
+       "low_noise": 0.001646839272883846,
+       "addedParams": 6
+      }
+     },
+     "policy": "lexicographic",
+     "policyOrigin": "external"
+    },
+    "baselineRevision": "R0-retrain-model"
+   },
+   "baseline_stress": {
+    "xeno14_before_revision": {
+     "0": {
+      "survival": 0.9119999999999999,
+      "axis": 0.08127901463041132,
+      "lower_center": 0.013580651437237568,
+      "low_noise": 0.0007277829639448003,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.812,
+       0.984,
+       0.904,
+       0.948,
+       0.964,
+       0.84,
+       0.948,
+       0.896
+      ]
+     },
+     "140": {
+      "survival": 0.813,
+      "axis": 0.061217450246662475,
+      "lower_center": 0.014698188005338736,
+      "low_noise": 0.0008413861703818534,
+      "recovered_fraction": 1.0,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       1.0,
+       0.752,
+       0.896,
+       0.74,
+       0.84,
+       0.7,
+       0.852,
+       0.724
+      ]
+     }
+    }
+   },
+   "wall_s": 719.4
+  },
+  {
+   "seed": 2,
+   "configs": {
+    "xeno14": {
+     "role": "primary",
+     "family": "xeno14",
+     "supplied": [
+      "3 organization modules",
+      "gates on organization-specific features",
+      "history H=3"
+     ],
+     "objective": "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.0005040753451059368,
+       "lower_center": 0.001813314085968265,
+       "low_noise": 0.0006407292363071389,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.5567683887481689,
+        "lower-abdominal-continuity": 0.5132357964515686,
+        "low-noise-movement": 0.47207028049230576
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.13166251126024872,
+        "axis-maintenance|low-noise-movement": 0.7945847554616922,
+        "lower-abdominal-continuity|low-noise-movement": 0.24672393729677425
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.056,
+        "axis-maintenance|low-noise-movement": 0.028,
+        "lower-abdominal-continuity|low-noise-movement": 0.052
+       }
+      },
+      "80": {
+       "survival": 0.95,
+       "axis": 0.049278131233423436,
+       "lower_center": 0.008498538378488702,
+       "low_noise": 0.000680896893459165,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.912,
+        1.0,
+        0.876,
+        1.0,
+        0.94,
+        1.0,
+        0.872,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.5561751010028887,
+        "lower-abdominal-continuity": 0.5137136389022093,
+        "low-noise-movement": 0.4732511272989058
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.10655128354128503,
+        "axis-maintenance|low-noise-movement": 0.737791546573698,
+        "lower-abdominal-continuity|low-noise-movement": 0.23466154403005976
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.058577405857740586,
+        "axis-maintenance|low-noise-movement": 0.029288702928870293,
+        "lower-abdominal-continuity|low-noise-movement": 0.05439330543933055
+       }
+      },
+      "140": {
+       "survival": 0.8375000000000001,
+       "axis": 0.07999257222065342,
+       "lower_center": 0.014863676701169054,
+       "low_noise": 0.0007769251341560172,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.796,
+        0.884,
+        0.776,
+        0.888,
+        0.808,
+        0.884,
+        0.776,
+        0.888
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.5556457985015143,
+        "lower-abdominal-continuity": 0.5140361707834971,
+        "low-noise-movement": 0.47383886632465183
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0898183040593895,
+        "axis-maintenance|low-noise-movement": 0.6963388997662627,
+        "lower-abdominal-continuity|low-noise-movement": 0.22270705541041458
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.06666666666666667,
+        "axis-maintenance|low-noise-movement": 0.03333333333333333,
+        "lower-abdominal-continuity|low-noise-movement": 0.06190476190476191
+       }
+      }
+     },
+     "train_steps": 158211,
+     "params": 1827,
+     "eval_ms": 3271
+    },
+    "standard-mlp": {
+     "role": "baseline",
+     "family": "standard embodied RL (ES)",
+     "supplied": [
+      "MLPPolicy"
+     ],
+     "objective": "survival",
+     "eval": {
+      "0": {
+       "survival": 0.8725,
+       "axis": 0.06167496252183072,
+       "lower_center": 0.0122413229040793,
+       "low_noise": 0.017359402476953244,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.788,
+        0.8,
+        0.784,
+        0.76,
+        0.928,
+        1.0,
+        0.92,
+        1.0
+       ]
+      },
+      "80": {
+       "survival": 0.8899999999999999,
+       "axis": 0.06672753124852118,
+       "lower_center": 0.013100174411396194,
+       "low_noise": 0.017146226183455977,
+       "recovered_fraction": 0.75,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.96,
+        0.716,
+        0.96,
+        0.692,
+        1.0,
+        0.876,
+        1.0,
+        0.916
+       ]
+      },
+      "140": {
+       "survival": 0.8255000000000001,
+       "axis": 0.06321433677978658,
+       "lower_center": 0.012352616952019104,
+       "low_noise": 0.018540064357032315,
+       "recovered_fraction": 0.75,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.672,
+        1.0,
+        0.656,
+        0.848,
+        0.776,
+        0.856,
+        0.796
+       ]
+      }
+     },
+     "train_steps": 146497,
+     "params": 774,
+     "eval_ms": 1415
+    },
+    "proprioceptive-mlp": {
+     "role": "baseline",
+     "family": "standard embodied RL (ES)",
+     "supplied": [
+      "MLPPolicy"
+     ],
+     "objective": "survival (joint angles/velocities only)",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.06058156530004202,
+       "lower_center": 0.006550331798082891,
+       "low_noise": 0.015366265028183869,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.05964368608543987,
+       "lower_center": 0.006144215298966447,
+       "low_noise": 0.015369018614541152,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 1.0,
+       "axis": 0.08493484836833226,
+       "lower_center": 0.008518845535036026,
+       "low_noise": 0.015375276824870311,
+       "recovered_fraction": 0.5,
+       "recovery_steps_mean": 50.75,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      }
+     },
+     "train_steps": 149548,
+     "params": 614,
+     "eval_ms": 1696
+    },
+    "recurrent-gru": {
+     "role": "baseline",
+     "family": "standard embodied RL (ES)",
+     "supplied": [
+      "GRUPolicy"
+     ],
+     "objective": "survival",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.03574984322454748,
+       "lower_center": 0.005047949579701307,
+       "low_noise": 0.006679391901940715,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "80": {
+       "survival": 0.8959999999999999,
+       "axis": 0.07194153240364662,
+       "lower_center": 0.009526834898168765,
+       "low_noise": 0.007708056444976674,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.88,
+        0.976,
+        0.848,
+        0.816,
+        0.832,
+        1.0,
+        0.816,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.7895000000000001,
+       "axis": 0.09764293595017942,
+       "lower_center": 0.010107839463247753,
+       "low_noise": 0.008750247624397862,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.784,
+        0.748,
+        0.764,
+        0.712,
+        0.748,
+        0.908,
+        0.74,
+        0.912
+       ]
+      }
+     },
+     "train_steps": 153877,
+     "params": 1782,
+     "eval_ms": 1459
+    },
+    "multiobjective-scalarized-mlp": {
+     "role": "baseline",
+     "family": "multi-objective (scalarized)",
+     "supplied": [
+      "MLPPolicy"
+     ],
+     "objective": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+     "eval": {
+      "0": {
+       "survival": 0.924,
+       "axis": 0.04709981676871223,
+       "lower_center": 0.009619831031094508,
+       "low_noise": 0.013122918269358082,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.796,
+        0.876,
+        0.928,
+        0.792,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "80": {
+       "survival": 0.8745,
+       "axis": 0.07037388048034468,
+       "lower_center": 0.013777252308450227,
+       "low_noise": 0.01394154731442659,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.752,
+        0.996,
+        0.708,
+        0.868,
+        0.892,
+        0.924,
+        0.856
+       ]
+      },
+      "140": {
+       "survival": 0.7915,
+       "axis": 0.07443516932745825,
+       "lower_center": 0.014414865633318766,
+       "low_noise": 0.015406648947528532,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.7,
+        0.836,
+        0.668,
+        0.776,
+        0.784,
+        0.804,
+        0.764
+       ]
+      }
+     },
+     "train_steps": 143531,
+     "params": 774,
+     "eval_ms": 1312
+    },
+    "xeno14-no-history": {
+     "role": "ablation",
+     "family": "xeno14",
+     "supplied": [
+      "xeno14-no-history"
+     ],
+     "objective": "as xeno14",
+     "eval": {
+      "0": {
+       "survival": 0.6165,
+       "axis": 0.10086960605894038,
+       "lower_center": 0.016352870150498317,
+       "low_noise": 0.0004834119849666051,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.608,
+        0.608,
+        0.62,
+        0.608,
+        0.604,
+        0.616,
+        0.64,
+        0.628
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.467923170445781,
+        "lower-abdominal-continuity": 0.5083093879450309,
+        "low-noise-movement": 0.46808272041380405
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.8848684210526315,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.21406306892535404,
+        "axis-maintenance|low-noise-movement": 0.24847588782646007,
+        "lower-abdominal-continuity|low-noise-movement": -0.7945242898636743
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.618421052631579,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 1.0
+       }
+      },
+      "80": {
+       "survival": 0.623,
+       "axis": 0.10004437315360427,
+       "lower_center": 0.01642013809966347,
+       "low_noise": 0.00047653742462563605,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.644,
+        0.588,
+        0.656,
+        0.584,
+        0.636,
+        0.592,
+        0.684,
+        0.6
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.46779369253229786,
+        "lower-abdominal-continuity": 0.5082573486225945,
+        "low-noise-movement": 0.46814661385951106
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.8831168831168831,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.22310892006309777,
+        "axis-maintenance|low-noise-movement": 0.25845728152395264,
+        "lower-abdominal-continuity|low-noise-movement": -0.7933972051197832
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.6688311688311688,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 1.0
+       }
+      },
+      "140": {
+       "survival": 0.6335,
+       "axis": 0.09851990947008618,
+       "lower_center": 0.01624710016505651,
+       "low_noise": 0.0004751693409442149,
+       "recovered_fraction": 0.0,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.676,
+        0.572,
+        0.692,
+        0.568,
+        0.668,
+        0.576,
+        0.732,
+        0.584
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.46776597794049823,
+        "lower-abdominal-continuity": 0.5082673187821339,
+        "low-noise-movement": 0.46818919537159115
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.8878205128205128,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.22463040400105408,
+        "axis-maintenance|low-noise-movement": 0.2614218247434996,
+        "lower-abdominal-continuity|low-noise-movement": -0.7932939324050378
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.6923076923076923,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 1.0
+       }
+      }
+     },
+     "train_steps": 104546,
+     "params": 603,
+     "eval_ms": 1930
+    },
+    "xeno14-gates-off": {
+     "role": "ablation",
+     "family": "xeno14",
+     "supplied": [
+      "xeno14-gates-off"
+     ],
+     "objective": "as xeno14",
+     "eval": {
+      "0": {
+       "survival": 0.914,
+       "axis": 0.053164353866459665,
+       "lower_center": 0.010500594562201903,
+       "low_noise": 0.007111982481901032,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.784,
+        0.836,
+        0.912,
+        0.804,
+        0.976,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.6186393133652063,
+        "axis-maintenance|low-noise-movement": 0.5067145641663192,
+        "lower-abdominal-continuity|low-noise-movement": -0.0030306529525356988
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.16049382716049382
+       }
+      },
+      "80": {
+       "survival": 0.858,
+       "axis": 0.07122935155572799,
+       "lower_center": 0.01361302734325633,
+       "low_noise": 0.007613340743010918,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.964,
+        0.732,
+        1.0,
+        0.716,
+        0.944,
+        0.808,
+        0.868,
+        0.832
+       ],
+       "gate_mean": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.6214831071501633,
+        "axis-maintenance|low-noise-movement": 0.5064094307445833,
+        "lower-abdominal-continuity|low-noise-movement": 0.0019889318285112373
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.1509433962264151
+       }
+      },
+      "140": {
+       "survival": 0.786,
+       "axis": 0.0726625109675503,
+       "lower_center": 0.013949999469126586,
+       "low_noise": 0.008311914452197504,
+       "recovered_fraction": 0.75,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.688,
+        0.844,
+        0.676,
+        0.816,
+        0.736,
+        0.776,
+        0.752
+       ],
+       "gate_mean": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.6593007073159466,
+        "axis-maintenance|low-noise-movement": 0.4896693433506935,
+        "lower-abdominal-continuity|low-noise-movement": 0.1146467959682647
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.07345971563981042
+       }
+      }
+     },
+     "train_steps": 147423,
+     "params": 1827,
+     "eval_ms": 3066
+    },
+    "xeno14-scalarized-training": {
+     "role": "ablation",
+     "family": "xeno14 architecture, scalarized objective",
+     "supplied": [
+      "same modules and gates"
+     ],
+     "objective": "all module parameters jointly on the scalarized objective",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.011947418497004692,
+       "lower_center": 0.00248469413581793,
+       "low_noise": 0.010540104415943677,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.5002803992033005,
+        "lower-abdominal-continuity": 0.5444224461317062,
+        "low-noise-movement": 0.47236173593997954
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.572,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.4197533852267079,
+        "axis-maintenance|low-noise-movement": 0.30745753210713156,
+        "lower-abdominal-continuity|low-noise-movement": 0.22494532349705695
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 0.154,
+        "lower-abdominal-continuity|low-noise-movement": 0.0
+       }
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.00918123067717785,
+       "lower_center": 0.0022890809516754995,
+       "low_noise": 0.010539917110806743,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.5024593964815139,
+        "lower-abdominal-continuity": 0.5445850083827972,
+        "low-noise-movement": 0.47197597712278366
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.752,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.4227766824383289,
+        "axis-maintenance|low-noise-movement": 0.3008889842685312,
+        "lower-abdominal-continuity|low-noise-movement": 0.22258332560956479
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 0.156,
+        "lower-abdominal-continuity|low-noise-movement": 0.0
+       }
+      },
+      "140": {
+       "survival": 1.0,
+       "axis": 0.023906970990755196,
+       "lower_center": 0.00371166465497121,
+       "low_noise": 0.011058123957619716,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.4979374175667763,
+        "lower-abdominal-continuity": 0.5445478100776673,
+        "low-noise-movement": 0.47280759245157244
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.608,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.40362048742128537,
+        "axis-maintenance|low-noise-movement": 0.3016237765153637,
+        "lower-abdominal-continuity|low-noise-movement": 0.2236806830316782
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 0.142,
+        "lower-abdominal-continuity|low-noise-movement": 0.0
+       }
+      }
+     },
+     "train_steps": 159787,
+     "params": 1827,
+     "eval_ms": 3204
+    }
+   },
+   "ops": [
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "c52d054f01829f45",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)",
+      "steps": 158211
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.0005040753451059368,
+       "lower_center": 0.001813314085968265,
+       "low_noise": 0.0006407292363071389,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.95,
+       "axis": 0.049278131233423436,
+       "lower_center": 0.008498538378488702,
+       "low_noise": 0.000680896893459165,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.8375000000000001,
+       "axis": 0.07999257222065342,
+       "lower_center": 0.014863676701169054,
+       "low_noise": 0.0007769251341560172,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "standard-mlp",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "3653c20a4d14b5c8",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival",
+      "steps": 146497
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.8725,
+       "axis": 0.06167496252183072,
+       "lower_center": 0.0122413229040793,
+       "low_noise": 0.017359402476953244,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.8899999999999999,
+       "axis": 0.06672753124852118,
+       "lower_center": 0.013100174411396194,
+       "low_noise": 0.017146226183455977,
+       "recovered_fraction": 0.75
+      },
+      "140": {
+       "survival": 0.8255000000000001,
+       "axis": 0.06321433677978658,
+       "lower_center": 0.012352616952019104,
+       "low_noise": 0.018540064357032315,
+       "recovered_fraction": 0.75
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "proprioceptive-mlp",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "e1cf618ff732fd81",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival (joint angles/velocities only)",
+      "steps": 149548
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.06058156530004202,
+       "lower_center": 0.006550331798082891,
+       "low_noise": 0.015366265028183869,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.05964368608543987,
+       "lower_center": 0.006144215298966447,
+       "low_noise": 0.015369018614541152,
+       "recovered_fraction": 0.0
+      },
+      "140": {
+       "survival": 1.0,
+       "axis": 0.08493484836833226,
+       "lower_center": 0.008518845535036026,
+       "low_noise": 0.015375276824870311,
+       "recovered_fraction": 0.5
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "recurrent-gru",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "6587d81bbf027608",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival",
+      "steps": 153877
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.03574984322454748,
+       "lower_center": 0.005047949579701307,
+       "low_noise": 0.006679391901940715,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.8959999999999999,
+       "axis": 0.07194153240364662,
+       "lower_center": 0.009526834898168765,
+       "low_noise": 0.007708056444976674,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.7895000000000001,
+       "axis": 0.09764293595017942,
+       "lower_center": 0.010107839463247753,
+       "low_noise": 0.008750247624397862,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "multiobjective-scalarized-mlp",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "cdab44a0ceddb3b8",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+      "steps": 143531
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.924,
+       "axis": 0.04709981676871223,
+       "lower_center": 0.009619831031094508,
+       "low_noise": 0.013122918269358082,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.8745,
+       "axis": 0.07037388048034468,
+       "lower_center": 0.013777252308450227,
+       "low_noise": 0.01394154731442659,
+       "recovered_fraction": 0.875
+      },
+      "140": {
+       "survival": 0.7915,
+       "axis": 0.07443516932745825,
+       "lower_center": 0.014414865633318766,
+       "low_noise": 0.015406648947528532,
+       "recovered_fraction": 0.875
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14-no-history",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "422ae496539a4a4b",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "as xeno14",
+      "steps": 104546
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.6165,
+       "axis": 0.10086960605894038,
+       "lower_center": 0.016352870150498317,
+       "low_noise": 0.0004834119849666051,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.623,
+       "axis": 0.10004437315360427,
+       "lower_center": 0.01642013809966347,
+       "low_noise": 0.00047653742462563605,
+       "recovered_fraction": 0.0
+      },
+      "140": {
+       "survival": 0.6335,
+       "axis": 0.09851990947008618,
+       "lower_center": 0.01624710016505651,
+       "low_noise": 0.0004751693409442149,
+       "recovered_fraction": 0.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14-gates-off",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "767c1cb1ad6e8ddc",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "as xeno14",
+      "steps": 147423
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.914,
+       "axis": 0.053164353866459665,
+       "lower_center": 0.010500594562201903,
+       "low_noise": 0.007111982481901032,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.858,
+       "axis": 0.07122935155572799,
+       "lower_center": 0.01361302734325633,
+       "low_noise": 0.007613340743010918,
+       "recovered_fraction": 0.875
+      },
+      "140": {
+       "survival": 0.786,
+       "axis": 0.0726625109675503,
+       "lower_center": 0.013949999469126586,
+       "low_noise": 0.008311914452197504,
+       "recovered_fraction": 0.75
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14-scalarized-training",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "f496f627773fbbf8",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "all module parameters jointly on the scalarized objective",
+      "steps": 159787
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.011947418497004692,
+       "lower_center": 0.00248469413581793,
+       "low_noise": 0.010540104415943677,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.00918123067717785,
+       "lower_center": 0.0022890809516754995,
+       "low_noise": 0.010539917110806743,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 1.0,
+       "axis": 0.023906970990755196,
+       "lower_center": 0.00371166465497121,
+       "low_noise": 0.011058123957619716,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "intervention",
+     "configuration": "xeno14:improve:axis-maintenance",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "82f32ec9f95b3379",
+     "history": {
+      "parent": "c52d054f01829f45"
+     },
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "improve": "axis-maintenance",
+      "iterations": 12
+     },
+     "realized_effect": {
+      "80": {
+       "survival": 1.0,
+       "axis": 0.0127715889541929,
+       "lower_center": 0.0030209421438405727,
+       "low_noise": 0.0019264365479496933,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 6.375,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.9339999999999999,
+       "axis": 0.04778744861739111,
+       "lower_center": 0.008937270935783614,
+       "low_noise": 0.0020871734710755704,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 5.375,
+       "per_episode_survival": [
+        0.884,
+        1.0,
+        0.864,
+        1.0,
+        0.848,
+        1.0,
+        0.876,
+        1.0
+       ]
+      }
+     }
+    },
+    {
+     "kind": "intervention",
+     "configuration": "xeno14:improve:lower-abdominal-continuity",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "2e93ba7dfc7e1b8e",
+     "history": {
+      "parent": "c52d054f01829f45"
+     },
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "improve": "lower-abdominal-continuity",
+      "iterations": 12
+     },
+     "realized_effect": {
+      "80": {
+       "survival": 0.899,
+       "axis": 0.04024330145086475,
+       "lower_center": 0.008260672643179385,
+       "low_noise": 0.0017863939546982582,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.8,
+        1.0,
+        0.792,
+        1.0,
+        0.808,
+        1.0,
+        0.792,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.8645,
+       "axis": 0.07182744989204315,
+       "lower_center": 0.013252245409971702,
+       "low_noise": 0.00188371345523411,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.736,
+        1.0,
+        0.732,
+        1.0,
+        0.74,
+        0.996,
+        0.728,
+        0.984
+       ]
+      }
+     }
+    },
+    {
+     "kind": "intervention",
+     "configuration": "xeno14:improve:low-noise-movement",
+     "seed": 2,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "fc29e05bb53b9170",
+     "history": {
+      "parent": "c52d054f01829f45"
+     },
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "improve": "low-noise-movement",
+      "iterations": 12
+     },
+     "realized_effect": {
+      "80": {
+       "survival": 0.973,
+       "axis": 0.04260318159554019,
+       "lower_center": 0.008241770389304104,
+       "low_noise": 0.0008744785292909586,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.956,
+        1.0,
+        0.944,
+        1.0,
+        0.944,
+        1.0,
+        0.94,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.8625,
+       "axis": 0.08076113548043598,
+       "lower_center": 0.015000478029648795,
+       "low_noise": 0.001008832780630301,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.832,
+        0.88,
+        0.824,
+        0.884,
+        0.824,
+        0.908,
+        0.82,
+        0.928
+       ]
+      }
+     }
+    }
+   ],
+   "removal": {
+    "remove:axis-maintenance": {
+     "0": {
+      "survival": 0.401,
+      "axis": 0.20719591692288403,
+      "lower_center": 0.010897944572539946,
+      "low_noise": 0.0010703485034375397,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.368,
+       0.392,
+       0.456,
+       0.36,
+       0.396,
+       0.352,
+       0.528,
+       0.356
+      ]
+     },
+     "80": {
+      "survival": 0.41000000000000003,
+      "axis": 0.2098197476749744,
+      "lower_center": 0.012832792580711669,
+      "low_noise": 0.0010661040050919896,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.368,
+       0.392,
+       0.524,
+       0.36,
+       0.396,
+       0.352,
+       0.532,
+       0.356
+      ]
+     }
+    },
+    "remove:lower-abdominal-continuity": {
+     "0": {
+      "survival": 0.9475,
+      "axis": 0.04741585844443587,
+      "lower_center": 0.008964899832253974,
+      "low_noise": 0.00027894083836791695,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       0.88,
+       0.972,
+       0.836,
+       0.892
+      ]
+     },
+     "80": {
+      "survival": 0.838,
+      "axis": 0.07196050887864515,
+      "lower_center": 0.013193882060471632,
+      "low_noise": 0.0003181582573690345,
+      "recovered_fraction": 1.0,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       0.896,
+       0.848,
+       0.812,
+       0.856,
+       1.0,
+       0.792,
+       0.736,
+       0.764
+      ]
+     }
+    },
+    "remove:low-noise-movement": {
+     "0": {
+      "survival": 1.0,
+      "axis": 0.002809172564101522,
+      "lower_center": 0.0018514333220159605,
+      "low_noise": 0.0008310422017811874,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0
+      ]
+     },
+     "80": {
+      "survival": 0.999,
+      "axis": 0.04728299357908552,
+      "lower_center": 0.007884087106334297,
+      "low_noise": 0.0008381752063167188,
+      "recovered_fraction": 1.0,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       0.992,
+       1.0,
+       1.0,
+       1.0
+      ]
+     }
+    },
+    "remove:axis-maintenance+lower-abdominal-continuity": {
+     "0": {
+      "survival": 0.4555,
+      "axis": 0.12692126325580005,
+      "lower_center": 0.004070798788807867,
+      "low_noise": 0.00018274441885873506,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.448,
+       0.448,
+       0.468,
+       0.456,
+       0.424,
+       0.476,
+       0.476,
+       0.448
+      ]
+     },
+     "80": {
+      "survival": 0.45699999999999996,
+      "axis": 0.12538261599625022,
+      "lower_center": 0.004152259854284558,
+      "low_noise": 0.00018361039382351672,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.46,
+       0.44,
+       0.484,
+       0.444,
+       0.428,
+       0.46,
+       0.5,
+       0.44
+      ]
+     }
+    },
+    "remove:axis-maintenance+low-noise-movement": {
+     "0": {
+      "survival": 0.2205,
+      "axis": 0.4377211235839381,
+      "lower_center": 0.008423173757895596,
+      "low_noise": 0.001963055731754963,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.216,
+       0.228,
+       0.22,
+       0.216,
+       0.224,
+       0.216,
+       0.228,
+       0.216
+      ]
+     },
+     "80": {
+      "survival": 0.2205,
+      "axis": 0.4377211235839381,
+      "lower_center": 0.008423173757895596,
+      "low_noise": 0.001963055731754963,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.216,
+       0.228,
+       0.22,
+       0.216,
+       0.224,
+       0.216,
+       0.228,
+       0.216
+      ]
+     }
+    },
+    "remove:lower-abdominal-continuity+low-noise-movement": {
+     "0": {
+      "survival": 0.7215,
+      "axis": 0.08985501965952666,
+      "lower_center": 0.016667552742601375,
+      "low_noise": 0.0006866052310228411,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.732,
+       0.708,
+       0.692,
+       0.716,
+       0.756,
+       0.74,
+       0.656,
+       0.772
+      ]
+     },
+     "80": {
+      "survival": 0.746,
+      "axis": 0.08611836474981187,
+      "lower_center": 0.01603293878454601,
+      "low_noise": 0.0006770141601544976,
+      "recovered_fraction": 0.25,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       0.672,
+       0.788,
+       0.644,
+       0.8,
+       0.688,
+       0.84,
+       0.62,
+       0.916
+      ]
+     }
+    }
+   },
+   "ft": {
+    "xeno14": {
+     "control": {
+      "80": {
+       "survival": 0.9395,
+       "axis": 0.039278804225138034,
+       "lower_center": 0.00776596138766937,
+       "low_noise": 0.002148510620378559,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.896,
+        1.0,
+        0.88,
+        1.0,
+        0.852,
+        1.0,
+        0.888,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.8855,
+       "axis": 0.07436500142407276,
+       "lower_center": 0.011836834592220812,
+       "low_noise": 0.0023219429875013763,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.784,
+        0.992,
+        0.776,
+        0.984,
+        0.764,
+        1.0,
+        0.784,
+        1.0
+       ]
+      }
+     },
+     "axis-maintenance": {
+      "80": {
+       "survival": 1.0,
+       "axis": 0.0127715889541929,
+       "lower_center": 0.0030209421438405727,
+       "low_noise": 0.0019264365479496933,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 6.375,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.9339999999999999,
+       "axis": 0.04778744861739111,
+       "lower_center": 0.008937270935783614,
+       "low_noise": 0.0020871734710755704,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 5.375,
+       "per_episode_survival": [
+        0.884,
+        1.0,
+        0.864,
+        1.0,
+        0.848,
+        1.0,
+        0.876,
+        1.0
+       ]
+      }
+     },
+     "lower-abdominal-continuity": {
+      "80": {
+       "survival": 0.899,
+       "axis": 0.04024330145086475,
+       "lower_center": 0.008260672643179385,
+       "low_noise": 0.0017863939546982582,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.8,
+        1.0,
+        0.792,
+        1.0,
+        0.808,
+        1.0,
+        0.792,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.8645,
+       "axis": 0.07182744989204315,
+       "lower_center": 0.013252245409971702,
+       "low_noise": 0.00188371345523411,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.736,
+        1.0,
+        0.732,
+        1.0,
+        0.74,
+        0.996,
+        0.728,
+        0.984
+       ]
+      }
+     },
+     "low-noise-movement": {
+      "80": {
+       "survival": 0.973,
+       "axis": 0.04260318159554019,
+       "lower_center": 0.008241770389304104,
+       "low_noise": 0.0008744785292909586,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.956,
+        1.0,
+        0.944,
+        1.0,
+        0.944,
+        1.0,
+        0.94,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.8625,
+       "axis": 0.08076113548043598,
+       "lower_center": 0.015000478029648795,
+       "low_noise": 0.001008832780630301,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.832,
+        0.88,
+        0.824,
+        0.884,
+        0.824,
+        0.908,
+        0.82,
+        0.928
+       ]
+      }
+     }
+    },
+    "tradeoff-scalarized-mlp": {
+     "control": {
+      "80": {
+       "survival": 0.8640000000000001,
+       "axis": 0.06698567476588105,
+       "lower_center": 0.012707120260071127,
+       "low_noise": 0.014793103438405782,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.932,
+        0.808,
+        0.828,
+        0.792,
+        0.808,
+        0.996,
+        0.748,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.7685,
+       "axis": 0.0770945224335593,
+       "lower_center": 0.014956765451303377,
+       "low_noise": 0.016539475502696004,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.808,
+        0.74,
+        0.756,
+        0.728,
+        0.74,
+        0.828,
+        0.7,
+        0.848
+       ]
+      }
+     },
+     "axis-maintenance": {
+      "80": {
+       "survival": 0.897,
+       "axis": 0.06140819437681168,
+       "lower_center": 0.011525207007285767,
+       "low_noise": 0.01381064390026274,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.768,
+        1.0,
+        0.768,
+        0.828,
+        1.0,
+        0.812,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.7895000000000001,
+       "axis": 0.07601841872908849,
+       "lower_center": 0.014745508082524564,
+       "low_noise": 0.01559356430071094,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.84,
+        0.712,
+        0.844,
+        0.712,
+        0.752,
+        0.848,
+        0.744,
+        0.864
+       ]
+      }
+     },
+     "lower-abdominal-continuity": {
+      "80": {
+       "survival": 0.8510000000000001,
+       "axis": 0.07271690888735947,
+       "lower_center": 0.014090524131350188,
+       "low_noise": 0.026563739442697284,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.784,
+        0.856,
+        0.744,
+        0.808,
+        0.896,
+        0.808,
+        0.912
+       ]
+      },
+      "140": {
+       "survival": 0.76,
+       "axis": 0.0773721165653394,
+       "lower_center": 0.015069653612085072,
+       "low_noise": 0.02963201917270909,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.836,
+        0.724,
+        0.772,
+        0.692,
+        0.74,
+        0.784,
+        0.74,
+        0.792
+       ]
+      }
+     },
+     "low-noise-movement": {
+      "80": {
+       "survival": 0.8765000000000001,
+       "axis": 0.06558149763518054,
+       "lower_center": 0.012812621979251258,
+       "low_noise": 0.017756978082840814,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.976,
+        0.728,
+        1.0,
+        0.724,
+        0.936,
+        0.884,
+        0.92,
+        0.844
+       ]
+      },
+      "140": {
+       "survival": 0.7975000000000001,
+       "axis": 0.07376381247693618,
+       "lower_center": 0.014194086014188395,
+       "low_noise": 0.019524463035722132,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.684,
+        0.864,
+        0.68,
+        0.812,
+        0.776,
+        0.804,
+        0.76
+       ]
+      }
+     }
+    }
+   },
+   "repartition": {
+    "candidates": [
+     {
+      "id": "R0-retrain-model",
+      "validation": {
+       "survival": 0.697,
+       "axis": 0.0833051732119656,
+       "lower_center": 0.00948749146033686,
+       "low_noise": 0.0024060982319690626,
+       "recovered_fraction": 0.5,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.8,
+        0.604,
+        0.804,
+        0.6,
+        0.784,
+        0.6,
+        0.788,
+        0.596
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 1.0,
+        "axis": 0.0018507755024806092,
+        "lower_center": 0.0020095764428453644,
+        "low_noise": 0.0016171167220233075,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0
+        ]
+       },
+       "140": {
+        "survival": 0.6984999999999999,
+        "axis": 0.08462885809698918,
+        "lower_center": 0.009646979130038442,
+        "low_noise": 0.0023963491789512938,
+        "recovered_fraction": 0.5,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         0.796,
+         0.608,
+         0.8,
+         0.596,
+         0.796,
+         0.6,
+         0.796,
+         0.596
+        ]
+       }
+      },
+      "addedParams": 0
+     },
+     {
+      "id": "R1-longer-history",
+      "validation": {
+       "survival": 0.8280000000000001,
+       "axis": 0.06458599188425955,
+       "lower_center": 0.007734180712747297,
+       "low_noise": 0.0021275434567129626,
+       "recovered_fraction": 0.75,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.68,
+        1.0,
+        0.672,
+        0.972,
+        0.672,
+        0.96,
+        0.668
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 1.0,
+        "axis": 0.004759326663977734,
+        "lower_center": 0.002034944767726101,
+        "low_noise": 0.0016967937250637053,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0
+        ]
+       },
+       "140": {
+        "survival": 0.8340000000000001,
+        "axis": 0.06600233534484073,
+        "lower_center": 0.008092406968903471,
+        "low_noise": 0.0021416886645927486,
+        "recovered_fraction": 0.625,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         0.98,
+         0.684,
+         0.992,
+         0.676,
+         0.996,
+         0.676,
+         1.0,
+         0.668
+        ]
+       }
+      },
+      "addedParams": 1224
+     },
+     {
+      "id": "R2-repartition-shared-gate",
+      "validation": {
+       "survival": 0.858,
+       "axis": 0.06492222841044169,
+       "lower_center": 0.009908424424801318,
+       "low_noise": 0.0017777841717632732,
+       "recovered_fraction": 0.5,
+       "recovery_steps_mean": 0.5,
+       "per_episode_survival": [
+        1.0,
+        0.72,
+        1.0,
+        0.716,
+        1.0,
+        0.716,
+        1.0,
+        0.712
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 0.862,
+        "axis": 0.11184298089432773,
+        "lower_center": 0.01583283923068038,
+        "low_noise": 0.0017556367501957307,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         0.86,
+         0.868,
+         0.864,
+         0.86,
+         0.868,
+         0.864,
+         0.856,
+         0.856
+        ]
+       },
+       "140": {
+        "survival": 0.856,
+        "axis": 0.06434237363488524,
+        "lower_center": 0.009791297451372125,
+        "low_noise": 0.0017866198224764655,
+        "recovered_fraction": 0.5,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         1.0,
+         0.716,
+         1.0,
+         0.712,
+         1.0,
+         0.712,
+         1.0,
+         0.708
+        ]
+       }
+      },
+      "addedParams": 0
+     },
+     {
+      "id": "R3-encoding-accel-gates",
+      "validation": {
+       "survival": 0.9555,
+       "axis": 0.06229674392306669,
+       "lower_center": 0.009290818058065194,
+       "low_noise": 0.0016995384454878688,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.924,
+        1.0,
+        0.928,
+        1.0,
+        0.904,
+        1.0,
+        0.888,
+        1.0
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 1.0,
+        "axis": 0.0031235659406746077,
+        "lower_center": 0.0020306699471770483,
+        "low_noise": 0.0016341672957187116,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0
+        ]
+       },
+       "140": {
+        "survival": 0.958,
+        "axis": 0.06170714310532955,
+        "lower_center": 0.00940903190243563,
+        "low_noise": 0.0017256898922061682,
+        "recovered_fraction": 1.0,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         0.908,
+         1.0,
+         0.912,
+         1.0,
+         0.912,
+         1.0,
+         0.932,
+         1.0
+        ]
+       }
+      },
+      "addedParams": 6
+     }
+    ],
+    "ziran": {
+     "pareto": [
+      "R0-retrain-model",
+      "R1-longer-history",
+      "R2-repartition-shared-gate",
+      "R3-encoding-accel-gates"
+     ],
+     "selected": [
+      "R3-encoding-accel-gates"
+     ],
+     "axisValues": {
+      "R0-retrain-model": {
+       "survival": 0.697,
+       "recovered": 0.5,
+       "axis": 0.0833051732119656,
+       "lower_center": 0.00948749146033686,
+       "low_noise": 0.0024060982319690626,
+       "addedParams": 0
+      },
+      "R1-longer-history": {
+       "survival": 0.8280000000000001,
+       "recovered": 0.75,
+       "axis": 0.06458599188425955,
+       "lower_center": 0.007734180712747297,
+       "low_noise": 0.0021275434567129626,
+       "addedParams": 1224
+      },
+      "R2-repartition-shared-gate": {
+       "survival": 0.858,
+       "recovered": 0.5,
+       "axis": 0.06492222841044169,
+       "lower_center": 0.009908424424801318,
+       "low_noise": 0.0017777841717632732,
+       "addedParams": 0
+      },
+      "R3-encoding-accel-gates": {
+       "survival": 0.9555,
+       "recovered": 1,
+       "axis": 0.06229674392306669,
+       "lower_center": 0.009290818058065194,
+       "low_noise": 0.0016995384454878688,
+       "addedParams": 6
+      }
+     },
+     "policy": "lexicographic",
+     "policyOrigin": "external"
+    },
+    "baselineRevision": "R0-retrain-model"
+   },
+   "baseline_stress": {
+    "xeno14_before_revision": {
+     "0": {
+      "survival": 1.0,
+      "axis": 0.000690412530999077,
+      "lower_center": 0.0019017322826817297,
+      "low_noise": 0.0006456966156437021,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0
+      ]
+     },
+     "140": {
+      "survival": 0.8395000000000001,
+      "axis": 0.07923923444414513,
+      "lower_center": 0.014852568403697745,
+      "low_noise": 0.00078000600733704,
+      "recovered_fraction": 1.0,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       0.792,
+       0.876,
+       0.812,
+       0.884,
+       0.8,
+       0.876,
+       0.792,
+       0.884
+      ]
+     }
+    }
+   },
+   "wall_s": 759.9
+  },
+  {
+   "seed": 3,
+   "configs": {
+    "xeno14": {
+     "role": "primary",
+     "family": "xeno14",
+     "supplied": [
+      "3 organization modules",
+      "gates on organization-specific features",
+      "history H=3"
+     ],
+     "objective": "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)",
+     "eval": {
+      "0": {
+       "survival": 0.9895,
+       "axis": 0.02997072143338206,
+       "lower_center": 0.006173561532974258,
+       "low_noise": 0.0017265846386460915,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        0.94,
+        1.0,
+        0.976,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.49338795223186926,
+        "lower-abdominal-continuity": 0.48331647466138467,
+        "low-noise-movement": 0.47287762546047724
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.16494845360824742,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.7637999290043546,
+        "axis-maintenance|low-noise-movement": 0.2957698993807294,
+        "lower-abdominal-continuity|low-noise-movement": -0.20766367660307317
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 0.016494845360824743,
+        "lower-abdominal-continuity|low-noise-movement": 0.6020618556701031
+       }
+      },
+      "80": {
+       "survival": 0.8865000000000001,
+       "axis": 0.07243358139528484,
+       "lower_center": 0.013786994634889718,
+       "low_noise": 0.0019386146543410514,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.808,
+        0.812,
+        0.844,
+        0.888,
+        0.872,
+        0.92,
+        0.948
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.492822002059063,
+        "lower-abdominal-continuity": 0.4835738953104061,
+        "low-noise-movement": 0.4728095805750484
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.16150442477876106,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.7474112129580658,
+        "axis-maintenance|low-noise-movement": 0.2920040791911955,
+        "lower-abdominal-continuity|low-noise-movement": -0.20844839120818667
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 0.017699115044247787,
+        "lower-abdominal-continuity|low-noise-movement": 0.6106194690265486
+       }
+      },
+      "140": {
+       "survival": 0.7905,
+       "axis": 0.08207602826388943,
+       "lower_center": 0.01591150696026383,
+       "low_noise": 0.002172502623108973,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.884,
+        0.74,
+        0.744,
+        0.76,
+        0.796,
+        0.776,
+        0.812,
+        0.812
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.49426711479137686,
+        "lower-abdominal-continuity": 0.48329160285407097,
+        "low-noise-movement": 0.472730368155564
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.21182266009852216,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.7414621224837937,
+        "axis-maintenance|low-noise-movement": 0.2876733826161385,
+        "lower-abdominal-continuity|low-noise-movement": -0.20188967921321505
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.0,
+        "axis-maintenance|low-noise-movement": 0.019704433497536946,
+        "lower-abdominal-continuity|low-noise-movement": 0.5541871921182266
+       }
+      }
+     },
+     "train_steps": 142345,
+     "params": 1827,
+     "eval_ms": 4628
+    },
+    "standard-mlp": {
+     "role": "baseline",
+     "family": "standard embodied RL (ES)",
+     "supplied": [
+      "MLPPolicy"
+     ],
+     "objective": "survival",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.013142341945990895,
+       "lower_center": 0.00340341903960117,
+       "low_noise": 0.015832717698353663,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.07121139845949054,
+       "lower_center": 0.007411625954719478,
+       "low_noise": 0.015828262728864815,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.9435,
+       "axis": 0.16729474909824177,
+       "lower_center": 0.015829196325031762,
+       "low_noise": 0.0168762038754985,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.856,
+        1.0,
+        0.948,
+        1.0,
+        0.848,
+        1.0,
+        0.896,
+        1.0
+       ]
+      }
+     },
+     "train_steps": 156884,
+     "params": 774,
+     "eval_ms": 1551
+    },
+    "proprioceptive-mlp": {
+     "role": "baseline",
+     "family": "standard embodied RL (ES)",
+     "supplied": [
+      "MLPPolicy"
+     ],
+     "objective": "survival (joint angles/velocities only)",
+     "eval": {
+      "0": {
+       "survival": 0.9435,
+       "axis": 0.06087471291106307,
+       "lower_center": 0.011871625740148948,
+       "low_noise": 0.016725896230420957,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        0.988,
+        0.82,
+        0.956,
+        0.988,
+        0.88,
+        0.916
+       ]
+      },
+      "80": {
+       "survival": 0.873,
+       "axis": 0.06270323207458012,
+       "lower_center": 0.012271901993497883,
+       "low_noise": 0.018210034513669184,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.824,
+        0.916,
+        0.936,
+        0.724,
+        0.792,
+        0.792,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.775,
+       "axis": 0.07628258876253263,
+       "lower_center": 0.015086746781154388,
+       "low_noise": 0.020378209654179774,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.752,
+        0.796,
+        0.812,
+        0.68,
+        0.732,
+        0.728,
+        0.864,
+        0.836
+       ]
+      }
+     },
+     "train_steps": 156001,
+     "params": 614,
+     "eval_ms": 1372
+    },
+    "recurrent-gru": {
+     "role": "baseline",
+     "family": "standard embodied RL (ES)",
+     "supplied": [
+      "GRUPolicy"
+     ],
+     "objective": "survival",
+     "eval": {
+      "0": {
+       "survival": 0.9545,
+       "axis": 0.05114619184613195,
+       "lower_center": 0.010176056266242624,
+       "low_noise": 0.0066623282498819054,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        0.976,
+        0.88,
+        1.0,
+        0.972,
+        0.9,
+        0.908
+       ]
+      },
+      "80": {
+       "survival": 0.88,
+       "axis": 0.06286746063411149,
+       "lower_center": 0.012318877002151963,
+       "low_noise": 0.007293516223821975,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.84,
+        0.892,
+        0.948,
+        0.756,
+        0.816,
+        0.788,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.78,
+       "axis": 0.07602573795763512,
+       "lower_center": 0.015192846881472488,
+       "low_noise": 0.008189892977792478,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.76,
+        0.784,
+        0.82,
+        0.704,
+        0.748,
+        0.724,
+        0.856,
+        0.844
+       ]
+      }
+     },
+     "train_steps": 157357,
+     "params": 1782,
+     "eval_ms": 1452
+    },
+    "multiobjective-scalarized-mlp": {
+     "role": "baseline",
+     "family": "multi-objective (scalarized)",
+     "supplied": [
+      "MLPPolicy"
+     ],
+     "objective": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+     "eval": {
+      "0": {
+       "survival": 0.961,
+       "axis": 0.037039862339978316,
+       "lower_center": 0.007434618177540507,
+       "low_noise": 0.014874135406405066,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        0.852,
+        0.876,
+        1.0,
+        1.0,
+        1.0,
+        0.96
+       ]
+      },
+      "80": {
+       "survival": 0.8885000000000001,
+       "axis": 0.06356688533617146,
+       "lower_center": 0.012531533447761724,
+       "low_noise": 0.01617987354166555,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.836,
+        0.872,
+        1.0,
+        0.756,
+        0.848,
+        0.844,
+        0.952,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.7945,
+       "axis": 0.07735762931263473,
+       "lower_center": 0.01501197466055956,
+       "low_noise": 0.01806160568958446,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.76,
+        0.776,
+        0.928,
+        0.7,
+        0.768,
+        0.76,
+        0.824,
+        0.84
+       ]
+      }
+     },
+     "train_steps": 143276,
+     "params": 774,
+     "eval_ms": 1406
+    },
+    "xeno14-no-history": {
+     "role": "ablation",
+     "family": "xeno14",
+     "supplied": [
+      "xeno14-no-history"
+     ],
+     "objective": "as xeno14",
+     "eval": {
+      "0": {
+       "survival": 0.9584999999999999,
+       "axis": 0.043664363080931815,
+       "lower_center": 0.008576245173394151,
+       "low_noise": 0.0004336174318925948,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        0.868,
+        1.0,
+        0.944,
+        1.0,
+        1.0,
+        0.856
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.4211871026754379,
+        "lower-abdominal-continuity": 0.4513278123140335,
+        "low-noise-movement": 0.4741626954674721
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.3133298003152013,
+        "axis-maintenance|low-noise-movement": -0.6150228976011276,
+        "lower-abdominal-continuity|low-noise-movement": -0.03291235038347077
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.952,
+        "axis-maintenance|low-noise-movement": 1.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.026
+       }
+      },
+      "80": {
+       "survival": 0.8714999999999999,
+       "axis": 0.0709311707211912,
+       "lower_center": 0.013399559324118984,
+       "low_noise": 0.0004840337286667758,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.828,
+        0.96,
+        0.748,
+        0.9,
+        0.78,
+        0.924,
+        0.832,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.41724186408973113,
+        "lower-abdominal-continuity": 0.45249975894388206,
+        "low-noise-movement": 0.474874789082764
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.2925488067670023,
+        "axis-maintenance|low-noise-movement": -0.5829683654927034,
+        "lower-abdominal-continuity|low-noise-movement": -0.1030385128172402
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.8859060402684564,
+        "axis-maintenance|low-noise-movement": 1.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.19463087248322147
+       }
+      },
+      "140": {
+       "survival": 0.7805,
+       "axis": 0.08495976811825894,
+       "lower_center": 0.015750843591520798,
+       "low_noise": 0.0005483457370059693,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.748,
+        0.82,
+        0.696,
+        0.792,
+        0.716,
+        0.804,
+        0.752,
+        0.916
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.41668824114057484,
+        "lower-abdominal-continuity": 0.4526742363766748,
+        "low-noise-movement": 0.47517524142654577
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 0.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.29050571544628057,
+        "axis-maintenance|low-noise-movement": -0.5807414842503411,
+        "lower-abdominal-continuity|low-noise-movement": -0.10223092979808547
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.8724489795918368,
+        "axis-maintenance|low-noise-movement": 1.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.19642857142857142
+       }
+      }
+     },
+     "train_steps": 136667,
+     "params": 603,
+     "eval_ms": 2878
+    },
+    "xeno14-gates-off": {
+     "role": "ablation",
+     "family": "xeno14",
+     "supplied": [
+      "xeno14-gates-off"
+     ],
+     "objective": "as xeno14",
+     "eval": {
+      "0": {
+       "survival": 0.974,
+       "axis": 0.034581433102212455,
+       "lower_center": 0.007397583413686454,
+       "low_noise": 0.006193670753731539,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        0.88,
+        1.0,
+        1.0,
+        0.976,
+        0.936
+       ],
+       "gate_mean": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.3969665076546371,
+        "axis-maintenance|low-noise-movement": 0.5420455069243908,
+        "lower-abdominal-continuity|low-noise-movement": -0.18352971805632115
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.968,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.074
+       }
+      },
+      "80": {
+       "survival": 0.873,
+       "axis": 0.0709054840061256,
+       "lower_center": 0.013598911885569094,
+       "low_noise": 0.006952869473425014,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.876,
+        0.84,
+        0.876,
+        0.756,
+        0.856,
+        0.804,
+        0.976,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.3779974160346882,
+        "axis-maintenance|low-noise-movement": 0.5368334059462403,
+        "lower-abdominal-continuity|low-noise-movement": -0.16568463474201658
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.9020979020979021,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.337995337995338
+       }
+      },
+      "140": {
+       "survival": 0.776,
+       "axis": 0.07834715321860151,
+       "lower_center": 0.015224357443458257,
+       "low_noise": 0.007790944521529355,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.784,
+        0.756,
+        0.784,
+        0.704,
+        0.772,
+        0.736,
+        0.832,
+        0.84
+       ],
+       "gate_mean": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 1.0,
+        "lower-abdominal-continuity": 1.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": -0.3753993883100036,
+        "axis-maintenance|low-noise-movement": 0.5367741567360891,
+        "lower-abdominal-continuity|low-noise-movement": -0.16399308150549505
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.8909090909090909,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.3194805194805195
+       }
+      }
+     },
+     "train_steps": 134438,
+     "params": 1827,
+     "eval_ms": 2626
+    },
+    "xeno14-scalarized-training": {
+     "role": "ablation",
+     "family": "xeno14 architecture, scalarized objective",
+     "supplied": [
+      "same modules and gates"
+     ],
+     "objective": "all module parameters jointly on the scalarized objective",
+     "eval": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.0012652802483726177,
+       "lower_center": 0.002052431366271544,
+       "low_noise": 0.005352115052035242,
+       "recovered_fraction": null,
+       "recovery_steps_mean": null,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.47931142896413803,
+        "lower-abdominal-continuity": 0.4496557385921478,
+        "low-noise-movement": 0.5997538678646087
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.17622222216799854,
+        "axis-maintenance|low-noise-movement": 0.6080663172006607,
+        "lower-abdominal-continuity|low-noise-movement": -0.4527586716786027
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.004,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.96
+       }
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.022413061017056,
+       "lower_center": 0.004335636462222866,
+       "low_noise": 0.005376645558209556,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.4787472259402275,
+        "lower-abdominal-continuity": 0.4501355770230293,
+        "low-noise-movement": 0.6002249345779419
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.17070158609049393,
+        "axis-maintenance|low-noise-movement": 0.6227823219299317,
+        "lower-abdominal-continuity|low-noise-movement": -0.458358833052218
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.004,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.96
+       }
+      },
+      "140": {
+       "survival": 0.9224999999999999,
+       "axis": 0.061240343442126366,
+       "lower_center": 0.00942290229161959,
+       "low_noise": 0.0058722431067529685,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.856,
+        1.0,
+        0.84,
+        1.0,
+        0.848,
+        1.0,
+        0.836,
+        1.0
+       ],
+       "gate_mean": {
+        "axis-maintenance": 0.47721092993843145,
+        "lower-abdominal-continuity": 0.4512612736173745,
+        "low-noise-movement": 0.6008514566668148
+       },
+       "gate_ignition_fraction": {
+        "axis-maintenance": 0.0,
+        "lower-abdominal-continuity": 0.0,
+        "low-noise-movement": 1.0
+       },
+       "conflict_cos_mean": {
+        "axis-maintenance|lower-abdominal-continuity": 0.17625838440214686,
+        "axis-maintenance|low-noise-movement": 0.6088872187738789,
+        "lower-abdominal-continuity|low-noise-movement": -0.43616315803554806
+       },
+       "conflict_fraction_negative": {
+        "axis-maintenance|lower-abdominal-continuity": 0.00646551724137931,
+        "axis-maintenance|low-noise-movement": 0.0,
+        "lower-abdominal-continuity|low-noise-movement": 0.9568965517241379
+       }
+      }
+     },
+     "train_steps": 158631,
+     "params": 1827,
+     "eval_ms": 3169
+    }
+   },
+   "ops": [
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "4592fa1eadb2fd63",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)",
+      "steps": 142345
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.9895,
+       "axis": 0.02997072143338206,
+       "lower_center": 0.006173561532974258,
+       "low_noise": 0.0017265846386460915,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.8865000000000001,
+       "axis": 0.07243358139528484,
+       "lower_center": 0.013786994634889718,
+       "low_noise": 0.0019386146543410514,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.7905,
+       "axis": 0.08207602826388943,
+       "lower_center": 0.01591150696026383,
+       "low_noise": 0.002172502623108973,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "standard-mlp",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "5ac24ecabfd79519",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival",
+      "steps": 156884
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.013142341945990895,
+       "lower_center": 0.00340341903960117,
+       "low_noise": 0.015832717698353663,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.07121139845949054,
+       "lower_center": 0.007411625954719478,
+       "low_noise": 0.015828262728864815,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.9435,
+       "axis": 0.16729474909824177,
+       "lower_center": 0.015829196325031762,
+       "low_noise": 0.0168762038754985,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "proprioceptive-mlp",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "dd3a22b56ad6ccde",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival (joint angles/velocities only)",
+      "steps": 156001
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.9435,
+       "axis": 0.06087471291106307,
+       "lower_center": 0.011871625740148948,
+       "low_noise": 0.016725896230420957,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.873,
+       "axis": 0.06270323207458012,
+       "lower_center": 0.012271901993497883,
+       "low_noise": 0.018210034513669184,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.775,
+       "axis": 0.07628258876253263,
+       "lower_center": 0.015086746781154388,
+       "low_noise": 0.020378209654179774,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "recurrent-gru",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "465b7761f306fc94",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival",
+      "steps": 157357
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.9545,
+       "axis": 0.05114619184613195,
+       "lower_center": 0.010176056266242624,
+       "low_noise": 0.0066623282498819054,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.88,
+       "axis": 0.06286746063411149,
+       "lower_center": 0.012318877002151963,
+       "low_noise": 0.007293516223821975,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.78,
+       "axis": 0.07602573795763512,
+       "lower_center": 0.015192846881472488,
+       "low_noise": 0.008189892977792478,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "multiobjective-scalarized-mlp",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "025f4ffb1536745f",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+      "steps": 143276
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.961,
+       "axis": 0.037039862339978316,
+       "lower_center": 0.007434618177540507,
+       "low_noise": 0.014874135406405066,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.8885000000000001,
+       "axis": 0.06356688533617146,
+       "lower_center": 0.012531533447761724,
+       "low_noise": 0.01617987354166555,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.7945,
+       "axis": 0.07735762931263473,
+       "lower_center": 0.01501197466055956,
+       "low_noise": 0.01806160568958446,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14-no-history",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=0",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "6a5033e83e0c5e56",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "as xeno14",
+      "steps": 136667
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.9584999999999999,
+       "axis": 0.043664363080931815,
+       "lower_center": 0.008576245173394151,
+       "low_noise": 0.0004336174318925948,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.8714999999999999,
+       "axis": 0.0709311707211912,
+       "lower_center": 0.013399559324118984,
+       "low_noise": 0.0004840337286667758,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.7805,
+       "axis": 0.08495976811825894,
+       "lower_center": 0.015750843591520798,
+       "low_noise": 0.0005483457370059693,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14-gates-off",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "5a292e8be51777bf",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "as xeno14",
+      "steps": 134438
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 0.974,
+       "axis": 0.034581433102212455,
+       "lower_center": 0.007397583413686454,
+       "low_noise": 0.006193670753731539,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 0.873,
+       "axis": 0.0709054840061256,
+       "lower_center": 0.013598911885569094,
+       "low_noise": 0.006952869473425014,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.776,
+       "axis": 0.07834715321860151,
+       "lower_center": 0.015224357443458257,
+       "low_noise": 0.007790944521529355,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "train+evaluate",
+     "configuration": "xeno14-scalarized-training",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "2e2600b49201e80f",
+     "history": {},
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "training": "all module parameters jointly on the scalarized objective",
+      "steps": 158631
+     },
+     "realized_effect": {
+      "0": {
+       "survival": 1.0,
+       "axis": 0.0012652802483726177,
+       "lower_center": 0.002052431366271544,
+       "low_noise": 0.005352115052035242,
+       "recovered_fraction": null
+      },
+      "80": {
+       "survival": 1.0,
+       "axis": 0.022413061017056,
+       "lower_center": 0.004335636462222866,
+       "low_noise": 0.005376645558209556,
+       "recovered_fraction": 1.0
+      },
+      "140": {
+       "survival": 0.9224999999999999,
+       "axis": 0.061240343442126366,
+       "lower_center": 0.00942290229161959,
+       "low_noise": 0.0058722431067529685,
+       "recovered_fraction": 1.0
+      }
+     }
+    },
+    {
+     "kind": "intervention",
+     "configuration": "xeno14:improve:axis-maintenance",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "cdd1cc949032d629",
+     "history": {
+      "parent": "4592fa1eadb2fd63"
+     },
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "improve": "axis-maintenance",
+      "iterations": 12
+     },
+     "realized_effect": {
+      "80": {
+       "survival": 0.9179999999999999,
+       "axis": 0.060006602190580995,
+       "lower_center": 0.01147389925593792,
+       "low_noise": 0.001982581573163154,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.9,
+        0.956,
+        0.784,
+        1.0,
+        0.852,
+        1.0,
+        0.852,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.811,
+       "axis": 0.07992153771560453,
+       "lower_center": 0.015562732586049576,
+       "low_noise": 0.0022252070237222168,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.804,
+        0.816,
+        0.728,
+        0.832,
+        0.776,
+        0.856,
+        0.776,
+        0.9
+       ]
+      }
+     }
+    },
+    {
+     "kind": "intervention",
+     "configuration": "xeno14:improve:lower-abdominal-continuity",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "487c4ca5370cbbcc",
+     "history": {
+      "parent": "4592fa1eadb2fd63"
+     },
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "improve": "lower-abdominal-continuity",
+      "iterations": 12
+     },
+     "realized_effect": {
+      "80": {
+       "survival": 1.0,
+       "axis": 0.018026711109400212,
+       "lower_center": 0.0033387136910153713,
+       "low_noise": 0.0017442303774307664,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.906,
+       "axis": 0.08318736018457673,
+       "lower_center": 0.015703203005848893,
+       "low_noise": 0.0019383343421088533,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.892,
+        0.9,
+        0.904,
+        0.928,
+        0.904,
+        0.924,
+        0.896,
+        0.9
+       ]
+      }
+     }
+    },
+    {
+     "kind": "intervention",
+     "configuration": "xeno14:improve:low-noise-movement",
+     "seed": 3,
+     "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+     "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+     "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+     "scale": "control step 0.008 s \u00d7 4 frame skip",
+     "temporal_window": "episode 250 steps; history H=3",
+     "substrate": "simulated (MuJoCo)",
+     "controller_state_sha256_16": "c74f6bfda833e6bf",
+     "history": {
+      "parent": "4592fa1eadb2fd63"
+     },
+     "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+     "intervention": {
+      "improve": "low-noise-movement",
+      "iterations": 12
+     },
+     "realized_effect": {
+      "80": {
+       "survival": 0.9284999999999999,
+       "axis": 0.05182944444474738,
+       "lower_center": 0.00968499197237072,
+       "low_noise": 0.0020962960606746173,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.852,
+        1.0,
+        0.832,
+        1.0,
+        0.844,
+        1.0,
+        0.9
+       ]
+      },
+      "140": {
+       "survival": 0.8590000000000001,
+       "axis": 0.09357029398682157,
+       "lower_center": 0.017464532503402817,
+       "low_noise": 0.0022829241843181393,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.96,
+        0.772,
+        0.912,
+        0.756,
+        0.92,
+        0.764,
+        0.988,
+        0.8
+       ]
+      }
+     }
+    }
+   ],
+   "removal": {
+    "remove:axis-maintenance": {
+     "0": {
+      "survival": 0.6535,
+      "axis": 0.09805669328694562,
+      "lower_center": 0.011318285832115724,
+      "low_noise": 0.001285077689911668,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.548,
+       0.568,
+       0.508,
+       0.804,
+       0.776,
+       0.776,
+       0.512,
+       0.736
+      ]
+     },
+     "80": {
+      "survival": 0.6355000000000001,
+      "axis": 0.11939594205486068,
+      "lower_center": 0.00801598810676489,
+      "low_noise": 0.0013122985987155953,
+      "recovered_fraction": 0.5,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       0.596,
+       0.532,
+       0.536,
+       0.664,
+       0.716,
+       0.708,
+       0.536,
+       0.796
+      ]
+     }
+    },
+    "remove:lower-abdominal-continuity": {
+     "0": {
+      "survival": 0.9904999999999999,
+      "axis": 0.043841411478817954,
+      "lower_center": 0.008314746736738056,
+      "low_noise": 0.0007956685489432685,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       1.0,
+       1.0,
+       1.0,
+       0.964,
+       1.0,
+       0.996,
+       0.964,
+       1.0
+      ]
+     },
+     "80": {
+      "survival": 0.9125,
+      "axis": 0.06548273361664847,
+      "lower_center": 0.01232643541012169,
+      "low_noise": 0.0008694077213895407,
+      "recovered_fraction": 1.0,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       1.0,
+       0.852,
+       0.936,
+       0.816,
+       0.964,
+       0.828,
+       1.0,
+       0.904
+      ]
+     }
+    },
+    "remove:low-noise-movement": {
+     "0": {
+      "survival": 0.9884999999999999,
+      "axis": 0.04042407257892683,
+      "lower_center": 0.007675747689917146,
+      "low_noise": 0.0016399375158261376,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       1.0,
+       1.0,
+       0.928,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       0.98
+      ]
+     },
+     "80": {
+      "survival": 0.871,
+      "axis": 0.07581864806263854,
+      "lower_center": 0.014694422289301606,
+      "low_noise": 0.0018716694016307405,
+      "recovered_fraction": 1.0,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       0.944,
+       0.812,
+       0.792,
+       0.816,
+       0.856,
+       0.84,
+       0.944,
+       0.964
+      ]
+     }
+    },
+    "remove:axis-maintenance+lower-abdominal-continuity": {
+     "0": {
+      "survival": 0.088,
+      "axis": 0.22677357888914568,
+      "lower_center": 0.004616937445771726,
+      "low_noise": 0.0017997556828827969,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.088,
+       0.088,
+       0.088,
+       0.088,
+       0.088,
+       0.088,
+       0.088,
+       0.088
+      ]
+     },
+     "80": {
+      "survival": 0.088,
+      "axis": 0.22677357888914568,
+      "lower_center": 0.004616937445771726,
+      "low_noise": 0.0017997556828827969,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.088,
+       0.088,
+       0.088,
+       0.088,
+       0.088,
+       0.088,
+       0.088,
+       0.088
+      ]
+     }
+    },
+    "remove:axis-maintenance+low-noise-movement": {
+     "0": {
+      "survival": 0.645,
+      "axis": 0.0906989900773979,
+      "lower_center": 0.018078180140686663,
+      "low_noise": 0.0005793881991469226,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.676,
+       0.664,
+       0.608,
+       0.648,
+       0.652,
+       0.636,
+       0.652,
+       0.624
+      ]
+     },
+     "80": {
+      "survival": 0.649,
+      "axis": 0.07699000898308458,
+      "lower_center": 0.017488863608177016,
+      "low_noise": 0.0005787549941457808,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.632,
+       0.704,
+       0.58,
+       0.692,
+       0.616,
+       0.684,
+       0.62,
+       0.664
+      ]
+     }
+    },
+    "remove:lower-abdominal-continuity+low-noise-movement": {
+     "0": {
+      "survival": 0.7215,
+      "axis": 0.10017781199961011,
+      "lower_center": 0.018258418687365885,
+      "low_noise": 0.0009255615135571036,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.74,
+       0.732,
+       0.692,
+       0.74,
+       0.716,
+       0.724,
+       0.736,
+       0.692
+      ]
+     },
+     "80": {
+      "survival": 0.7375,
+      "axis": 0.09832693115519525,
+      "lower_center": 0.018007486394680944,
+      "low_noise": 0.0009143062305504429,
+      "recovered_fraction": 0.0,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.68,
+       0.824,
+       0.648,
+       0.836,
+       0.664,
+       0.812,
+       0.676,
+       0.76
+      ]
+     }
+    }
+   },
+   "ft": {
+    "xeno14": {
+     "control": {
+      "80": {
+       "survival": 0.8700000000000001,
+       "axis": 0.05639104401414227,
+       "lower_center": 0.010978125345284305,
+       "low_noise": 0.002741434726913826,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 2.142857142857143,
+       "per_episode_survival": [
+        1.0,
+        0.744,
+        0.848,
+        0.776,
+        1.0,
+        0.78,
+        1.0,
+        0.812
+       ]
+      },
+      "140": {
+       "survival": 0.8065,
+       "axis": 0.07786992763517799,
+       "lower_center": 0.0149405623043154,
+       "low_noise": 0.0029049873666292204,
+       "recovered_fraction": 0.625,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.696,
+        0.768,
+        0.72,
+        0.9,
+        0.724,
+        0.9,
+        0.744
+       ]
+      }
+     },
+     "axis-maintenance": {
+      "80": {
+       "survival": 0.9179999999999999,
+       "axis": 0.060006602190580995,
+       "lower_center": 0.01147389925593792,
+       "low_noise": 0.001982581573163154,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.9,
+        0.956,
+        0.784,
+        1.0,
+        0.852,
+        1.0,
+        0.852,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.811,
+       "axis": 0.07992153771560453,
+       "lower_center": 0.015562732586049576,
+       "low_noise": 0.0022252070237222168,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.804,
+        0.816,
+        0.728,
+        0.832,
+        0.776,
+        0.856,
+        0.776,
+        0.9
+       ]
+      }
+     },
+     "lower-abdominal-continuity": {
+      "80": {
+       "survival": 1.0,
+       "axis": 0.018026711109400212,
+       "lower_center": 0.0033387136910153713,
+       "low_noise": 0.0017442303774307664,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.906,
+       "axis": 0.08318736018457673,
+       "lower_center": 0.015703203005848893,
+       "low_noise": 0.0019383343421088533,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.892,
+        0.9,
+        0.904,
+        0.928,
+        0.904,
+        0.924,
+        0.896,
+        0.9
+       ]
+      }
+     },
+     "low-noise-movement": {
+      "80": {
+       "survival": 0.9284999999999999,
+       "axis": 0.05182944444474738,
+       "lower_center": 0.00968499197237072,
+       "low_noise": 0.0020962960606746173,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        1.0,
+        0.852,
+        1.0,
+        0.832,
+        1.0,
+        0.844,
+        1.0,
+        0.9
+       ]
+      },
+      "140": {
+       "survival": 0.8590000000000001,
+       "axis": 0.09357029398682157,
+       "lower_center": 0.017464532503402817,
+       "low_noise": 0.0022829241843181393,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.96,
+        0.772,
+        0.912,
+        0.756,
+        0.92,
+        0.764,
+        0.988,
+        0.8
+       ]
+      }
+     }
+    },
+    "tradeoff-scalarized-mlp": {
+     "control": {
+      "80": {
+       "survival": 0.8645,
+       "axis": 0.0697378286217484,
+       "lower_center": 0.008832513447574651,
+       "low_noise": 0.021294224681457134,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.88,
+        0.816,
+        1.0,
+        0.648,
+        0.884,
+        0.692,
+        0.996,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.764,
+       "axis": 0.0908957460351987,
+       "lower_center": 0.01104392275604134,
+       "low_noise": 0.023976834755431588,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.78,
+        0.7,
+        0.984,
+        0.62,
+        0.784,
+        0.648,
+        0.844,
+        0.752
+       ]
+      }
+     },
+     "axis-maintenance": {
+      "80": {
+       "survival": 0.953,
+       "axis": 0.0684070881159321,
+       "lower_center": 0.010751752321386497,
+       "low_noise": 0.015290108836937061,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.884,
+        1.0,
+        0.956,
+        1.0,
+        0.872,
+        1.0,
+        0.912,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.811,
+       "axis": 0.11338743984432438,
+       "lower_center": 0.011748394549511503,
+       "low_noise": 0.017976865618012407,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.776,
+        0.892,
+        0.828,
+        0.74,
+        0.772,
+        0.808,
+        0.796,
+        0.876
+       ]
+      }
+     },
+     "lower-abdominal-continuity": {
+      "80": {
+       "survival": 0.9179999999999999,
+       "axis": 0.0868403907419473,
+       "lower_center": 0.009731239191023814,
+       "low_noise": 0.015607158010798164,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.86,
+        1.0,
+        1.0,
+        0.764,
+        0.876,
+        0.844,
+        1.0,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.816,
+       "axis": 0.1076379480936056,
+       "lower_center": 0.013564538426796799,
+       "low_noise": 0.01755045848375606,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.776,
+        0.832,
+        0.968,
+        0.708,
+        0.784,
+        0.756,
+        0.856,
+        0.848
+       ]
+      }
+     },
+     "low-noise-movement": {
+      "80": {
+       "survival": 0.8925000000000001,
+       "axis": 0.05041336867889234,
+       "lower_center": 0.008929549980766345,
+       "low_noise": 0.016263081679091393,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.772,
+        1.0,
+        0.812,
+        1.0,
+        0.756,
+        1.0,
+        0.8,
+        1.0
+       ]
+      },
+      "140": {
+       "survival": 0.8395,
+       "axis": 0.07762715469021465,
+       "lower_center": 0.012812901076686272,
+       "low_noise": 0.01738756055059757,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.72,
+        1.0,
+        0.748,
+        0.864,
+        0.708,
+        0.936,
+        0.74,
+        1.0
+       ]
+      }
+     }
+    }
+   },
+   "repartition": {
+    "candidates": [
+     {
+      "id": "R0-retrain-model",
+      "validation": {
+       "survival": 0.8015000000000001,
+       "axis": 0.08099352600625878,
+       "lower_center": 0.01636084274523642,
+       "low_noise": 0.0024073547422361055,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.868,
+        0.804,
+        0.788,
+        0.82,
+        0.764,
+        0.836,
+        0.864,
+        0.668
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 0.9875,
+        "axis": 0.05233434080119013,
+        "lower_center": 0.006115603837564489,
+        "low_noise": 0.0018524990615308439,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         0.932,
+         1.0,
+         1.0,
+         0.972,
+         1.0,
+         1.0,
+         0.996,
+         1.0
+        ]
+       },
+       "140": {
+        "survival": 0.808,
+        "axis": 0.08509853627824539,
+        "lower_center": 0.01728654026244432,
+        "low_noise": 0.0024335187253572855,
+        "recovered_fraction": 1.0,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         0.912,
+         0.76,
+         0.812,
+         0.724,
+         0.792,
+         0.8,
+         0.88,
+         0.784
+        ]
+       }
+      },
+      "addedParams": 0
+     },
+     {
+      "id": "R1-longer-history",
+      "validation": {
+       "survival": 0.7444999999999999,
+       "axis": 0.0810645636446729,
+       "lower_center": 0.015068115102794682,
+       "low_noise": 0.0033242511098704928,
+       "recovered_fraction": 0.5,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.696,
+        0.816,
+        0.628,
+        0.824,
+        0.6,
+        0.9,
+        0.696,
+        0.796
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 0.804,
+        "axis": 0.07825754161760264,
+        "lower_center": 0.01483013160489374,
+        "low_noise": 0.0030639914686275927,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         0.908,
+         0.776,
+         0.732,
+         0.868,
+         0.76,
+         0.752,
+         0.864,
+         0.772
+        ]
+       },
+       "140": {
+        "survival": 0.8255,
+        "axis": 0.053460713953307884,
+        "lower_center": 0.010687203342157565,
+        "low_noise": 0.0030707752914431747,
+        "recovered_fraction": 0.75,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         0.72,
+         1.0,
+         0.644,
+         0.876,
+         0.66,
+         1.0,
+         0.704,
+         1.0
+        ]
+       }
+      },
+      "addedParams": 1224
+     },
+     {
+      "id": "R2-repartition-shared-gate",
+      "validation": {
+       "survival": 0.8165,
+       "axis": 0.058247522803732715,
+       "lower_center": 0.011413513702207617,
+       "low_noise": 0.0028244275484760363,
+       "recovered_fraction": 0.875,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.716,
+        1.0,
+        0.672,
+        1.0,
+        0.652,
+        1.0,
+        0.736,
+        0.756
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 0.8915,
+        "axis": 0.057737610205677685,
+        "lower_center": 0.011037474011274811,
+        "low_noise": 0.002518005369618311,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         1.0,
+         0.9,
+         0.832,
+         1.0,
+         0.796,
+         0.82,
+         0.956,
+         0.828
+        ]
+       },
+       "140": {
+        "survival": 0.7989999999999999,
+        "axis": 0.07501936568431206,
+        "lower_center": 0.014700418368889006,
+        "low_noise": 0.0028318564216162213,
+        "recovered_fraction": 1.0,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         0.756,
+         0.848,
+         0.692,
+         0.78,
+         0.68,
+         0.96,
+         0.732,
+         0.944
+        ]
+       }
+      },
+      "addedParams": 0
+     },
+     {
+      "id": "R3-encoding-accel-gates",
+      "validation": {
+       "survival": 0.7869999999999999,
+       "axis": 0.07114499755727235,
+       "lower_center": 0.013675136332971256,
+       "low_noise": 0.0026253162303944153,
+       "recovered_fraction": 1.0,
+       "recovery_steps_mean": 0.0,
+       "per_episode_survival": [
+        0.712,
+        0.796,
+        0.728,
+        0.848,
+        0.7,
+        1.0,
+        0.74,
+        0.772
+       ]
+      },
+      "test": {
+       "0": {
+        "survival": 0.9275,
+        "axis": 0.04608782421169023,
+        "lower_center": 0.009298317854539502,
+        "low_noise": 0.002227479536704621,
+        "recovered_fraction": null,
+        "recovery_steps_mean": null,
+        "per_episode_survival": [
+         1.0,
+         1.0,
+         0.892,
+         1.0,
+         0.824,
+         0.92,
+         0.932,
+         0.852
+        ]
+       },
+       "140": {
+        "survival": 0.7705,
+        "axis": 0.0771349042859051,
+        "lower_center": 0.015163663551235829,
+        "low_noise": 0.0026870169935047077,
+        "recovered_fraction": 1.0,
+        "recovery_steps_mean": 0.0,
+        "per_episode_survival": [
+         0.776,
+         0.776,
+         0.716,
+         0.752,
+         0.688,
+         0.832,
+         0.724,
+         0.9
+        ]
+       }
+      },
+      "addedParams": 6
+     }
+    ],
+    "ziran": {
+     "pareto": [
+      "R0-retrain-model",
+      "R2-repartition-shared-gate",
+      "R3-encoding-accel-gates"
+     ],
+     "selected": [
+      "R2-repartition-shared-gate"
+     ],
+     "axisValues": {
+      "R0-retrain-model": {
+       "survival": 0.8015000000000001,
+       "recovered": 0.875,
+       "axis": 0.08099352600625878,
+       "lower_center": 0.01636084274523642,
+       "low_noise": 0.0024073547422361055,
+       "addedParams": 0
+      },
+      "R1-longer-history": {
+       "survival": 0.7444999999999999,
+       "recovered": 0.5,
+       "axis": 0.0810645636446729,
+       "lower_center": 0.015068115102794682,
+       "low_noise": 0.0033242511098704928,
+       "addedParams": 1224
+      },
+      "R2-repartition-shared-gate": {
+       "survival": 0.8165,
+       "recovered": 0.875,
+       "axis": 0.058247522803732715,
+       "lower_center": 0.011413513702207617,
+       "low_noise": 0.0028244275484760363,
+       "addedParams": 0
+      },
+      "R3-encoding-accel-gates": {
+       "survival": 0.7869999999999999,
+       "recovered": 1,
+       "axis": 0.07114499755727235,
+       "lower_center": 0.013675136332971256,
+       "low_noise": 0.0026253162303944153,
+       "addedParams": 6
+      }
+     },
+     "policy": "lexicographic",
+     "policyOrigin": "external"
+    },
+    "baselineRevision": "R0-retrain-model"
+   },
+   "baseline_stress": {
+    "xeno14_before_revision": {
+     "0": {
+      "survival": 0.9835,
+      "axis": 0.03824891438854901,
+      "lower_center": 0.007505064257832482,
+      "low_noise": 0.001739487287666661,
+      "recovered_fraction": null,
+      "recovery_steps_mean": null,
+      "per_episode_survival": [
+       0.94,
+       1.0,
+       1.0,
+       0.984,
+       1.0,
+       1.0,
+       0.944,
+       1.0
+      ]
+     },
+     "140": {
+      "survival": 0.7975000000000001,
+      "axis": 0.08122502501346379,
+      "lower_center": 0.015657037156999485,
+      "low_noise": 0.0021590796373456133,
+      "recovered_fraction": 0.875,
+      "recovery_steps_mean": 0.0,
+      "per_episode_survival": [
+       0.884,
+       0.772,
+       0.768,
+       0.728,
+       0.768,
+       0.796,
+       0.884,
+       0.78
+      ]
+     }
+    }
+   },
+   "wall_s": 762.8
+  }
+ ]
+}

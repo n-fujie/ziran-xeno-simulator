@@ -1,0 +1,1508 @@
+[
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "8c51e670effd63de",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)",
+   "steps": 119448
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.8855,
+    "axis": 0.08310446867196222,
+    "lower_center": 0.013740327888996914,
+    "low_noise": 0.0007399920555201743,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.8865000000000001,
+    "axis": 0.05762957480194784,
+    "lower_center": 0.0098839698725089,
+    "low_noise": 0.0007483072213371953,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.8285,
+    "axis": 0.06295978484806174,
+    "lower_center": 0.014783022216835355,
+    "low_noise": 0.0008286613302308683,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "standard-mlp",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "1d3a6b209d9ce833",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival",
+   "steps": 155533
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.02539152974490269,
+    "lower_center": 0.0035950369083104423,
+    "low_noise": 0.013592367770253643,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.9115,
+    "axis": 0.07355770004162142,
+    "lower_center": 0.010159035920871742,
+    "low_noise": 0.015099624204718432,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.7915000000000001,
+    "axis": 0.1028675217647639,
+    "lower_center": 0.010920319124080632,
+    "low_noise": 0.01735441894514568,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "proprioceptive-mlp",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "4f077e8be421221f",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival (joint angles/velocities only)",
+   "steps": 152315
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.23789023964290207,
+    "lower_center": 0.022680321248513123,
+    "low_noise": 0.008731090192661833,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 1.0,
+    "axis": 0.2372294614457615,
+    "lower_center": 0.022524905036886568,
+    "low_noise": 0.00872231791557226,
+    "recovered_fraction": 0.0
+   },
+   "140": {
+    "survival": 1.0,
+    "axis": 0.23375189858161027,
+    "lower_center": 0.021810263313727818,
+    "low_noise": 0.008728689303330369,
+    "recovered_fraction": 0.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "recurrent-gru",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "4ba7b71ea38e93b9",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival",
+   "steps": 126269
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.927,
+    "axis": 0.06460708803579827,
+    "lower_center": 0.011371557960428961,
+    "low_noise": 0.009141220588229089,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.8815000000000001,
+    "axis": 0.05665854597671047,
+    "lower_center": 0.010659013950068331,
+    "low_noise": 0.009164165640394939,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.7975000000000001,
+    "axis": 0.07879007444426925,
+    "lower_center": 0.014925799256898794,
+    "low_noise": 0.009676857614418036,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "multiobjective-scalarized-mlp",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "375d533d8c237f9b",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+   "steps": 148460
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.967,
+    "axis": 0.01927087202516651,
+    "lower_center": 0.003097393871248171,
+    "low_noise": 0.019813541729982023,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.9315,
+    "axis": 0.06889124086603361,
+    "lower_center": 0.009731307744465359,
+    "low_noise": 0.019942495960032093,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.749,
+    "axis": 0.09456565568058474,
+    "lower_center": 0.011848305387957355,
+    "low_noise": 0.024826722584467577,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14-no-history",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "a575e192bf7d655c",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "as xeno14",
+   "steps": 149599
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.001608908788006944,
+    "lower_center": 0.0020248144174980463,
+    "low_noise": 0.0006908796281824671,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.9309999999999999,
+    "axis": 0.04068929313990318,
+    "lower_center": 0.00859390082450664,
+    "low_noise": 0.000753829000357784,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.8855,
+    "axis": 0.06492333657315932,
+    "lower_center": 0.01000900251296412,
+    "low_noise": 0.000797104899653065,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14-gates-off",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "565fe211dad0d1de",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "as xeno14",
+   "steps": 139552
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.015055658864199767,
+    "lower_center": 0.0026950654539276593,
+    "low_noise": 0.007508064198244683,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 1.0,
+    "axis": 0.021470928006116108,
+    "lower_center": 0.0029333252251225682,
+    "low_noise": 0.007306321078209843,
+    "recovered_fraction": 0.75
+   },
+   "140": {
+    "survival": 1.0,
+    "axis": 0.027546055640445394,
+    "lower_center": 0.002647571951150438,
+    "low_noise": 0.00761470415078263,
+    "recovered_fraction": 0.875
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14-scalarized-training",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "cec5d15dc8a34f5a",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "all module parameters jointly on the scalarized objective",
+   "steps": 144165
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.951,
+    "axis": 0.040191062719196605,
+    "lower_center": 0.00838341805242768,
+    "low_noise": 0.007879841917297258,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.8520000000000001,
+    "axis": 0.06868355817722402,
+    "lower_center": 0.013449356034090556,
+    "low_noise": 0.008852593451972087,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.7735000000000001,
+    "axis": 0.08150422918759709,
+    "lower_center": 0.015749739194349882,
+    "low_noise": 0.009749978332808237,
+    "recovered_fraction": 0.875
+   }
+  }
+ },
+ {
+  "kind": "intervention",
+  "configuration": "xeno14:improve:axis-maintenance",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "5985943455e3e436",
+  "history": {
+   "parent": "8c51e670effd63de"
+  },
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "improve": "axis-maintenance",
+   "iterations": 12
+  },
+  "realized_effect": {
+   "80": {
+    "survival": 0.6955,
+    "axis": 0.08964493208587551,
+    "lower_center": 0.016954517766958804,
+    "low_noise": 0.0015995695597542132,
+    "recovered_fraction": 0.125,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.64,
+     0.724,
+     0.652,
+     0.688,
+     0.648,
+     0.708,
+     0.636,
+     0.868
+    ]
+   },
+   "140": {
+    "survival": 0.719,
+    "axis": 0.08069197843963957,
+    "lower_center": 0.015167363850060648,
+    "low_noise": 0.0015896976901668544,
+    "recovered_fraction": 0.125,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.616,
+     0.78,
+     0.624,
+     0.736,
+     0.624,
+     0.76,
+     0.612,
+     1.0
+    ]
+   }
+  }
+ },
+ {
+  "kind": "intervention",
+  "configuration": "xeno14:improve:lower-abdominal-continuity",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "d1634d1c43cc041d",
+  "history": {
+   "parent": "8c51e670effd63de"
+  },
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "improve": "lower-abdominal-continuity",
+   "iterations": 12
+  },
+  "realized_effect": {
+   "80": {
+    "survival": 0.9125,
+    "axis": 0.07205109849478089,
+    "lower_center": 0.014583306755626316,
+    "low_noise": 0.001764662851558945,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.9,
+     0.94,
+     0.888,
+     1.0,
+     0.904,
+     0.968,
+     0.856,
+     0.844
+    ]
+   },
+   "140": {
+    "survival": 0.7985,
+    "axis": 0.07697749589913488,
+    "lower_center": 0.015646107416325303,
+    "low_noise": 0.0020190684618303376,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.788,
+     0.82,
+     0.78,
+     0.852,
+     0.788,
+     0.836,
+     0.764,
+     0.76
+    ]
+   }
+  }
+ },
+ {
+  "kind": "intervention",
+  "configuration": "xeno14:improve:low-noise-movement",
+  "seed": 1,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "93d379884a01978f",
+  "history": {
+   "parent": "8c51e670effd63de"
+  },
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "improve": "low-noise-movement",
+   "iterations": 12
+  },
+  "realized_effect": {
+   "80": {
+    "survival": 0.6435,
+    "axis": 0.0399567199946571,
+    "lower_center": 0.020919371784639974,
+    "low_noise": 0.00202910336964514,
+    "recovered_fraction": 0.0,
+    "recovery_steps_mean": null,
+    "per_episode_survival": [
+     0.632,
+     0.676,
+     0.612,
+     0.652,
+     0.588,
+     0.648,
+     0.6,
+     0.74
+    ]
+   },
+   "140": {
+    "survival": 0.6575,
+    "axis": 0.0453302462904575,
+    "lower_center": 0.021042199825559646,
+    "low_noise": 0.0020190177849038283,
+    "recovered_fraction": 0.0,
+    "recovery_steps_mean": null,
+    "per_episode_survival": [
+     0.612,
+     0.708,
+     0.596,
+     0.684,
+     0.576,
+     0.672,
+     0.584,
+     0.828
+    ]
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "c52d054f01829f45",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)",
+   "steps": 158211
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.0005040753451059368,
+    "lower_center": 0.001813314085968265,
+    "low_noise": 0.0006407292363071389,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.95,
+    "axis": 0.049278131233423436,
+    "lower_center": 0.008498538378488702,
+    "low_noise": 0.000680896893459165,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.8375000000000001,
+    "axis": 0.07999257222065342,
+    "lower_center": 0.014863676701169054,
+    "low_noise": 0.0007769251341560172,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "standard-mlp",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "3653c20a4d14b5c8",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival",
+   "steps": 146497
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.8725,
+    "axis": 0.06167496252183072,
+    "lower_center": 0.0122413229040793,
+    "low_noise": 0.017359402476953244,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.8899999999999999,
+    "axis": 0.06672753124852118,
+    "lower_center": 0.013100174411396194,
+    "low_noise": 0.017146226183455977,
+    "recovered_fraction": 0.75
+   },
+   "140": {
+    "survival": 0.8255000000000001,
+    "axis": 0.06321433677978658,
+    "lower_center": 0.012352616952019104,
+    "low_noise": 0.018540064357032315,
+    "recovered_fraction": 0.75
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "proprioceptive-mlp",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "e1cf618ff732fd81",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival (joint angles/velocities only)",
+   "steps": 149548
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.06058156530004202,
+    "lower_center": 0.006550331798082891,
+    "low_noise": 0.015366265028183869,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 1.0,
+    "axis": 0.05964368608543987,
+    "lower_center": 0.006144215298966447,
+    "low_noise": 0.015369018614541152,
+    "recovered_fraction": 0.0
+   },
+   "140": {
+    "survival": 1.0,
+    "axis": 0.08493484836833226,
+    "lower_center": 0.008518845535036026,
+    "low_noise": 0.015375276824870311,
+    "recovered_fraction": 0.5
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "recurrent-gru",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "6587d81bbf027608",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival",
+   "steps": 153877
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.03574984322454748,
+    "lower_center": 0.005047949579701307,
+    "low_noise": 0.006679391901940715,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.8959999999999999,
+    "axis": 0.07194153240364662,
+    "lower_center": 0.009526834898168765,
+    "low_noise": 0.007708056444976674,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.7895000000000001,
+    "axis": 0.09764293595017942,
+    "lower_center": 0.010107839463247753,
+    "low_noise": 0.008750247624397862,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "multiobjective-scalarized-mlp",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "cdab44a0ceddb3b8",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+   "steps": 143531
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.924,
+    "axis": 0.04709981676871223,
+    "lower_center": 0.009619831031094508,
+    "low_noise": 0.013122918269358082,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.8745,
+    "axis": 0.07037388048034468,
+    "lower_center": 0.013777252308450227,
+    "low_noise": 0.01394154731442659,
+    "recovered_fraction": 0.875
+   },
+   "140": {
+    "survival": 0.7915,
+    "axis": 0.07443516932745825,
+    "lower_center": 0.014414865633318766,
+    "low_noise": 0.015406648947528532,
+    "recovered_fraction": 0.875
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14-no-history",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "422ae496539a4a4b",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "as xeno14",
+   "steps": 104546
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.6165,
+    "axis": 0.10086960605894038,
+    "lower_center": 0.016352870150498317,
+    "low_noise": 0.0004834119849666051,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.623,
+    "axis": 0.10004437315360427,
+    "lower_center": 0.01642013809966347,
+    "low_noise": 0.00047653742462563605,
+    "recovered_fraction": 0.0
+   },
+   "140": {
+    "survival": 0.6335,
+    "axis": 0.09851990947008618,
+    "lower_center": 0.01624710016505651,
+    "low_noise": 0.0004751693409442149,
+    "recovered_fraction": 0.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14-gates-off",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "767c1cb1ad6e8ddc",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "as xeno14",
+   "steps": 147423
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.914,
+    "axis": 0.053164353866459665,
+    "lower_center": 0.010500594562201903,
+    "low_noise": 0.007111982481901032,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.858,
+    "axis": 0.07122935155572799,
+    "lower_center": 0.01361302734325633,
+    "low_noise": 0.007613340743010918,
+    "recovered_fraction": 0.875
+   },
+   "140": {
+    "survival": 0.786,
+    "axis": 0.0726625109675503,
+    "lower_center": 0.013949999469126586,
+    "low_noise": 0.008311914452197504,
+    "recovered_fraction": 0.75
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14-scalarized-training",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "f496f627773fbbf8",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "all module parameters jointly on the scalarized objective",
+   "steps": 159787
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.011947418497004692,
+    "lower_center": 0.00248469413581793,
+    "low_noise": 0.010540104415943677,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 1.0,
+    "axis": 0.00918123067717785,
+    "lower_center": 0.0022890809516754995,
+    "low_noise": 0.010539917110806743,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 1.0,
+    "axis": 0.023906970990755196,
+    "lower_center": 0.00371166465497121,
+    "low_noise": 0.011058123957619716,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "intervention",
+  "configuration": "xeno14:improve:axis-maintenance",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "82f32ec9f95b3379",
+  "history": {
+   "parent": "c52d054f01829f45"
+  },
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "improve": "axis-maintenance",
+   "iterations": 12
+  },
+  "realized_effect": {
+   "80": {
+    "survival": 1.0,
+    "axis": 0.0127715889541929,
+    "lower_center": 0.0030209421438405727,
+    "low_noise": 0.0019264365479496933,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 6.375,
+    "per_episode_survival": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   "140": {
+    "survival": 0.9339999999999999,
+    "axis": 0.04778744861739111,
+    "lower_center": 0.008937270935783614,
+    "low_noise": 0.0020871734710755704,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 5.375,
+    "per_episode_survival": [
+     0.884,
+     1.0,
+     0.864,
+     1.0,
+     0.848,
+     1.0,
+     0.876,
+     1.0
+    ]
+   }
+  }
+ },
+ {
+  "kind": "intervention",
+  "configuration": "xeno14:improve:lower-abdominal-continuity",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "2e93ba7dfc7e1b8e",
+  "history": {
+   "parent": "c52d054f01829f45"
+  },
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "improve": "lower-abdominal-continuity",
+   "iterations": 12
+  },
+  "realized_effect": {
+   "80": {
+    "survival": 0.899,
+    "axis": 0.04024330145086475,
+    "lower_center": 0.008260672643179385,
+    "low_noise": 0.0017863939546982582,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.8,
+     1.0,
+     0.792,
+     1.0,
+     0.808,
+     1.0,
+     0.792,
+     1.0
+    ]
+   },
+   "140": {
+    "survival": 0.8645,
+    "axis": 0.07182744989204315,
+    "lower_center": 0.013252245409971702,
+    "low_noise": 0.00188371345523411,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.736,
+     1.0,
+     0.732,
+     1.0,
+     0.74,
+     0.996,
+     0.728,
+     0.984
+    ]
+   }
+  }
+ },
+ {
+  "kind": "intervention",
+  "configuration": "xeno14:improve:low-noise-movement",
+  "seed": 2,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "fc29e05bb53b9170",
+  "history": {
+   "parent": "c52d054f01829f45"
+  },
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "improve": "low-noise-movement",
+   "iterations": 12
+  },
+  "realized_effect": {
+   "80": {
+    "survival": 0.973,
+    "axis": 0.04260318159554019,
+    "lower_center": 0.008241770389304104,
+    "low_noise": 0.0008744785292909586,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.956,
+     1.0,
+     0.944,
+     1.0,
+     0.944,
+     1.0,
+     0.94,
+     1.0
+    ]
+   },
+   "140": {
+    "survival": 0.8625,
+    "axis": 0.08076113548043598,
+    "lower_center": 0.015000478029648795,
+    "low_noise": 0.001008832780630301,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.832,
+     0.88,
+     0.824,
+     0.884,
+     0.824,
+     0.908,
+     0.82,
+     0.928
+    ]
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "4592fa1eadb2fd63",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "round-robin: each module on survival \u2212 \u03bb\u00b7(its organization metric)",
+   "steps": 142345
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.9895,
+    "axis": 0.02997072143338206,
+    "lower_center": 0.006173561532974258,
+    "low_noise": 0.0017265846386460915,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.8865000000000001,
+    "axis": 0.07243358139528484,
+    "lower_center": 0.013786994634889718,
+    "low_noise": 0.0019386146543410514,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.7905,
+    "axis": 0.08207602826388943,
+    "lower_center": 0.01591150696026383,
+    "low_noise": 0.002172502623108973,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "standard-mlp",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "5ac24ecabfd79519",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival",
+   "steps": 156884
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.013142341945990895,
+    "lower_center": 0.00340341903960117,
+    "low_noise": 0.015832717698353663,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 1.0,
+    "axis": 0.07121139845949054,
+    "lower_center": 0.007411625954719478,
+    "low_noise": 0.015828262728864815,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.9435,
+    "axis": 0.16729474909824177,
+    "lower_center": 0.015829196325031762,
+    "low_noise": 0.0168762038754985,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "proprioceptive-mlp",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "dd3a22b56ad6ccde",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival (joint angles/velocities only)",
+   "steps": 156001
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.9435,
+    "axis": 0.06087471291106307,
+    "lower_center": 0.011871625740148948,
+    "low_noise": 0.016725896230420957,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.873,
+    "axis": 0.06270323207458012,
+    "lower_center": 0.012271901993497883,
+    "low_noise": 0.018210034513669184,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.775,
+    "axis": 0.07628258876253263,
+    "lower_center": 0.015086746781154388,
+    "low_noise": 0.020378209654179774,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "recurrent-gru",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "465b7761f306fc94",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival",
+   "steps": 157357
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.9545,
+    "axis": 0.05114619184613195,
+    "lower_center": 0.010176056266242624,
+    "low_noise": 0.0066623282498819054,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.88,
+    "axis": 0.06286746063411149,
+    "lower_center": 0.012318877002151963,
+    "low_noise": 0.007293516223821975,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.78,
+    "axis": 0.07602573795763512,
+    "lower_center": 0.015192846881472488,
+    "low_noise": 0.008189892977792478,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "multiobjective-scalarized-mlp",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "025f4ffb1536745f",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "survival \u2212 \u03bb\u00b7mean of the three normalized organization metrics",
+   "steps": 143276
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.961,
+    "axis": 0.037039862339978316,
+    "lower_center": 0.007434618177540507,
+    "low_noise": 0.014874135406405066,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.8885000000000001,
+    "axis": 0.06356688533617146,
+    "lower_center": 0.012531533447761724,
+    "low_noise": 0.01617987354166555,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.7945,
+    "axis": 0.07735762931263473,
+    "lower_center": 0.01501197466055956,
+    "low_noise": 0.01806160568958446,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14-no-history",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=0",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "6a5033e83e0c5e56",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "as xeno14",
+   "steps": 136667
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.9584999999999999,
+    "axis": 0.043664363080931815,
+    "lower_center": 0.008576245173394151,
+    "low_noise": 0.0004336174318925948,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.8714999999999999,
+    "axis": 0.0709311707211912,
+    "lower_center": 0.013399559324118984,
+    "low_noise": 0.0004840337286667758,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.7805,
+    "axis": 0.08495976811825894,
+    "lower_center": 0.015750843591520798,
+    "low_noise": 0.0005483457370059693,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14-gates-off",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "5a292e8be51777bf",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "as xeno14",
+   "steps": 134438
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 0.974,
+    "axis": 0.034581433102212455,
+    "lower_center": 0.007397583413686454,
+    "low_noise": 0.006193670753731539,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 0.873,
+    "axis": 0.0709054840061256,
+    "lower_center": 0.013598911885569094,
+    "low_noise": 0.006952869473425014,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.776,
+    "axis": 0.07834715321860151,
+    "lower_center": 0.015224357443458257,
+    "low_noise": 0.007790944521529355,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "train+evaluate",
+  "configuration": "xeno14-scalarized-training",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "2e2600b49201e80f",
+  "history": {},
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "training": "all module parameters jointly on the scalarized objective",
+   "steps": 158631
+  },
+  "realized_effect": {
+   "0": {
+    "survival": 1.0,
+    "axis": 0.0012652802483726177,
+    "lower_center": 0.002052431366271544,
+    "low_noise": 0.005352115052035242,
+    "recovered_fraction": null
+   },
+   "80": {
+    "survival": 1.0,
+    "axis": 0.022413061017056,
+    "lower_center": 0.004335636462222866,
+    "low_noise": 0.005376645558209556,
+    "recovered_fraction": 1.0
+   },
+   "140": {
+    "survival": 0.9224999999999999,
+    "axis": 0.061240343442126366,
+    "lower_center": 0.00942290229161959,
+    "low_noise": 0.0058722431067529685,
+    "recovered_fraction": 1.0
+   }
+  }
+ },
+ {
+  "kind": "intervention",
+  "configuration": "xeno14:improve:axis-maintenance",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "cdd1cc949032d629",
+  "history": {
+   "parent": "4592fa1eadb2fd63"
+  },
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "improve": "axis-maintenance",
+   "iterations": 12
+  },
+  "realized_effect": {
+   "80": {
+    "survival": 0.9179999999999999,
+    "axis": 0.060006602190580995,
+    "lower_center": 0.01147389925593792,
+    "low_noise": 0.001982581573163154,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.9,
+     0.956,
+     0.784,
+     1.0,
+     0.852,
+     1.0,
+     0.852,
+     1.0
+    ]
+   },
+   "140": {
+    "survival": 0.811,
+    "axis": 0.07992153771560453,
+    "lower_center": 0.015562732586049576,
+    "low_noise": 0.0022252070237222168,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.804,
+     0.816,
+     0.728,
+     0.832,
+     0.776,
+     0.856,
+     0.776,
+     0.9
+    ]
+   }
+  }
+ },
+ {
+  "kind": "intervention",
+  "configuration": "xeno14:improve:lower-abdominal-continuity",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "487c4ca5370cbbcc",
+  "history": {
+   "parent": "4592fa1eadb2fd63"
+  },
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "improve": "lower-abdominal-continuity",
+   "iterations": 12
+  },
+  "realized_effect": {
+   "80": {
+    "survival": 1.0,
+    "axis": 0.018026711109400212,
+    "lower_center": 0.0033387136910153713,
+    "low_noise": 0.0017442303774307664,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   "140": {
+    "survival": 0.906,
+    "axis": 0.08318736018457673,
+    "lower_center": 0.015703203005848893,
+    "low_noise": 0.0019383343421088533,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.892,
+     0.9,
+     0.904,
+     0.928,
+     0.904,
+     0.924,
+     0.896,
+     0.9
+    ]
+   }
+  }
+ },
+ {
+  "kind": "intervention",
+  "configuration": "xeno14:improve:low-noise-movement",
+  "seed": 3,
+  "embodiment": "Walker2d-v5 planar biped (gymnasium 1.3, MuJoCo 3.14)",
+  "sensor_arrangement": "17-dim proprioceptive observation (torso height/pitch, 6 joint angles, root and joint velocities)",
+  "boundary": "whole Walker2d body; push applied to the torso by the environment, not sensed directly",
+  "scale": "control step 0.008 s \u00d7 4 frame skip",
+  "temporal_window": "episode 250 steps; history H=3",
+  "substrate": "simulated (MuJoCo)",
+  "controller_state_sha256_16": "c74f6bfda833e6bf",
+  "history": {
+   "parent": "4592fa1eadb2fd63"
+  },
+  "resource_constraints": "action bounds [\u22121, 1]; no energy budget in X14-1",
+  "intervention": {
+   "improve": "low-noise-movement",
+   "iterations": 12
+  },
+  "realized_effect": {
+   "80": {
+    "survival": 0.9284999999999999,
+    "axis": 0.05182944444474738,
+    "lower_center": 0.00968499197237072,
+    "low_noise": 0.0020962960606746173,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     1.0,
+     0.852,
+     1.0,
+     0.832,
+     1.0,
+     0.844,
+     1.0,
+     0.9
+    ]
+   },
+   "140": {
+    "survival": 0.8590000000000001,
+    "axis": 0.09357029398682157,
+    "lower_center": 0.017464532503402817,
+    "low_noise": 0.0022829241843181393,
+    "recovered_fraction": 1.0,
+    "recovery_steps_mean": 0.0,
+    "per_episode_survival": [
+     0.96,
+     0.772,
+     0.912,
+     0.756,
+     0.92,
+     0.764,
+     0.988,
+     0.8
+    ]
+   }
+  }
+ }
+]

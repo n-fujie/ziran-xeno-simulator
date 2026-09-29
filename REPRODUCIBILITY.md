@@ -105,3 +105,28 @@ These do not affect traces, hashes or benchmark outcomes:
 
 The release archive was extracted into an empty directory and checked with `npm ci`, `npm run typecheck`,
 `npm test`, `npm run bench`, `npm run check:presets` and `npm run check:api`.
+
+
+## Research modules (v0.4.0)
+
+External comparison (Node; no extra dependencies):
+
+```bash
+npm run compare
+```
+
+```bash
+npm run test:comparison
+```
+
+`npm run compare` regenerates `results/external-comparison/*.json`, byte-identical across runs (wall-time fields are
+omitted). The Cascaded Tanks evaluation needs the dataset, fetched from the primary archive with hash verification:
+
+```bash
+node comparison/empirical/fetch-cascaded-tanks.ts
+```
+
+Embodied modules (Python 3.12; pinned packages in `embodied/requirements.txt`, validated in a clean virtual
+environment; resolved set in `embodied/requirements-lock.txt`): see [embodied/README.md](embodied/README.md). The
+Active Inference Milestone 1 run loads the committed controller checkpoints and reproduces the committed behavioural
+results exactly; latency figures vary between runs and machines.

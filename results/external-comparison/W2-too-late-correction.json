@@ -1,0 +1,1115 @@
+{
+  "references": {
+    "switchesPerRun": 33.4,
+    "note": "no framework is given the switching schedule; the interval support must be learned"
+  },
+  "world": "W2-too-late-correction",
+  "question": "When the environment reorganizes on its own clock, which frameworks avoid, register, or merely suffer corrections that are correct when issued but too late when they land?",
+  "design": "integrator plant, actuator delay 3, sensor delay 1, target sign switches every 8–16 steps",
+  "matched": {
+    "world": "W2-too-late-correction",
+    "inputData": "same environment instances (seeds 1–5); RL uses 20 training episodes (8000 steps) from disjoint seeds",
+    "initialConditions": "y₀ = 0, φ₀ = +1",
+    "interventionHistory": "framework-chosen corrections",
+    "temporalHorizon": "400 steps",
+    "computationalBudget": "not equalized; recorded",
+    "observationAvailability": "y and r with one-step delay for all",
+    "measurementResolution": "noise σ = 0.05 on y dynamics",
+    "resourceConstraints": "none (corrections are free)",
+    "evaluationWindow": "t ∈ [20, 400)",
+    "sameness": [
+      {
+        "framework": "all",
+        "sameRawSource": true,
+        "samePreprocessing": true,
+        "sameObservation": true,
+        "sameStateRepresentation": false,
+        "sameIntervention": true,
+        "sameOperationalEffect": null,
+        "transformation": "RL bins observations; others use readings. The environment schedule is supplied to no framework."
+      }
+    ]
+  },
+  "records": [
+    {
+      "world": "W2-too-late-correction",
+      "framework": "control-mpc",
+      "configuration": "synchronous P control (single clock, delays ignored)",
+      "role": "primary",
+      "representationSupplied": [
+        "error e = r − y",
+        "gain 0.5"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "whether an issued correction became too late (not represented by the framework; evaluator only)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 265,
+        "clockModelSeed1": null
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 1790,
+        "correctness_correctFraction": 0.937,
+        "timing_reorganizedBeforeLandingFraction": 0.237,
+        "environmentalReconfiguration_correctButReorganized": 396,
+        "realizedEffect_effectiveFraction": 0.62,
+        "realizedEffect_harmfulFraction": 0.375,
+        "correctButTooLate": 265,
+        "correctReorganizedStillEffective": 131,
+        "meanAbsTrackingError": 1.796,
+        "fractionWithin0_3": 0.078,
+        "selfClassification": null
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "none beyond gain",
+          "enabled": "simplicity",
+          "prevented": "delay compensation"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 400,
+        "dataSteps": 0,
+        "observationsUsed": 400,
+        "interventionCount": 358,
+        "memoryItems": 0,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [
+          "delay",
+          "environment clock"
+        ],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": [
+          "correct-but-too-late 265 vs Ziran adapter 14; mean |e| 1.796 vs 0.577"
+        ]
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W2-too-late-correction",
+      "framework": "control-mpc",
+      "configuration": "delay-compensated control (Smith-predictor style)",
+      "role": "primary",
+      "representationSupplied": [
+        "plant delays",
+        "in-flight corrections"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "whether an issued correction became too late (not represented by the framework; evaluator only)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 50,
+        "clockModelSeed1": null
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 914,
+        "correctness_correctFraction": 0.991,
+        "timing_reorganizedBeforeLandingFraction": 0.058,
+        "environmentalReconfiguration_correctButReorganized": 53,
+        "realizedEffect_effectiveFraction": 0.86,
+        "realizedEffect_harmfulFraction": 0.132,
+        "correctButTooLate": 50,
+        "correctReorganizedStillEffective": 3,
+        "meanAbsTrackingError": 1.161,
+        "fractionWithin0_3": 0.247,
+        "selfClassification": null
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "integrator plant, actuator delay 3, sensor delay 1",
+          "enabled": "prediction of y at landing",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 400,
+        "dataSteps": 0,
+        "observationsUsed": 400,
+        "interventionCount": 183,
+        "memoryItems": 4,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "in-flight corrections"
+        ],
+        "merges": [],
+        "cannotExpress": [
+          "environment reorganization"
+        ],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": [
+          "correct-but-too-late 50 vs Ziran adapter 14; mean |e| 1.161 vs 0.577"
+        ]
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W2-too-late-correction",
+      "framework": "control-mpc",
+      "configuration": "asynchronous MPC (delays + learned environment-clock model)",
+      "role": "primary",
+      "representationSupplied": [
+        "plant delays",
+        "switching-interval model (uniform support, learned online)"
+      ],
+      "representationGenerated": [
+        "interval support"
+      ],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "whether an issued correction became too late (not represented by the framework; evaluator only)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 14,
+        "clockModelSeed1": "[8, 16]"
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [
+        "t=26: environment-clock interval support [9, 9]",
+        "t=38: environment-clock interval support [9, 12]",
+        "t=49: environment-clock interval support [9, 12]",
+        "t=58: environment-clock interval support [9, 12]"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 1024,
+        "correctness_correctFraction": 0.573,
+        "timing_reorganizedBeforeLandingFraction": 0.289,
+        "environmentalReconfiguration_correctButReorganized": 103,
+        "realizedEffect_effectiveFraction": 0.695,
+        "realizedEffect_harmfulFraction": 0.254,
+        "correctButTooLate": 14,
+        "correctReorganizedStillEffective": 89,
+        "meanAbsTrackingError": 0.577,
+        "fractionWithin0_3": 0.573,
+        "selfClassification": null
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "integrator plant, actuator delay 3, sensor delay 1",
+          "enabled": "prediction of y at landing",
+          "prevented": "—"
+        },
+        {
+          "item": "schedule",
+          "supplied": "model class: renewal process with uniform intervals",
+          "enabled": "switch prediction",
+          "prevented": "non-renewal switching",
+          "wrongWhen": "not tested here"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2000,
+        "dataSteps": 0,
+        "observationsUsed": 400,
+        "interventionCount": 205,
+        "memoryItems": 431,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [
+          "clock model"
+        ],
+        "inaccessible": [],
+        "interventionDifferences": [
+          "correct-but-too-late 14 vs Ziran adapter 14; mean |e| 0.577 vs 0.577"
+        ]
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "Anticipatory corrections (issued toward the predicted target at landing) count as incorrect under the at-issue premise even when they are effective at landing; correctness at issue and realized effect are therefore reported separately."
+      ]
+    },
+    {
+      "world": "W2-too-late-correction",
+      "framework": "reinforcement-learning",
+      "configuration": "tabular Q, fixed state (observed error bin)",
+      "role": "primary",
+      "representationSupplied": [
+        "state: error bin",
+        "reward −|e|",
+        "5 actions"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "whether an issued correction became too late (not represented by the framework; evaluator only)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 192,
+        "clockModelSeed1": null
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 1545,
+        "correctness_correctFraction": 0.794,
+        "timing_reorganizedBeforeLandingFraction": 0.24,
+        "environmentalReconfiguration_correctButReorganized": 256,
+        "realizedEffect_effectiveFraction": 0.603,
+        "realizedEffect_harmfulFraction": 0.392,
+        "correctButTooLate": 192,
+        "correctReorganizedStillEffective": 64,
+        "meanAbsTrackingError": 1.613,
+        "fractionWithin0_3": 0.101,
+        "selfClassification": null
+      },
+      "burden": [
+        {
+          "item": "state-variables",
+          "supplied": "observed error bin",
+          "enabled": "learning",
+          "prevented": "in-flight corrections and clock phase",
+          "wrongWhen": "the same observed error calls for different corrections depending on what is in flight"
+        },
+        {
+          "item": "reward",
+          "supplied": "−|r − y|",
+          "enabled": "learning",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 400,
+        "dataSteps": 8000,
+        "observationsUsed": 400,
+        "interventionCount": 309,
+        "memoryItems": 45,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [
+          "states with equal observed error and different in-flight corrections"
+        ],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": [
+          "correct-but-too-late 192 vs Ziran adapter 14; mean |e| 1.613 vs 0.577"
+        ]
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W2-too-late-correction",
+      "framework": "reinforcement-learning",
+      "configuration": "goal-conditioned Q (state y bin, goal r)",
+      "role": "primary",
+      "representationSupplied": [
+        "state y bin",
+        "goal r"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "whether an issued correction became too late (not represented by the framework; evaluator only)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 119,
+        "clockModelSeed1": null
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 1374,
+        "correctness_correctFraction": 0.585,
+        "timing_reorganizedBeforeLandingFraction": 0.233,
+        "environmentalReconfiguration_correctButReorganized": 193,
+        "realizedEffect_effectiveFraction": 0.463,
+        "realizedEffect_harmfulFraction": 0.531,
+        "correctButTooLate": 119,
+        "correctReorganizedStillEffective": 74,
+        "meanAbsTrackingError": 4.632,
+        "fractionWithin0_3": 0.108,
+        "selfClassification": null
+      },
+      "burden": [
+        {
+          "item": "goals",
+          "supplied": "goal = observed target",
+          "enabled": "goal-conditioned policy",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 400,
+        "dataSteps": 8000,
+        "observationsUsed": 400,
+        "interventionCount": 275,
+        "memoryItems": 90,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": [
+          "correct-but-too-late 119 vs Ziran adapter 14; mean |e| 4.632 vs 0.577"
+        ]
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W2-too-late-correction",
+      "framework": "reinforcement-learning",
+      "configuration": "hierarchical Q with options (hold correction 1 or 3 steps)",
+      "role": "primary",
+      "representationSupplied": [
+        "options (temporal abstraction)",
+        "state: predicted error bin (incl. in-flight)"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "whether an issued correction became too late (not represented by the framework; evaluator only)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 130,
+        "clockModelSeed1": null
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 1348,
+        "correctness_correctFraction": 0.72,
+        "timing_reorganizedBeforeLandingFraction": 0.228,
+        "environmentalReconfiguration_correctButReorganized": 171,
+        "realizedEffect_effectiveFraction": 0.659,
+        "realizedEffect_harmfulFraction": 0.336,
+        "correctButTooLate": 130,
+        "correctReorganizedStillEffective": 41,
+        "meanAbsTrackingError": 1.134,
+        "fractionWithin0_3": 0.076,
+        "selfClassification": null
+      },
+      "burden": [
+        {
+          "item": "action-set",
+          "supplied": "10 options",
+          "enabled": "temporal abstraction",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 392,
+        "dataSteps": 8000,
+        "observationsUsed": 400,
+        "interventionCount": 270,
+        "memoryItems": 90,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": [
+          "correct-but-too-late 130 vs Ziran adapter 14; mean |e| 1.134 vs 0.577"
+        ]
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W2-too-late-correction",
+      "framework": "reinforcement-learning",
+      "configuration": "tabular Q with clock feature (time since observed switch)",
+      "role": "fairness",
+      "representationSupplied": [
+        "state: predicted error bin × time-since-switch"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "whether an issued correction became too late (not represented by the framework; evaluator only)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 170,
+        "clockModelSeed1": null
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 1615,
+        "correctness_correctFraction": 0.691,
+        "timing_reorganizedBeforeLandingFraction": 0.238,
+        "environmentalReconfiguration_correctButReorganized": 222,
+        "realizedEffect_effectiveFraction": 0.62,
+        "realizedEffect_harmfulFraction": 0.372,
+        "correctButTooLate": 170,
+        "correctReorganizedStillEffective": 52,
+        "meanAbsTrackingError": 1.187,
+        "fractionWithin0_3": 0.137,
+        "selfClassification": null
+      },
+      "burden": [
+        {
+          "item": "state-variables",
+          "supplied": "clock feature added by the designer",
+          "enabled": "implicit timing",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 400,
+        "dataSteps": 8000,
+        "observationsUsed": 400,
+        "interventionCount": 323,
+        "memoryItems": 369,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": [
+          "correct-but-too-late 170 vs Ziran adapter 14; mean |e| 1.187 vs 0.577"
+        ]
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    },
+    {
+      "world": "W2-too-late-correction",
+      "framework": "active-inference",
+      "configuration": "AIF: hidden φ + semi-Markov duration, learned duration likelihood",
+      "role": "primary",
+      "representationSupplied": [
+        "hidden φ",
+        "duration factor",
+        "delays",
+        "preferences over landing error"
+      ],
+      "representationGenerated": [
+        "duration likelihood"
+      ],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [],
+      "inaccessibleDifferences": [
+        "whether an issued correction became too late (not represented by the framework; evaluator only)"
+      ],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 76,
+        "clockModelSeed1": null
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [
+        "t=26: duration likelihood updated (1 intervals)",
+        "t=38: duration likelihood updated (2 intervals)",
+        "t=49: duration likelihood updated (3 intervals)",
+        "t=58: duration likelihood updated (4 intervals)"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 1315,
+        "correctness_correctFraction": 0.468,
+        "timing_reorganizedBeforeLandingFraction": 0.244,
+        "environmentalReconfiguration_correctButReorganized": 114,
+        "realizedEffect_effectiveFraction": 0.56,
+        "realizedEffect_harmfulFraction": 0.414,
+        "correctButTooLate": 76,
+        "correctReorganizedStillEffective": 38,
+        "meanAbsTrackingError": 0.634,
+        "fractionWithin0_3": 0.358,
+        "selfClassification": null
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "integrator plant, actuator delay 3, sensor delay 1",
+          "enabled": "prediction of y at landing",
+          "prevented": "—"
+        },
+        {
+          "item": "hidden-factors",
+          "supplied": "φ and time since switch",
+          "enabled": "belief about switching",
+          "prevented": "—"
+        },
+        {
+          "item": "preferences",
+          "supplied": "ln P̃(e) ∝ −e²/0.08",
+          "enabled": "risk",
+          "prevented": "—"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2000,
+        "dataSteps": 0,
+        "observationsUsed": 400,
+        "interventionCount": 263,
+        "memoryItems": 431,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "uncertainty about the switch"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": [
+          "correct-but-too-late 76 vs Ziran adapter 14; mean |e| 0.634 vs 0.577"
+        ]
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "Epistemic value is zero in this world: no action changes what is observed about φ. AIF therefore reduces to Bayesian decision under preferences here.",
+        "Anticipatory corrections (issued toward the predicted target at landing) count as incorrect under the at-issue premise even when they are effective at landing; correctness at issue and realized effect are therefore reported separately."
+      ]
+    },
+    {
+      "world": "W2-too-late-correction",
+      "framework": "ziran-xeno",
+      "configuration": "Ziran / Xeno adapter (sensor, actuator and environment clocks; premise at issue and landing)",
+      "role": "primary",
+      "representationSupplied": [
+        "three clocks",
+        "delays",
+        "premise function"
+      ],
+      "representationGenerated": [
+        "environment-clock interval support",
+        "self-classification of corrections"
+      ],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [
+        "correct-but-too-late corrections (self-classified)"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 14,
+        "clockModelSeed1": "[8, 16]"
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [
+        "t=26: environment-clock interval support [9, 9]",
+        "t=38: environment-clock interval support [9, 12]",
+        "t=49: environment-clock interval support [9, 12]",
+        "t=58: environment-clock interval support [9, 12]"
+      ],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 1024,
+        "correctness_correctFraction": 0.573,
+        "timing_reorganizedBeforeLandingFraction": 0.289,
+        "environmentalReconfiguration_correctButReorganized": 103,
+        "realizedEffect_effectiveFraction": 0.695,
+        "realizedEffect_harmfulFraction": 0.254,
+        "correctButTooLate": 14,
+        "correctReorganizedStillEffective": 89,
+        "meanAbsTrackingError": 0.577,
+        "fractionWithin0_3": 0.573,
+        "selfClassification": "{\"correct-in-time\":450,\"correct-but-too-late\":65,\"incorrect\":551}"
+      },
+      "burden": [
+        {
+          "item": "dynamics",
+          "supplied": "integrator plant, actuator delay 3, sensor delay 1",
+          "enabled": "prediction of y at landing",
+          "prevented": "—"
+        },
+        {
+          "item": "schedule",
+          "supplied": "renewal clock model class",
+          "enabled": "switch prediction",
+          "prevented": "non-renewal switching"
+        }
+      ],
+      "cost": {
+        "modelEvaluations": 2000,
+        "dataSteps": 0,
+        "observationsUsed": 400,
+        "interventionCount": 205,
+        "memoryItems": 431,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [
+          "correction premise at issue and at landing"
+        ],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": []
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": [
+        "Anticipatory corrections (issued toward the predicted target at landing) count as incorrect under the at-issue premise even when they are effective at landing; correctness at issue and realized effect are therefore reported separately."
+      ]
+    },
+    {
+      "world": "W2-too-late-correction",
+      "framework": "ziran-xeno",
+      "configuration": "ablation: no multiple clocks (single clock, self-classification kept)",
+      "role": "ablation",
+      "representationSupplied": [
+        "single clock: no delay model, no environment clock; self-classification kept"
+      ],
+      "representationGenerated": [],
+      "observationsSupplied": [
+        "y (delay 1)",
+        "r (delay 1)"
+      ],
+      "observationsRevised": [],
+      "interventions": [
+        "correction c ∈ {−0.4,−0.2,0,0.2,0.4}, lands after 3 steps"
+      ],
+      "detectedDifferences": [
+        "correct-but-too-late corrections (self-classified)"
+      ],
+      "inaccessibleDifferences": [],
+      "branchChanges": [],
+      "timing": {
+        "correctButTooLate": 273,
+        "clockModelSeed1": "none"
+      },
+      "failures": [],
+      "resourceUse": {},
+      "reorganization": [],
+      "modelRevisions": [],
+      "descriptionRevisions": [],
+      "measurements": {
+        "corrections": 1838,
+        "correctness_correctFraction": 0.926,
+        "timing_reorganizedBeforeLandingFraction": 0.243,
+        "environmentalReconfiguration_correctButReorganized": 411,
+        "realizedEffect_effectiveFraction": 0.614,
+        "realizedEffect_harmfulFraction": 0.381,
+        "correctButTooLate": 273,
+        "correctReorganizedStillEffective": 138,
+        "meanAbsTrackingError": 1.823,
+        "fractionWithin0_3": 0.077,
+        "selfClassification": "{\"correct-in-time\":1317,\"correct-but-too-late\":613,\"incorrect\":0}"
+      },
+      "burden": [],
+      "cost": {
+        "modelEvaluations": 2000,
+        "dataSteps": 0,
+        "observationsUsed": 400,
+        "interventionCount": 368,
+        "memoryItems": 400,
+        "representationComplexity": null,
+        "note": "per run; computeMs covers all seeds incl. training"
+      },
+      "conversions": [
+        {
+          "from": "true (y, φ)",
+          "to": "observation (y, r) delayed 1",
+          "retained": [
+            "y, r one step old"
+          ],
+          "lost": [
+            "current y, φ"
+          ],
+          "newlyAvailable": [],
+          "unresolved": []
+        }
+      ],
+      "profile": {
+        "preserves": [],
+        "merges": [],
+        "cannotExpress": [],
+        "detectsEarlier": [],
+        "detectsLater": [],
+        "requiresPredefined": [],
+        "canRevise": [],
+        "inaccessible": [],
+        "interventionDifferences": [
+          "correct-but-too-late 273 vs Ziran adapter 14; mean |e| 1.823 vs 0.577"
+        ]
+      },
+      "claimStatus": "synthetic-world result",
+      "notes": []
+    }
+  ],
+  "fairness": [
+    {
+      "distinction": "too-late corrections avoided",
+      "firstConfiguration": "tabular Q, fixed state (observed error bin)",
+      "alternativeConfiguration": "tabular Q with clock feature (time since observed switch)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "too-late 192 → 170"
+    },
+    {
+      "distinction": "too-late corrections avoided",
+      "firstConfiguration": "synchronous P control (single clock, delays ignored)",
+      "alternativeConfiguration": "asynchronous MPC (delays + learned environment-clock model)",
+      "alternativeTested": true,
+      "retainedUnderAlternative": true,
+      "note": "too-late 265 → 14"
+    },
+    {
+      "distinction": "self-classification of too-late corrections",
+      "firstConfiguration": "asynchronous MPC (delays + learned environment-clock model)",
+      "alternativeConfiguration": "asynchronous MPC + post-hoc premise check at landing (same as the Ziran adapter's classifier)",
+      "alternativeTested": false,
+      "retainedUnderAlternative": null,
+      "note": "Not separately run: the Ziran adapter's decision rule is the asynchronous MPC rule plus this classifier, so adding the classifier to MPC would reproduce it exactly. The classifier is therefore not evidence of a capability MPC lacks."
+    }
+  ],
+  "statements": [
+    "under configuration synchronous P control (single clock, delays ignored) and implementation control-mpc, distinction \"correct-but-too-late correction\" was not retained (evaluator count 265; realized-effective fraction 0.62; mean |e| 1.796)",
+    "under configuration delay-compensated control (Smith-predictor style) and implementation control-mpc, distinction \"correct-but-too-late correction\" was not retained (evaluator count 50; realized-effective fraction 0.86; mean |e| 1.161)",
+    "under configuration asynchronous MPC (delays + learned environment-clock model) and implementation control-mpc, distinction \"correct-but-too-late correction\" was not retained (evaluator count 14; realized-effective fraction 0.695; mean |e| 0.577)",
+    "under configuration tabular Q, fixed state (observed error bin) and implementation reinforcement-learning, distinction \"correct-but-too-late correction\" was not retained (evaluator count 192; realized-effective fraction 0.603; mean |e| 1.613)",
+    "under configuration goal-conditioned Q (state y bin, goal r) and implementation reinforcement-learning, distinction \"correct-but-too-late correction\" was not retained (evaluator count 119; realized-effective fraction 0.463; mean |e| 4.632)",
+    "under configuration hierarchical Q with options (hold correction 1 or 3 steps) and implementation reinforcement-learning, distinction \"correct-but-too-late correction\" was not retained (evaluator count 130; realized-effective fraction 0.659; mean |e| 1.134)",
+    "under configuration tabular Q with clock feature (time since observed switch) and implementation reinforcement-learning, distinction \"correct-but-too-late correction\" was not retained (evaluator count 170; realized-effective fraction 0.62; mean |e| 1.187)",
+    "under configuration AIF: hidden φ + semi-Markov duration, learned duration likelihood and implementation active-inference, distinction \"correct-but-too-late correction\" was not retained (evaluator count 76; realized-effective fraction 0.56; mean |e| 0.634)",
+    "under configuration Ziran / Xeno adapter (sensor, actuator and environment clocks; premise at issue and landing) and implementation ziran-xeno, distinction \"correct-but-too-late correction\" was retained (evaluator count 14; realized-effective fraction 0.695; mean |e| 0.577)",
+    "under configuration ablation: no multiple clocks (single clock, self-classification kept) and implementation ziran-xeno, distinction \"correct-but-too-late correction\" was retained (evaluator count 273; realized-effective fraction 0.614; mean |e| 1.823)"
+  ],
+  "distinctionTable": [
+    {
+      "distinction": "too-late corrections self-registered",
+      "retainedBy": [
+        "ziran-xeno:Ziran / Xeno adapter (sensor, actuator and environment clocks; premise at issue and landing)",
+        "ziran-xeno:ablation: no multiple clocks (single clock, self-classification kept)"
+      ],
+      "notRetainedBy": [
+        "control-mpc:synchronous P control (single clock, delays ignored)",
+        "control-mpc:delay-compensated control (Smith-predictor style)",
+        "control-mpc:asynchronous MPC (delays + learned environment-clock model)",
+        "reinforcement-learning:tabular Q, fixed state (observed error bin)",
+        "reinforcement-learning:goal-conditioned Q (state y bin, goal r)",
+        "reinforcement-learning:hierarchical Q with options (hold correction 1 or 3 steps)",
+        "reinforcement-learning:tabular Q with clock feature (time since observed switch)",
+        "active-inference:AIF: hidden φ + semi-Markov duration, learned duration likelihood"
+      ],
+      "notApplicable": []
+    },
+    {
+      "distinction": "environment clock modeled",
+      "retainedBy": [
+        "control-mpc:synchronous P control (single clock, delays ignored)",
+        "control-mpc:asynchronous MPC (delays + learned environment-clock model)",
+        "reinforcement-learning:tabular Q with clock feature (time since observed switch)",
+        "active-inference:AIF: hidden φ + semi-Markov duration, learned duration likelihood",
+        "ziran-xeno:Ziran / Xeno adapter (sensor, actuator and environment clocks; premise at issue and landing)"
+      ],
+      "notRetainedBy": [
+        "control-mpc:delay-compensated control (Smith-predictor style)",
+        "reinforcement-learning:tabular Q, fixed state (observed error bin)",
+        "reinforcement-learning:goal-conditioned Q (state y bin, goal r)",
+        "reinforcement-learning:hierarchical Q with options (hold correction 1 or 3 steps)",
+        "ziran-xeno:ablation: no multiple clocks (single clock, self-classification kept)"
+      ],
+      "notApplicable": []
+    }
+  ],
+  "notApplicable": [
+    {
+      "framework": "agent-based-modeling",
+      "reason": "one controller and one environment; no population"
+    },
+    {
+      "framework": "digital-twin",
+      "reason": "not in the W2 comparison list; synchronization is covered by the delay-compensated controller"
+    },
+    {
+      "framework": "viability-reachability",
+      "reason": "not in the W2 comparison list"
+    }
+  ],
+  "claimStatus": "synthetic-world result"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "cascaded-tanks-4tu-12960104-v1",
+  "source": "4TU.ResearchData, DOI 10.4121/12960104.v1",
+  "version": "1 (published 2020-09-21)",
+  "acquisitionDate": "2026-09-28",
+  "measurementApparatus": "two cascaded tanks fed by a pump; uncalibrated capacitive level sensors; Matlab A/D–D/A interface",
+  "samplingFrequency": "Ts = 4 s (0.25 Hz), 1024 samples per record",
+  "units": {
+    "u": "V (pump voltage)",
+    "y": "V (uncalibrated level sensor)"
+  },
+  "preprocessing": "publisher: not documented in supplied source; this project: parsing only",
+  "missingness": "none",
+  "knownBiases": "short estimation record; uncalibrated sensors; unknown initial state; stochastic overflow; single setup",
+  "temporalBasis": "uniform sampling at 4 s; absolute start times not documented in supplied source",
+  "uncertainty": "output SNR close to 40 dB; overflow acts as input-dependent process noise",
+  "interventionRecord": "designed multisine excitation (estimation and test records); no randomized interventions",
+  "license": "CC BY-SA 4.0",
+  "selectionRationale": [
+    "public, with a DOI, a version and a license",
+    "known measurement process and a documented physical setup",
+    "a recorded input (excitation) history",
+    "separate estimation and test records",
+    "small and widely used, so established system-identification baselines exist"
+  ],
+  "selectionRisks": [
+    "The overflow nonlinearity could appear to favour description-space mechanisms; mitigated by a pre-registered protocol and strong conventional baselines (ARX, output-error, NARX, grey-box with overflow, switching ARX, twin, MLP).",
+    "One physical system: results are replayed empirical results for this dataset only."
+  ],
+  "claimStatusIfUsed": "replayed empirical result",
+  "missingRequiredFields": []
+}

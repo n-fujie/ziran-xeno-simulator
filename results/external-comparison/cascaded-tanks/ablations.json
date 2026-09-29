@@ -1,0 +1,51 @@
+[
+  {
+    "ablation": "Z-fixed-observations",
+    "predE_RMSt": 0.0859,
+    "fullPredE_RMSt": 0.0763,
+    "generatedVariables": [],
+    "changedFromFull": true
+  },
+  {
+    "ablation": "Z-no-grammar-revision",
+    "predE_RMSt": 0.0757,
+    "fullPredE_RMSt": 0.0763,
+    "generatedVariables": [
+      "diff(u)",
+      "diff(y)"
+    ],
+    "changedFromFull": true
+  },
+  {
+    "ablation": "Z-fixed-description-space",
+    "predE_RMSt": 0.0757,
+    "fullPredE_RMSt": 0.0763,
+    "generatedVariables": [
+      "diff(u)",
+      "diff(y)"
+    ],
+    "changedFromFull": true
+  },
+  {
+    "ablation": "Z-no-multiple-windows",
+    "predE_RMSt": 0.0763,
+    "fullPredE_RMSt": 0.0763,
+    "generatedVariables": [
+      "diff(u)",
+      "step@v1(v1)",
+      "diff(y)"
+    ],
+    "changedFromFull": false
+  },
+  {
+    "ablation": "Z-no-meta",
+    "predE_RMSt": 0.0763,
+    "fullPredE_RMSt": 0.0763,
+    "generatedVariables": [
+      "diff(u)",
+      "step@v1(v1)",
+      "diff(y)"
+    ],
+    "changedFromFull": false
+  }
+]

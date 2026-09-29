@@ -1,0 +1,63 @@
+{
+  "suite": "External Framework Comparison Benchmarks",
+  "branch": "research/external-comparison",
+  "baseRelease": "v0.3.0 (frozen)",
+  "claimStatus": "synthetic-world result",
+  "node": "v24.14.1",
+  "worlds": [
+    {
+      "world": "W1-observation-aliasing",
+      "records": 15,
+      "fairnessChecks": 5,
+      "notApplicable": [
+        "agent-based-modeling",
+        "dynamical-systems"
+      ]
+    },
+    {
+      "world": "W2-too-late-correction",
+      "records": 10,
+      "fairnessChecks": 3,
+      "notApplicable": [
+        "agent-based-modeling",
+        "digital-twin",
+        "viability-reachability"
+      ]
+    },
+    {
+      "world": "W3-fragility-transfer",
+      "records": 14,
+      "fairnessChecks": 5,
+      "notApplicable": [
+        "dynamical-systems"
+      ]
+    },
+    {
+      "world": "W4-description-space-change",
+      "records": 9,
+      "fairnessChecks": 2,
+      "notApplicable": [
+        "agent-based-modeling",
+        "reinforcement-learning",
+        "active-inference",
+        "viability-reachability",
+        "control-mpc",
+        "digital-twin"
+      ]
+    },
+    {
+      "world": "W5-thick-category",
+      "records": 8,
+      "fairnessChecks": 2,
+      "notApplicable": [
+        "reinforcement-learning",
+        "control-mpc",
+        "viability-reachability",
+        "feature-learning"
+      ]
+    }
+  ],
+  "ablations": 7,
+  "negativeResults": 29,
+  "note": "computeMs fields are omitted from the JSON files because wall time is machine-dependent; they appear in docs/external-results.md"
+}

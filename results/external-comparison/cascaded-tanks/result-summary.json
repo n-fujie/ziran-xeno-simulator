@@ -1,0 +1,35 @@
+{
+  "protocol": "CT-P1",
+  "protocolFreezeCommit": "db3e6224aa8c89222e40e2596bacf5c137de4ef5",
+  "dataset": "Cascaded Tanks, DOI 10.4121/12960104.v1",
+  "claimStatus": "replayed empirical result",
+  "simulationE_RMSt": {
+    "M1-ARX": 0.6421,
+    "M2-OE": 0.5907,
+    "M3-NARX": 0.7633,
+    "M4a-grey-box": 0.6703,
+    "M4b-grey-box-overflow": 0.5701,
+    "M5-twin": 0.5701,
+    "M6-MLP": 1.7497,
+    "M7-PWARX": 0.9073
+  },
+  "predictionE_RMSt": {
+    "M1-ARX": 0.0522,
+    "M3-NARX": 0.0534,
+    "M5-twin": 0.1063,
+    "M6-MLP": 0.113,
+    "M7-PWARX": 0.0515,
+    "Z-full": 0.0763,
+    "Z-fixed-observations": 0.0859,
+    "Z-no-grammar-revision": 0.0757,
+    "Z-fixed-description-space": 0.0757,
+    "Z-no-multiple-windows": 0.0763,
+    "Z-no-meta": 0.0763
+  },
+  "fairnessVerdict": "not triggered: no Ziran variant improved over the best conventional one-step model",
+  "ablationsWithoutChange": [
+    "Z-no-multiple-windows",
+    "Z-no-meta"
+  ],
+  "note": "no global ranking; per-mode, per-metric values only"
+}

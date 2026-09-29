@@ -15,11 +15,11 @@ import { ensurePresets } from '../src/presets/index.ts';
 const root = new URL('../', import.meta.url);
 const read = (p: string) => readFileSync(new URL(p, root), 'utf8');
 
-test('release documents exist and version is 0.3.0', () => {
+test('release documents exist; package version 0.4.0; core engine version unchanged at 0.3.0', () => {
   for (const f of ['README.md', 'DESIGN.md', 'LIMITATIONS.md', 'BENCHMARKS.md', 'REPRODUCIBILITY.md', 'CHANGELOG.md', 'CITATION.cff', 'LICENSE', 'docs/claims.md', 'docs/negative-results.md']) assert.ok(existsSync(new URL(f, root)), f);
-  assert.equal(JSON.parse(read('package.json')).version, '0.3.0');
-  assert.equal(ENGINE_VERSION, '0.3.0');
-  assert.match(read('CITATION.cff'), /version: "0\.3\.0"/);
+  assert.equal(JSON.parse(read('package.json')).version, '0.4.0');
+  assert.equal(ENGINE_VERSION, '0.3.0'); // the core engine is unchanged in v0.4.0
+  assert.match(read('CITATION.cff'), /version: "0\.4\.0"/);
   assert.doesNotMatch(read('CITATION.cff'), /^doi:/m);
   const REPO = 'https://github.com/n-fujie/ziran-xeno-simulator';
   assert.match(read('CITATION.cff'), /family-names: "Fujie"/);

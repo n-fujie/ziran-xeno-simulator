@@ -1,0 +1,98 @@
+[
+  {
+    "id": "EC1",
+    "world": "W1-observation-aliasing",
+    "question": "Which frameworks register a hidden-mode distinction that the initial apparatus aliases, and how (model vs apparatus revision)?",
+    "setup": "x′ = 0.9x + 0.4·h·u + noise; h flips 3× at unknown times; h sensor installable by any framework",
+    "compared": "MPC (nominal, adaptive), RL (fixed, history, sensor action, 10× data), AIF (with/without mode), twin (Kalman, IMM), viability (fixed, information state), Ziran adapter (+ ablation, override)",
+    "measured": [
+      "aliasing detected",
+      "model changed",
+      "apparatus changed",
+      "estimate- and behaviour-based latency",
+      "intervention success",
+      "energy",
+      "lost / new observability",
+      "downstream reachability"
+    ],
+    "predicate": "none predefined: per-distinction statements only",
+    "wouldCountAsFailure": "a baseline reported as not retaining the mode distinction while a standard configuration of it that retains it was not tested; or unequal observation access"
+  },
+  {
+    "id": "EC2",
+    "world": "W2-too-late-correction",
+    "question": "Which frameworks avoid, self-register or merely suffer corrections that are correct at issue but too late at landing?",
+    "setup": "integrator plant, actuator delay 3, sensor delay 1, target switches every 8–16 steps (unknown schedule)",
+    "compared": "synchronous P, delay-compensated, asynchronous MPC, RL (fixed, goal-conditioned, options, clock feature), AIF, Ziran adapter (+ single-clock ablation)",
+    "measured": [
+      "correctness at issue",
+      "reorganization before landing",
+      "realized effect",
+      "correct-but-too-late count",
+      "tracking error",
+      "self-classification"
+    ],
+    "predicate": "none predefined",
+    "wouldCountAsFailure": "the switching schedule given to some frameworks and not others; correctness and realized effect merged into one measure"
+  },
+  {
+    "id": "EC3",
+    "world": "W3-fragility-transfer",
+    "question": "Which frameworks register the downstream consequences of one matched local optimization?",
+    "setup": "shared reservoir, B curtailment rule, scheduled C demand; candidate: A draw 1.8 and meter moved from C to A",
+    "compared": "ABM (+ sweep), local / centralized MPC, RL evaluation (local / team reward), AIF (local / system), system twin, viability, Ziran adapter (+ reachability, 2 ablations)",
+    "measured": [
+      "local improvement",
+      "transferred dependency",
+      "delayed failure",
+      "resource displacement",
+      "observation loss",
+      "new closure",
+      "closure times under two recovery definitions"
+    ],
+    "predicate": "none predefined; per item, compared with ground truth from the true environment",
+    "wouldCountAsFailure": "different pilot data or schedule knowledge per framework; detection asserted rather than read from the framework's outputs"
+  },
+  {
+    "id": "EC4",
+    "world": "W4-description-space-change",
+    "question": "Which model classes capture a dependence on a distinction absent from the initial vocabulary, how fast and at what cost?",
+    "setup": "linear regime then window-threshold regime; do(x) interventions; online cut-offs without regime boundaries",
+    "compared": "fixed-state, parameter-adaptive, MLP (8 / 3 lags, 1000-epoch variant), v0.3.0 grammar-bounded, grammar morphogenesis, description-space transformation (+ meta-grammar ablation)",
+    "measured": [
+      "adaptation latency",
+      "held-out prediction",
+      "intervention prediction",
+      "new named / unnamed distinctions",
+      "representation cost",
+      "information loss"
+    ],
+    "predicate": "recovery ≥ 0.25 over the fixed-state model defines adaptation (fixed before running)",
+    "wouldCountAsFailure": "regime boundaries given to some models; test rows used for selection"
+  },
+  {
+    "id": "EC5",
+    "world": "W5-thick-category",
+    "question": "In paired worlds where a category is relevant (A) or redundant (B), how does each framework handle it?",
+    "setup": "eight Poisson streams, two accounts; separate vs pooled budgets; two account-level cuts",
+    "compared": "ABM (fixed / structure selected), aggregate model, twin (with / without account variable), AIF model comparison, Ziran adapter (+ ablation)",
+    "measured": [
+      "prediction MAE per world",
+      "category used per world"
+    ],
+    "predicate": "none predefined",
+    "wouldCountAsFailure": "the category label available to some frameworks only; the worlds differing in anything but the budget structure"
+  },
+  {
+    "id": "EC6",
+    "world": "ablations",
+    "question": "Which Ziran / Xeno mechanisms produce non-redundant differences in these worlds?",
+    "setup": "each ablation is compared with the full adapter in the world where the mechanism acts",
+    "compared": "no observation revision (W1), no multiple clocks (W2), no fragility transfer analysis and fixed operational values (W3), no MetaConfiguration and no description-space revision (W4), fixed operational values (W5)",
+    "measured": [
+      "the world's own measurements"
+    ],
+    "predicate": "a mechanism is reported as producing a difference only if the ablation changes a measurement; unchanged measurements are reported as \"no difference in this world\"",
+    "wouldCountAsFailure": "an ablation that also changes something other than the named mechanism"
+  }
+]
