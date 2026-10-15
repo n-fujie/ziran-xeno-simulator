@@ -341,6 +341,6 @@ Security reports: GitHub private vulnerability reporting ([SECURITY.md](SECURITY
 Further reading: [DESIGN.md](DESIGN.md) · [docs/architecture.md](docs/architecture.md) · [docs/claims.md](docs/claims.md) ·
 [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md).
 
-An opt-in [scientific cycle HTTP extension](docs/scientific-runtime.md) reuses the core apparatus, candidate
+An opt-in [scientific cycle HTTP extension and audit](docs/scientific-runtime-audit.md) reuses the core apparatus, candidate
 generation and intervention APIs with independent synthetic validation cohorts, durable receipts and explicit
 recovery. Its matched-condition comparison retains failures and does not establish strong Xenoscience.

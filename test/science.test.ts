@@ -12,7 +12,7 @@ import { acquire, configured, generate, measure, relation, instrument } from '..
 
 function setup(t: { after: (fn: () => void) => void }) {
   const directory = mkdtempSync(join(tmpdir(), 'science-test-'));
-  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  t.after(() => { rmSync(directory, { recursive: true, force: true }); rmSync(`${directory}.checkpoint`, { force: true }); });
   return new ScientificRuntime(new Ledger(directory));
 }
 
@@ -25,7 +25,8 @@ test('scientific cycle uses existing engine candidates and independently verifie
   assert.equal(result.intervention?.consistent, true);
   assert.ok(result.intervention!.after! < result.intervention!.before!);
   assert.deepEqual(result.failures, []);
-  assert.equal(runtime.ledger.read().length, 2);
+  assert.deepEqual(runtime.ledger.read().map((e) => e.kind), ['prepared', 'event', 'event', 'event', 'event', 'event', 'event', 'completed']);
+  assert.deepEqual(runtime.ledger.read().filter((e) => e.kind === 'event').map((e) => (e.data as { phase: string }).phase), ['connect-issued', 'connect-confirmed', 'intervention-issued', 'intervention-remeasured', 'disconnect-issued', 'disconnect-confirmed']);
   assert.equal(result.resources.interventions, 1);
   assert.ok(result.generated.some((p) => p.parent && p.kinds.length === 2));
   assert.ok(result.decisions.some((d) => d.reason === 'loses-existing-target-channel'));
@@ -41,7 +42,7 @@ test('cohorts, measurement receipts and evaluation data are separate and traceab
     assert.ok(Array.isArray(m.historyRefs));
   }
   assert.equal(new Set(result.measurements.map((m) => m.id)).size, result.measurements.length);
-  assert.equal(result.measurements.filter((m) => m.apparatus === 'independent-reference-probe').length, 18);
+  assert.equal(result.measurements.filter((m) => m.apparatus === 'independent-reference-probe').length, 6 * (2 + result.resources.evaluatedCandidates) + 2);
   for (const a of result.assessments) for (const id of a.measurementIds) assert.equal(result.measurements.find((m) => m.id === id)?.partition, a.partition);
   assert.equal(result.assessments.at(-1)?.partition, 'evaluation');
   assert.ok(result.decisions.every((d) => !d.reason.includes('evaluation')));
@@ -104,13 +105,11 @@ test('no measurement, missing target, incompatible scale, boundary hiding and me
     assert.equal(relation([make(status)], [make(status)]), 'undetermined', status);
   }
   assert.equal(relation([make('detected')], [make('detected')]), 'no-difference-in-measured-channels');
-  const spec = { id: 'missing', seed: 1, horizon: 1, state: {}, clocks: [{ id: 'sample', period: 1 }], rules: [], apparatus: [instrument()] };
-  const missing = new Engine(spec); missing.run(0);
+  const missing = configured(pair.engines[0]); delete missing.state['target/x'];
   const readings = measure(missing, pair, 0, [], new Date().toISOString(), 'coupled');
   assert.equal(readings[0].status, 'unmeasurable');
   assert.equal(readings[0].value, null);
-  const hiddenSpec = { ...spec, state: { 'target/x': 5 }, apparatus: [{ ...instrument(), channels: [{ ...instrument().channels[0], boundary: ['other/'] }] }] };
-  const hidden = new Engine(hiddenSpec); hidden.run(0);
+  const hidden = configured(pair.engines[0], { id: 'hidden', kinds: ['boundary'], cost: 0, description: 'test hidden boundary', apply: (emit) => emit.apparatus.patchChannel('science', 'x', { boundary: ['other/'] }) });
   assert.equal(measure(hidden, pair, 0, [], new Date().toISOString(), 'coupled')[0].status, 'boundary-hidden');
 });
 
@@ -140,7 +139,7 @@ test('fixed and zero-adoption methods never actuate; evaluation budget is enforc
 });
 
 test('incompatible prior is an explicit stress condition, and cannot manufacture acceptance', (t) => {
-  const result = setup(t).run({ method: 'mismatched-history', budget: 1 });
+  const result = setup(t).run({ method: 'mismatched-history', historyPolicy: 'synthetic-stress', budget: 1 });
   assert.equal(result.provenance.incompatibleHistoryUsed, true);
   assert.equal(result.generated[0].id, 'external memory 0 → 1 frames');
   assert.equal(result.selected, null);
@@ -149,7 +148,7 @@ test('incompatible prior is an explicit stress condition, and cannot manufacture
 test('adverse history can consume the same tight candidate cap and worsen results', (t) => {
   const runtime = setup(t);
   const ordinary = runtime.run({ method: 'adaptive', budget: 3 });
-  const adverse = runtime.run({ method: 'mismatched-history', budget: 3 });
+  const adverse = runtime.run({ method: 'mismatched-history', historyPolicy: 'synthetic-stress', budget: 3 });
   assert.equal(ordinary.adoptionVerified, true);
   assert.equal(adverse.adoptionVerified, false);
   assert.equal(ordinary.resources.evaluatedCandidates, adverse.resources.evaluatedCandidates);
@@ -179,7 +178,7 @@ test('quarantined scientific outcomes feed later avoidance without replaying old
   const runtime = setup(t);
   const first = runtime.run({ condition: 'intervention-mismatch', method: 'history' });
   assert.equal(first.state, 'quarantined');
-  const next = runtime.run({ condition: 'intervention-mismatch', method: 'history' });
+  const next = runtime.run({ condition: 'intervention-mismatch', method: 'history', seed: 2 });
   assert.equal(next.provenance.historyRefs.length, 1);
   assert.notEqual(next.generated[0].id, first.selected);
   assert.equal(runtime.ledger.read().filter((e) => e.kind === 'prepared').length, 2);
@@ -203,9 +202,10 @@ test('failed durable completion never returns an apparent success', (t) => {
 for (const point of ['after-prepare', 'after-adoption', 'after-intervention', 'before-complete'] as FaultPoint[]) test(`fault injection ${point}: no partial success or automatic replay`, (t) => {
   const runtime = setup(t);
   assert.throws(() => runtime.run({}, (p) => { if (p === point) throw Error(`injected ${point}`); }), /injected/);
-  assert.deepEqual(runtime.ledger.read().map((e) => e.kind), ['prepared', 'quarantined']);
-  assert.equal(runtime.recover().length, 2);
-  assert.equal(runtime.recover().length, 2);
+  const entries = runtime.ledger.read();
+  assert.deepEqual(entries.filter((e) => e.kind !== 'event').map((e) => e.kind), ['prepared', 'quarantined']);
+  assert.equal(runtime.recover().length, entries.length);
+  assert.equal(runtime.recover().length, entries.length);
 });
 
 test('real process exit leaves intent; explicit recovery isolates it without replaying actuation', (t) => {
@@ -214,17 +214,18 @@ test('real process exit leaves intent; explicit recovery isolates it without rep
   const storeURL = new URL('../src/science/store.ts', import.meta.url).href;
   const code = `import {ScientificRuntime} from ${JSON.stringify(moduleURL)}; import {Ledger} from ${JSON.stringify(storeURL)}; new ScientificRuntime(new Ledger(${JSON.stringify(runtime.ledger.directory)})).run({}, p => { if(p === 'after-intervention') process.exit(72); });`;
   assert.throws(() => execFileSync(process.execPath, ['--input-type=module', '-e', code], { stdio: 'pipe' }), (e: unknown) => (e as { status: number }).status === 72);
-  assert.equal(runtime.ledger.read().length, 1);
+  assert.deepEqual(runtime.ledger.read().filter((e) => e.kind !== 'event').map((e) => e.kind), ['prepared']);
   assert.throws(() => runtime.run({}), /EEXIST/);
-  assert.deepEqual(runtime.recover().map((e) => e.kind), ['prepared', 'quarantined']);
-  assert.equal(runtime.recover().length, 2);
+  const recovered = runtime.recover();
+  assert.deepEqual(recovered.filter((e) => e.kind !== 'event').map((e) => e.kind), ['prepared', 'quarantined']);
+  assert.equal(runtime.recover().length, recovered.length);
   assert.equal(runtime.run({ seed: 2 }).state, 'completed');
 });
 
 test('checksum corruption blocks both execution and recovery and preserves evidence', (t) => {
   const runtime = setup(t); runtime.run({});
   const file = join(runtime.ledger.directory, 'ledger.json');
-  const data = readFileSync(file, 'utf8').replace('"version":1', '"version":2');
+  const data = readFileSync(file, 'utf8').replace('"version":2', '"version":3');
   writeFileSync(file, data);
   assert.throws(() => runtime.run({}), /integrity/);
   assert.throws(() => runtime.recover(), /integrity/);

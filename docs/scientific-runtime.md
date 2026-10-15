@@ -1,5 +1,8 @@
 # Scientific cycle integrated with the core runtime
 
+Historical protocol-v1 description at `ff45ab0`. Current behavior, repaired guarantees and validation are documented
+in [the PR #1 protocol-v2 audit](scientific-runtime-audit.md); the v1 results below remain preserved.
+
 Status: executable synthetic engineering prototype. Claim status: **synthetic-world result**.
 This extension does not establish strong Xenoscience. It uses the existing Node runtime and has no Python dependency.
 

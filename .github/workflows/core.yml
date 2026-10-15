@@ -1,4 +1,6 @@
 name: Core and scientific runtime
+permissions:
+  contents: read
 on:
   push:
   pull_request:
@@ -22,9 +24,11 @@ jobs:
       - run: npm run check:api
       - run: npm run test:comparison
       - run: node scripts/scientific-comparison.ts --out /tmp/scientific-comparison.json --receipts-dir /tmp/scientific-evidence
+      - run: node scripts/scientific-comparison.ts --out /tmp/scientific-comparison-repeat.json --verify-against /tmp/scientific-comparison.json
       - uses: actions/upload-artifact@v4
         with:
           name: scientific-comparison
           path: |
             /tmp/scientific-comparison.json
+            /tmp/scientific-comparison-repeat.json
             /tmp/scientific-evidence
