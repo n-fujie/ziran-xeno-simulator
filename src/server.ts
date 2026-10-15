@@ -39,6 +39,7 @@ import { hysteresis } from './domains/physical.ts';
 import { RECONSTRUCTIONS } from './domains/thought.ts';
 import { hashOf } from './core/hash.ts';
 import type { RuleSpec, TraceEvent } from './core/types.ts';
+import { scientificRoute } from './science/http.ts';
 
 ensurePresets();
 const here = dirname(fileURLToPath(import.meta.url));
@@ -156,6 +157,7 @@ const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? '/', 'http://localhost');
     const P = url.pathname;
+    if (await scientificRoute(req, res, P)) return;
     const m = (re: RegExp) => P.match(re);
     if (req.method === 'GET' && P === '/api/presets') return send(res, 200, listPresets().map((p) => ({ id: p.id, title: p.title, area: p.area, layer: p.layer, summary: p.summary, questions: p.questions ?? [], defaults: p.defaults, options: p.options ?? {}, perturbations: (p.perturbations ?? []).map((x) => ({ label: x.label, list: x.list.map(describePerturbation) })) })));
     if (req.method === 'GET' && P === '/api/perturbation-types') return send(res, 200, PERTURBATION_TYPES);

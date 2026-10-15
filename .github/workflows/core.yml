@@ -1,0 +1,30 @@
+name: Core and scientific runtime
+on:
+  push:
+  pull_request:
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run bench
+      - run: npm run check:presets
+      - run: npm run check:api
+      - run: npm run test:comparison
+      - run: node scripts/scientific-comparison.ts --out /tmp/scientific-comparison.json --receipts-dir /tmp/scientific-evidence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scientific-comparison
+          path: |
+            /tmp/scientific-comparison.json
+            /tmp/scientific-evidence
