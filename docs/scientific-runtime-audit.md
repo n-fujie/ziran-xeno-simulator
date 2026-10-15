@@ -38,7 +38,7 @@ accepted and empty readings were classified as no difference. Both are now cover
 | “Mismatched history” is a constant adverse ranking, not real stored history | E now queries actual foreign-condition records with the same bounded query rule; the old synthetic adverse prior is explicitly `historyPolicy: synthetic-stress` and remains tested |
 | “Grammar revision” is only a permutation plus an unconditional supplied composition | Keep supplied composition; add residual + failed-parent conditioned placement/absolute construction, current-graph regeneration and explicit expiry of unavailable prior structures; no new physics claim |
 | Generation/decision/history costs and reused reference datasets are obscured | Separate CPU/wall stages, actual sorting comparisons, every recorded reference acquisition, complete transaction timing and common-slot packet checks |
-| Local browser can submit cross-site scientific writes | Reject cross-origin/cross-site scientific requests; same-origin and CLI remain compatible. No fictional authentication system added |
+| Local browser can submit cross-site scientific writes | Reject cross-origin/cross-site requests and hostile Host names on a loopback-bound service, including matching-Origin DNS rebinding; same-origin and CLI remain compatible. No fictional authentication system added |
 
 ## Connected call paths
 

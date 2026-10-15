@@ -14,6 +14,11 @@ export async function scientificRoute(req: IncomingMessage, res: ServerResponse,
   const send = (status: number, value: unknown) => { res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(JSON.stringify(value)); };
   try {
     // No authentication is invented: protect this loopback service against cross-site browser writes.
+    // Matching Origin to an arbitrary Host alone also accepts a DNS-rebinding browser origin.
+    const binding = process.env.HOST ?? '127.0.0.1';
+    const authority = new URL(`http://${req.headers.host ?? ''}`);
+    const loopback = (host: string) => host === 'localhost' || host === '::1' || host === '[::1]' || /^127(?:\.\d{1,3}){3}$/.test(host);
+    if (authority.username || authority.password || (loopback(binding) && !loopback(authority.hostname))) { send(403, { error: 'untrusted scientific host' }); return true; }
     const origin = req.headers.origin;
     if (req.headers['sec-fetch-site'] === 'cross-site' || (origin && origin !== `http://${req.headers.host}` && origin !== `https://${req.headers.host}`)) { send(403, { error: 'cross-origin scientific request denied' }); return true; }
     if (path === '/api/science/protocol' && req.method === 'GET') {

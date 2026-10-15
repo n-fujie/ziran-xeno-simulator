@@ -32,6 +32,10 @@ test('cross-site scientific requests cannot trigger operations; same-origin and 
     assert.equal(response.status, 403);
   }
   assert.deepEqual(await fetch(base + '/api/science/ledger').then((r) => r.json()), []);
+  // A rebound origin matches its own hostile Host; Origin equality alone is insufficient.
+  const rebound = await fetch(base + '/api/science/cycles', { method: 'POST', headers: { host: 'rebound.example', origin: 'http://rebound.example' }, body: '{}' });
+  assert.equal(rebound.status, 403);
+  assert.deepEqual(await fetch(base + '/api/science/ledger').then((r) => r.json()), []);
   assert.equal((await fetch(base + '/api/science/protocol', { headers: { origin: base } })).status, 200);
   assert.equal((await fetch(base + '/api/presets').then((r) => r.json())).length, 38);
 });
