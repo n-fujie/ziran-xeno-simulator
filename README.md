@@ -344,3 +344,6 @@ Further reading: [DESIGN.md](DESIGN.md) · [docs/architecture.md](docs/architect
 An opt-in [scientific cycle HTTP extension and audit](docs/scientific-runtime-audit.md) reuses the core apparatus, candidate
 generation and intervention APIs with independent synthetic validation cohorts, durable receipts and explicit
 recovery. Its matched-condition comparison retains failures and does not establish strong Xenoscience.
+[Evidence authenticity, long-term history audit and fail-closed resume](docs/evidence-authenticity-and-safe-resume.md)
+adds offline measurement-provenance and ledger audits, real TLS verification tests and an idempotent resume gate; all
+verification is simulated or contract-model only.

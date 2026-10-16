@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { performance } from 'node:perf_hooks';
 import { hashOf } from '../core/hash.ts';
 import { Ledger } from './store.ts';
+import { unresolvedInterruptions } from './resume.ts';
 import { acquire, configured, generate, measure, independentMeasurement, relation, CONDITIONS } from './protocol.ts';
 import type { Condition, Pair, Proposal, Measurement } from './protocol.ts';
 
@@ -39,9 +40,15 @@ export function parseRequest(value: unknown): CycleRequest {
 }
 
 export type FaultPoint = 'after-prepare' | 'after-adoption' | 'after-connect' | 'after-intervention' | 'after-disconnect' | 'before-complete';
+export interface RuntimeOptions {
+  /** Opt-in. When true, a new operation is refused while any interrupted operation lacks a recorded, satisfied
+   * resume assessment (see resume.ts). Off by default: nothing resumes or is blocked differently unless enabled. */
+  requireResumeClearance?: boolean;
+}
 export class ScientificRuntime {
   readonly ledger: Ledger;
-  constructor(ledger: Ledger) { this.ledger = ledger; }
+  private requireResumeClearance: boolean;
+  constructor(ledger: Ledger, options: RuntimeOptions = {}) { this.ledger = ledger; this.requireResumeClearance = options.requireResumeClearance === true; }
   recover() { this.ledger.recoverDeadWriter(); return this.ledger.recover(); }
   run(input: unknown, fault?: (point: FaultPoint) => void): CycleResult {
     const request = parseRequest(input);
@@ -60,6 +67,7 @@ export class ScientificRuntime {
       }
       const ended = new Set(entries.filter((e) => e.kind === 'completed' || e.kind === 'quarantined').map((e) => e.operation));
       if (entries.some((e) => e.kind === 'prepared' && !ended.has(e.operation))) throw Error('interrupted operation: explicit recovery required before running');
+      if (this.requireResumeClearance && unresolvedInterruptions(entries).length) throw Error('interrupted operation lacks resume clearance; explicit resume assessment required');
       const id = request.operationId ?? randomUUID();
       const prepared = this.ledger.append('prepared', id, { request, protocol: PROTOCOL, adapter: 'simulated-engine-only' });
       try {

@@ -1,10 +1,12 @@
 // A separate-process HTTP contract model. Not a deployed immutable service.
 import { createServer } from 'node:http';
+import { createServer as createTlsServer } from 'node:https';
+import { readFileSync } from 'node:fs';
 import { sha256 } from '../../src/core/hash.ts';
 import { sameHead } from '../../src/science/checkpoint.ts';
 let head = { version: 1 as const, historyId: 'contract', seriesId: 'series', count: 0, hash: '', digest: sha256('[]') };
 let mode = 'normal', writes = 0, redirected = 0;
-const server = createServer(async (req, res) => {
+const handler = async (req: import('node:http').IncomingMessage, res: import('node:http').ServerResponse) => {
   if (req.url === '/redirected') { redirected++; res.end('{}'); return; }
   if (req.headers.authorization !== 'Bearer contract-only-credential' || mode === 'unauthorized') { res.writeHead(401); res.end('credential detail must not escape'); return; }
   if (mode === 'forbidden') { res.writeHead(403); res.end('private error'); return; }
@@ -24,7 +26,11 @@ const server = createServer(async (req, res) => {
     res.end(JSON.stringify(mode === 'wrong-ack' ? { ...head, hash: 'a'.repeat(64) } : head)); return;
   }
   res.writeHead(404); res.end('{}');
-});
+};
+// TLS is opt-in for tests of certificate verification; the default remains the loopback plaintext contract model.
+const server = process.env.CONTRACT_TLS_CERT && process.env.CONTRACT_TLS_KEY
+  ? createTlsServer({ cert: readFileSync(process.env.CONTRACT_TLS_CERT), key: readFileSync(process.env.CONTRACT_TLS_KEY) }, handler)
+  : createServer(handler);
 process.on('message', (message: { mode?: string; request: number }) => {
   if (message.mode) mode = message.mode;
   process.send?.({ request: message.request, head, writes, redirected });
