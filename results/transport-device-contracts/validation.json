@@ -1,0 +1,70 @@
+{
+  "baseMain": "39b2a47c4ec99c00a22929e31e18ee31e5cc063e",
+  "dependency": {
+    "pr": 2,
+    "state": "OPEN",
+    "head": "dca726b5908671bcbcc5acf59b92652efa0005d8"
+  },
+  "branch": "feat/checkpoint-transport-device-reconciliation",
+  "node": "v24.19.0",
+  "sourceSha256": {
+    "src/science/checkpoint-http.ts": "89be3100b358f29dc749fd43b021040046e2c1e747e59d747ab3634dc53d2a61",
+    "src/science/checkpoint-http-worker.ts": "5be763756b0344501a0427c31dd892da08263d9065e7870e62fd27dd9fbf70a4",
+    "src/science/device-reconciliation.ts": "21f76c5ceefa3df0676b185bde35a9497ab52a13feb4bc1fb72191856b007fa5"
+  },
+  "validation": {
+    "tests": 153,
+    "newTests": 19,
+    "checkpointTransport": 9,
+    "deviceReconciliation": 10,
+    "comparisonTests": 11,
+    "failures": 0,
+    "skips": 0,
+    "typecheck": "passed",
+    "conformance": 57,
+    "theory": {
+      "positive": 7,
+      "negative": 5,
+      "null": 2
+    },
+    "meta": {
+      "stable": 2,
+      "dependent": 5
+    },
+    "presets": 38,
+    "apiFailures": 0
+  },
+  "scientificResults": {
+    "conditionsChanged": false,
+    "retainedV1": "unchanged",
+    "retainedV2": "unchanged",
+    "priorPushAndPrArtifactsVerified": {
+      "fingerprints": 504,
+      "repeat": 504,
+      "chains": 36,
+      "receipts": 504
+    },
+    "newDefaultExperiments": "not needed locally; CI runs two complete comparisons"
+  },
+  "externalService": {
+    "configured": false,
+    "provisioned": false,
+    "model": "separate-process loopback HTTP contract server; two competing real client processes",
+    "deployedImmutability": "unverified"
+  },
+  "device": {
+    "model": "HMAC-authenticated state probe; fresh nonce, identity, sequence, capability and safe-stop checks",
+    "realHardware": "unverified",
+    "automaticResume": false,
+    "automaticActuationReplay": false
+  },
+  "environment": {
+    "startInstructionsUpdated": true,
+    "publication": "unverified",
+    "freshTaskRestoration": "unverified"
+  },
+  "secretsMetadata": "403; unknown",
+  "runtimeV020": "unlocated; unreproduced",
+  "historySpecificSuperiority": "unproven",
+  "strongXenoscience": "four conditions independently and jointly unproven"
+}
