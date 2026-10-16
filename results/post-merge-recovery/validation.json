@@ -1,0 +1,62 @@
+{
+  "baseMain": "39b2a47c4ec99c00a22929e31e18ee31e5cc063e",
+  "ancestryExitCode": 0,
+  "node": "v24.19.0",
+  "packageVersion": "0.4.0",
+  "protocol": "engine-scientific-cycle-v2",
+  "sourceSha256": {
+    "src/science/checkpoint.ts": "5533ffd346c852365e04cdf93c741dfbb7cc205c2df44236a408a9793bc5d818",
+    "src/science/store.ts": "1e48099b279f4d25e13cc530fb49e4e26fad0668dbe0494e35f3b39af49608db",
+    "src/science/http.ts": "e55ea262466d34f8b37152d9be99e365623296a72f2f514614172a4993be1ff7"
+  },
+  "baseline": {
+    "tests": 122,
+    "comparison": 11,
+    "failed": 0,
+    "skipped": 0
+  },
+  "current": {
+    "tests": 134,
+    "added": 12,
+    "comparison": 11,
+    "failed": 0,
+    "skipped": 0,
+    "typecheck": "passed",
+    "conformanceChecks": 57,
+    "theory": {
+      "positive": 7,
+      "negative": 5,
+      "null": 2,
+      "errors": 0
+    },
+    "meta": {
+      "stable": 2,
+      "dependent": 5,
+      "errors": 0
+    },
+    "presets": 38,
+    "apiEndpointFailures": 0,
+    "build": "No separate build command; native TypeScript and noEmit typecheck",
+    "webSocket": "No implementation exists"
+  },
+  "comparison": {
+    "cycles": 504,
+    "matchesRetainedV2": 504,
+    "witnessedChains": 36,
+    "terminalReceipts": 504,
+    "reportSha256": "73f81fed4af732f5bbdb43261692cd1f93036eb41867f381d9ed2ed01e6b2ef5",
+    "oldV1": "preserved unchanged; historical source and validation remain in repository"
+  },
+  "externalCheckpoint": {
+    "implementation": "optional synchronous injected interface with exact-head CAS and read-back",
+    "tested": "in-memory fault model; local file/witness reconciliation",
+    "immutableDeployment": "unverified",
+    "physicalRecovery": "unverified"
+  },
+  "secretsMetadata": "403; uninspected",
+  "environmentPublication": "unverified",
+  "newTaskRestoration": "unverified",
+  "runtimeV020": "original material not located; unreproduced",
+  "historySpecificSuperiority": "unproven",
+  "strongXenoscience": "joint conditions unproven"
+}

@@ -3,6 +3,8 @@ import { openSync, closeSync, writeFileSync, readFileSync, fsyncSync, renameSync
 import { join, resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { sha256 } from '../core/hash.ts';
+import { externalHead, sameHead } from './checkpoint.ts';
+import type { ExternalCheckpointBinding, ExternalHead } from './checkpoint.ts';
 
 export interface LedgerEntry { sequence: number; previous: string; kind: 'prepared' | 'event' | 'completed' | 'quarantined'; operation: string; data: unknown; hash: string }
 export interface Checkpoint { count: number; hash: string; digest: string; pending: string }
@@ -10,7 +12,9 @@ export class Ledger {
   readonly directory: string;
   readonly checkpointPath: string;
   private writing = false;
-  constructor(directory: string, checkpointPath = `${resolve(directory)}.checkpoint`) {
+  private external: ExternalCheckpointBinding | undefined;
+  constructor(directory: string, checkpointPath = `${resolve(directory)}.checkpoint`, external?: ExternalCheckpointBinding) {
+    if (external) { externalHead(external); this.external = { ...external }; }
     this.directory = resolve(directory); this.checkpointPath = resolve(checkpointPath);
     if (this.checkpointPath === join(this.directory, 'ledger.json')) throw Error('checkpoint must be separate from ledger');
     mkdirSync(this.directory, { recursive: true, mode: 0o700 });
@@ -21,6 +25,18 @@ export class Ledger {
   }
   private path(name: string) { return join(this.directory, name); }
   private syncDirectory() { const fd = openSync(this.directory, 'r'); try { fsyncSync(fd); } finally { closeSync(fd); } }
+  private head(raw: string, entries: LedgerEntry[]): ExternalHead {
+    return externalHead(this.external!, entries.length, entries.at(-1)?.hash ?? '', sha256(raw));
+  }
+  private verifyExternal(raw: string, entries: LedgerEntry[]) {
+    if (this.external && !sameHead(this.external.store.read(this.external.historyId, this.external.seriesId), this.head(raw, entries))) throw Error('external checkpoint mismatch; isolate store');
+  }
+  private advanceExternal(previousRaw: string, previous: LedgerEntry[], raw: string, entries: LedgerEntry[]) {
+    if (!this.external) return;
+    const next = this.head(raw, entries);
+    this.external.store.compareAndSet(this.head(previousRaw, previous), next);
+    this.verifyExternal(raw, entries); // An acknowledgement alone does not prove the retained head.
+  }
   private decode(raw: string): LedgerEntry[] {
     const entries: LedgerEntry[] = JSON.parse(raw);
     if (!Array.isArray(entries)) throw Error('ledger integrity: expected array');
@@ -49,6 +65,7 @@ export class Ledger {
     const raw = existsSync(this.path('ledger.json')) ? readFileSync(this.path('ledger.json'), 'utf8') : '[]';
     const entries = this.decode(raw), checkpoint = this.checkpoint();
     if (checkpoint.count !== entries.length || checkpoint.hash !== (entries.at(-1)?.hash ?? '') || checkpoint.digest !== sha256(raw)) throw Error('ledger integrity: checkpoint mismatch (truncation, rollback or interrupted commit); explicit recovery required');
+    this.verifyExternal(raw, entries);
     return entries;
   }
   exclusive<T>(action: () => T): T {
@@ -83,6 +100,8 @@ export class Ledger {
     try { writeFileSync(witness, JSON.stringify({ count: entries.length + 1, hash: entry.hash, digest: sha256(raw), pending })); fsyncSync(witness); } finally { closeSync(witness); }
     renameSync(witnessTemp, this.checkpointPath);
     const parent = openSync(resolve(this.checkpointPath, '..'), 'r'); try { fsyncSync(parent); } finally { closeSync(parent); }
+    // Intent is durable before external CAS. A timeout may mean committed: stop, never retry effects.
+    this.advanceExternal(existsSync(this.path('ledger.json')) ? readFileSync(this.path('ledger.json'), 'utf8') : '[]', entries, raw, [...entries, entry]);
     renameSync(temp, this.path('ledger.json')); this.syncDirectory();
     return entry;
   }
@@ -92,6 +111,7 @@ export class Ledger {
       if (existsSync(this.checkpointPath)) throw Error('checkpoint already exists');
       const raw = readFileSync(this.path('ledger.json'), 'utf8'), entries = this.decode(raw);
       if (entries.length !== expected.count || (entries.at(-1)?.hash ?? '') !== expected.hash) throw Error('external checkpoint mismatch');
+      this.verifyExternal(raw, entries);
       const fd = openSync(this.checkpointPath, 'wx', 0o600);
       try { writeFileSync(fd, JSON.stringify({ ...expected, digest: sha256(raw), pending: '' })); fsyncSync(fd); } finally { closeSync(fd); }
     });
@@ -104,6 +124,16 @@ export class Ledger {
         if (!checkpoint.pending || !existsSync(this.path(checkpoint.pending))) throw error;
         const raw = readFileSync(this.path(checkpoint.pending), 'utf8'), entries = this.decode(raw);
         if (sha256(raw) !== checkpoint.digest || entries.length !== checkpoint.count || entries.at(-1)?.hash !== checkpoint.hash) throw Error('ledger integrity: pending replacement mismatch');
+        if (this.external) {
+          const current = this.external.store.read(this.external.historyId, this.external.seriesId);
+          if (!sameHead(current, this.head(raw, entries))) {
+            const previousRaw = existsSync(this.path('ledger.json')) ? readFileSync(this.path('ledger.json'), 'utf8') : '[]';
+            const previous = this.decode(previousRaw);
+            // Only an exact one-event extension of the externally retained previous head can advance.
+            if (entries.length !== previous.length + 1 || JSON.stringify(entries.slice(0, -1)) !== JSON.stringify(previous) || !sameHead(current, this.head(previousRaw, previous))) throw Error('external checkpoint mismatch; isolate store');
+            this.advanceExternal(previousRaw, previous, raw, entries);
+          }
+        }
         renameSync(this.path(checkpoint.pending), this.path('ledger.json')); this.syncDirectory(); this.read();
       }
       const entries = this.read();
