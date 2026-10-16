@@ -79,6 +79,8 @@ test('transport rejects plaintext remote endpoints, embedded credentials and mis
   const credential = () => ({ token: 'contract-only-credential', expiresAt: Date.now() + 60000 });
   for (const endpoint of ['http://remote.example', 'https://user:password@remote.example', 'https://remote.example?token=x', 'https://remote.example/#fragment']) assert.throws(() => new CheckpointHttpStore({ endpoint, credential, allowLoopbackHttp: true }), /endpoint/);
   assert.throws(() => checkpointBindingFromEnvironment({}), /configuration missing/);
+  const local = new CheckpointHttpStore({ endpoint: 'http://127.0.0.1:1', allowLoopbackHttp: true, credential });
+  for (const id of ['.', '..']) assert.throws(() => local.read(id, 'series'), /identity/);
 });
 
 test('two actual client processes cannot both update the same external expected head', { timeout: 45000 }, async (t) => {

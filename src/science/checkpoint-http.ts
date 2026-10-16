@@ -22,7 +22,7 @@ export class CheckpointHttpStore implements ExternalCheckpointStore {
     this.endpoint = url.href.replace(/\/$/, ''); this.options = { ...options, timeoutMs };
   }
   private call(historyId: string, seriesId: string, update?: { expected: ExternalHead; next: ExternalHead }): unknown {
-    if (![historyId, seriesId].every((id) => /^[A-Za-z0-9_.-]{1,128}$/.test(id))) throw Error('invalid checkpoint service identity');
+    if (![historyId, seriesId].every((id) => /^[A-Za-z0-9_.-]{1,128}$/.test(id) && id !== '.' && id !== '..')) throw Error('invalid checkpoint service identity');
     let credential: CheckpointCredential;
     try { credential = this.options.credential(); } catch { throw Error('checkpoint credential unavailable'); }
     if (!credential || typeof credential.token !== 'string' || !credential.token || /[\r\n]/.test(credential.token) || !Number.isFinite(credential.expiresAt) || credential.expiresAt <= Date.now() + this.options.timeoutMs!) throw Error('checkpoint credential expired or invalid');
