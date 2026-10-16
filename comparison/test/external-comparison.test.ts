@@ -61,10 +61,16 @@ test('External Framework Comparison Benchmarks are defined separately from the v
   for (const f of ['src/bench/layers.ts', 'src/bench/theory.ts', 'src/bench/meta.ts']) assert.doesNotMatch(readFileSync(new URL(f, root), 'utf8'), /comparison\//);
 });
 
-test('the frozen v0.3.0 source tree is unchanged on this branch', (t) => {
+test('the frozen v0.3.0 source tree is preserved except the explicit scientific HTTP integration', (t) => {
   try { execFileSync('git', ['rev-parse', 'v0.3.0'], { cwd: root, stdio: 'ignore' }); } catch { t.skip('no git tag v0.3.0 available'); return; }
-  const diff = execFileSync('git', ['diff', '--name-only', 'v0.3.0', '--', 'src', 'public', 'bin'], { cwd: root, encoding: 'utf8' }).trim();
+  const diff = execFileSync('git', ['diff', '--name-only', 'v0.3.0', '--', 'src', 'public', 'bin', ':!src/science', ':!src/server.ts'], { cwd: root, encoding: 'utf8' }).trim();
   assert.equal(diff, '', `changed under src/public/bin: ${diff}`);
+  // Existing server code must remain byte-for-byte intact around the two additive integration lines.
+  const baseline = execFileSync('git', ['show', 'v0.3.0:src/server.ts'], { cwd: root, encoding: 'utf8' });
+  const current = readFileSync(new URL('src/server.ts', root), 'utf8');
+  assert.ok(current.includes("import { scientificRoute } from './science/http.ts';\n"));
+  assert.ok(current.includes('    if (await scientificRoute(req, res, P)) return;\n'));
+  assert.equal(current.replace("import { scientificRoute } from './science/http.ts';\n", '').replace('    if (await scientificRoute(req, res, P)) return;\n', ''), baseline);
 });
 
 test('runs are deterministic apart from wall time', () => {
