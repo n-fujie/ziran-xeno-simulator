@@ -9,12 +9,12 @@
     "src/science/resume.ts": "4834621d76a1a57619eb8b169ecd564ad8d68f38b826437aed2ecf73db60b844"
   },
   "validation": {
-    "tests": 183,
+    "tests": 185,
     "existingTests": 153,
-    "newTests": 30,
+    "newTests": 32,
     "newByFile": {
       "science-evidence-audit": 8,
-      "science-resume-gate": 18,
+      "science-resume-gate": 20,
       "science-checkpoint-assurance": 4
     },
     "comparisonTests": 11,

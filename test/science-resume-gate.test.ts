@@ -5,7 +5,7 @@ import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Ledger } from '../src/science/store.ts';
-import { ScientificRuntime } from '../src/science/runtime.ts';
+import { ScientificRuntime, parseRequest } from '../src/science/runtime.ts';
 import type { FaultPoint } from '../src/science/runtime.ts';
 import { DeviceReconciler } from '../src/science/device-reconciliation.ts';
 import type { DeviceSnapshot, DeviceQuery, DeviceExpectation, DeviceStateProbe } from '../src/science/device-reconciliation.ts';
@@ -196,4 +196,41 @@ test('resume and reconciliation records never feed scientific history', (t) => {
   const result = new ScientificRuntime(f.ledger, { requireResumeClearance: true }).run({ seed: 60, method: 'history' });
   const audited = new Set(trace.filter((e) => e.operation.startsWith('resume-') || e.operation.startsWith('reconcile-')).map((e) => e.hash));
   assert.equal(result.provenance.historyRefs.some((ref) => audited.has(ref)), false);
+});
+
+test('protection scope with the guard OFF: pending work and replay stay refused; a recovered interruption does not block new work', (t) => {
+  const f = setup(t);
+  const off = () => new ScientificRuntime(f.ledger), on = () => new ScientificRuntime(f.ledger, { requireResumeClearance: true });
+  // A crash that left a prepared record with no terminal record: both modes refuse new work until explicit recovery.
+  f.ledger.exclusive(() => f.ledger.append('prepared', 'crashed-before-terminal', { request: parseRequest({ operationId: 'crashed-before-terminal' }), protocol: 'engine-scientific-cycle-v2', adapter: 'simulated-engine-only' }));
+  assert.throws(() => off().run({ seed: 81 }), /interrupted operation: explicit recovery required/);
+  assert.throws(() => on().run({ seed: 81 }), /interrupted operation: explicit recovery required/);
+  // Satisfied resume conditions for ANOTHER interruption do not unblock a pending operation in either mode.
+  assert.ok(f.gate().assess(f.request()).reasons.includes('pending-operation'));
+  assert.throws(() => off().run({ seed: 81 }), /explicit recovery required/);
+  off().recover();
+  // After explicit recovery the crashed operation is a permanent quarantine: it can never be replayed in either mode.
+  assert.throws(() => off().run({ operationId: 'crashed-before-terminal' }), /quarantined/);
+  assert.throws(() => on().run({ operationId: 'crashed-before-terminal' }), /quarantined/);
+  // NOT guaranteed with the guard off: new work proceeds despite uncleared interruptions. The guard closes that gap.
+  assert.deepEqual(unresolvedInterruptions(f.ledger.read()).sort(), ['crashed-before-terminal', f.operationId].sort());
+  assert.equal(off().run({ seed: 82 }).state, 'completed');
+  assert.throws(() => on().run({ seed: 82 }), /lacks resume clearance/);
+  // A satisfied assessment for one interruption never clears another, and never un-quarantines the cleared one.
+  assert.equal(f.gate().assess(f.request()).status, 'conditions-met');
+  assert.deepEqual(unresolvedInterruptions(f.ledger.read()), ['crashed-before-terminal']);
+  assert.throws(() => on().run({ seed: 83 }), /lacks resume clearance/);
+  assert.throws(() => off().run({ operationId: f.operationId }), /quarantined/);
+  assert.throws(() => on().run({ operationId: f.operationId }), /quarantined/);
+});
+
+test('clearance is tamper-evident, not tamper-proof: forged entries without a valid chain are rejected', (t) => {
+  const f = setup(t);
+  // A clearance record without its prepared record is rejected by the ledger chain rules.
+  assert.throws(() => f.ledger.exclusive(() => f.ledger.append('completed', 'resume-forged-request', { kind: 'resume-assessment-v1', status: 'conditions-met', originalOperation: f.operationId })), /event outside active operation/);
+  // Hand-editing the file to insert one breaks the hash chain and the witness.
+  const file = join(f.ledger.directory, 'ledger.json'), entries = JSON.parse(readFileSync(file, 'utf8'));
+  entries.push({ sequence: entries.length, previous: entries.at(-1).hash, kind: 'completed', operation: 'resume-forged-request', data: {}, hash: 'f'.repeat(64) });
+  writeFileSync(file, JSON.stringify(entries));
+  assert.throws(() => new ScientificRuntime(f.ledger, { requireResumeClearance: true }).run({ seed: 91 }), /ledger integrity/);
 });

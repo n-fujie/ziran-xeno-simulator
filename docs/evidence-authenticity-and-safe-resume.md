@@ -111,6 +111,32 @@ library-only: it is not exposed over the unauthenticated HTTP service. The check
 *different* quarantine record is implemented defensively but has no dedicated test, because the current ledger
 cannot produce that state through its public operations.
 
+### Protection scope: guard on versus off
+
+Verified by `test/science-resume-gate.test.ts` (two tests added after review):
+
+| | Guard OFF (default; behaviour unchanged from main) | Guard ON (`requireResumeClearance`) |
+|---|---|---|
+| A prepared record with no terminal record (crash) refuses all new work until explicit `recover()` | yes | yes |
+| A recovered interruption is a permanent quarantine; its operation id can never be replayed | yes | yes |
+| Ledger chain, witness and external head are verified before every operation | yes | yes |
+| A satisfied assessment for one interruption never clears another or un-quarantines the cleared one | yes | yes |
+| New work is refused while an interruption lacks a satisfied assessment | **no** | yes |
+
+So with the guard off, enabling nothing weakens an existing safety stop, but **new cycles may start after
+`recover()` even though the interrupted operation's physical outcome is uncleared**; only the guard closes that.
+Limits that hold in both modes:
+
+- The guard is a property of one `ScientificRuntime` instance. The existing HTTP singleton (`src/science/http.ts`)
+  is constructed **without** it and this change adds no switch for it, so HTTP-hosted runs are unguarded.
+- Clearance is **tamper-evident, not tamper-proof**. The ledger authorizes nobody: a party who can append to the
+  ledger (and, if bound, hold the external CAS credential) can write any record, including a clearance. Forged
+  entries without a valid hash chain and witness are rejected, but a faithful forger is not.
+- A clearance is per interruption and is not re-evaluated against later device state; the freshness limit applies
+  to the evidence at assessment time only. `observedBootId`, `currentApparatusHash` and `requestedBy` are operator
+  assertions. "Last confirmed apparatus hash" is the hash recorded by the last confirming event of the interrupted
+  operation (for example the adopted configuration); an operator intending a different configuration is blocked.
+
 ## 6. Local authentication and external credentials
 
 The HTTP server remains unauthenticated and loopback-bound; Origin and DNS-rebinding checks are not user
@@ -133,7 +159,7 @@ robustness here is not evidence for any of them.
 ```sh
 npm ci
 npm run typecheck
-npm test                 # 183 tests: 153 existing + 30 new
+npm test                 # 185 tests: 153 existing + 32 new
 npm run test:comparison  # 11
 npm run bench && npm run check:presets && npm run check:api
 node scripts/scientific-comparison.ts --out /tmp/new.json --receipts-dir /tmp/new-receipts \
