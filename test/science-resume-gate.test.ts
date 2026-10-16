@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
@@ -12,9 +12,17 @@ import type { DeviceSnapshot, DeviceQuery, DeviceExpectation, DeviceStateProbe }
 import { ResumeGate, unresolvedInterruptions } from '../src/science/resume.ts';
 import type { ResumeRequest, ResumeBlock } from '../src/science/resume.ts';
 import { sha256 } from '../src/core/hash.ts';
+import { control, faultyFs } from './fixtures/ledger-faults.ts';
+import type { FaultControl } from './fixtures/ledger-faults.ts';
 import { sameHead } from '../src/science/checkpoint.ts';
-import type { ExternalHead, ExternalCheckpointStore } from '../src/science/checkpoint.ts';
+import type { ExternalHead, ExternalCheckpointStore, ExternalCheckpointBinding } from '../src/science/checkpoint.ts';
 
+// The whole suite runs against the single-file layout and against a rotating ledger with a tiny threshold, so
+// every assessment, clearance and guard check also crosses sealed-segment boundaries.
+// A restart reopens the same external store; the in-memory model of it lives on the ledger object that created it.
+function memoryBindingFor(ledger: Ledger) { return (ledger as unknown as { external: ExternalCheckpointBinding }).external; }
+const LAYOUTS: [string, number | undefined][] = [['single-file ledger', undefined], ['rotating ledger (2000 B segments)', 2000]];
+for (const [layout, segmentBytes] of LAYOUTS) describe(layout, () => {
 const key = 'contract-model-only-signing-key';
 const sign = (value: unknown) => createHmac('sha256', key).update(JSON.stringify(value)).digest('hex');
 function memoryBinding() {
@@ -26,10 +34,10 @@ const KINDS: Record<string, readonly ('connect' | 'intervene' | 'disconnect')[]>
   'after-connect': ['connect', 'disconnect'], 'after-intervention': ['connect', 'intervene', 'disconnect'], 'after-disconnect': ['connect', 'intervene', 'disconnect'],
 };
 
-function setup(t: { after: (fn: () => void) => void }, options: { point?: FaultPoint; bound?: boolean; reconcile?: boolean } = {}) {
+function setup(t: { after: (fn: () => void) => void }, options: { point?: FaultPoint; bound?: boolean; reconcile?: boolean; faults?: FaultControl } = {}) {
   const point = options.point ?? 'after-disconnect';
   const root = mkdtempSync(join(tmpdir(), 'resume-gate-')); t.after(() => rmSync(root, { recursive: true, force: true }));
-  const ledger = new Ledger(join(root, 'ledger'), undefined, options.bound === false ? undefined : memoryBinding());
+  const ledger = new Ledger(join(root, 'ledger'), undefined, options.bound === false ? undefined : memoryBinding(), { ...(segmentBytes === undefined ? {} : { maxSegmentBytes: segmentBytes }), ...(options.faults ? { fs: faultyFs(options.faults) } : {}) });
   const runtime = new ScientificRuntime(ledger);
   const operationId = 'interrupted-device-op';
   assert.throws(() => runtime.run({ operationId }, (phase) => { if (phase === point) throw Error('simulated device response loss'); }));
@@ -66,6 +74,7 @@ function setup(t: { after: (fn: () => void) => void }, options: { point?: FaultP
 test('satisfied conditions record a software run clearance only; physical recovery stays unverified and nothing is replayed', (t) => {
   const f = setup(t);
   assert.equal(f.recordedHash()?.length, 64);
+  if (segmentBytes !== undefined) assert.ok(f.ledger.layout().sealed.length >= 1, 'this layout really is rotating');
   const before = f.ledger.read();
   const result = f.gate().assess(f.request());
   assert.equal(result.status, 'conditions-met'); assert.deepEqual(result.reasons, []);
@@ -233,4 +242,40 @@ test('clearance is tamper-evident, not tamper-proof: forged entries without a va
   entries.push({ sequence: entries.length, previous: entries.at(-1).hash, kind: 'completed', operation: 'resume-forged-request', data: {}, hash: 'f'.repeat(64) });
   writeFileSync(file, JSON.stringify(entries));
   assert.throws(() => new ScientificRuntime(f.ledger, { requireResumeClearance: true }).run({ seed: 91 }), /ledger integrity/);
+});
+
+
+test('idempotency and conflict detection survive a restart (fresh ledger and gate objects)', (t) => {
+  const f = setup(t), request = f.request();
+  const first = f.gate().assess(request), length = f.ledger.read().length;
+  const restartedLedger = new Ledger(f.ledger.directory, undefined, memoryBindingFor(f.ledger), segmentBytes === undefined ? {} : { maxSegmentBytes: segmentBytes });
+  const again = new ResumeGate(restartedLedger, { now: () => 1000 + 1000 }).assess(structuredClone(request));
+  assert.deepEqual(again, first); assert.equal(restartedLedger.read().length, length, 'nothing is re-evaluated or re-recorded after restart');
+  assert.throws(() => new ResumeGate(restartedLedger, { now: () => 1000 + 1000 }).assess({ ...request, requestedBy: 'different-operator' }), /resumeId conflict/);
+  assert.deepEqual(unresolvedInterruptions(restartedLedger.read()), [], 'the clearance itself is durable across restart');
+  assert.equal(new ScientificRuntime(restartedLedger, { requireResumeClearance: true }).run({ seed: 71 }).state, 'completed');
+});
+
+test('a storage failure while recording a resume request: before the record nothing exists; after it the request is isolated, never half-applied', (t) => {
+  // (a) the very first write fails: nothing is recorded, the same resumeId can simply be submitted again.
+  const a = (() => { const c = control(); return { c, f: setup(t, { faults: c }) }; })();
+  const lengthA = a.f.ledger.read().length, requestA = a.f.request();
+  a.c.armed = { label: 'write:pending', partial: true, code: 'ENOSPC' };
+  assert.throws(() => a.f.gate().assess(requestA), /ENOSPC/);
+  assert.equal(a.f.ledger.read().length, lengthA);
+  assert.equal(a.f.gate().assess(requestA).status, 'conditions-met');
+  // (b) the second write (the outcome) fails: the prepared record stays pending, so all new work is refused until
+  // explicit recovery isolates it; the same id is not replayable, and a new id gets a fresh, complete assessment.
+  const b = (() => { const c = control(); return { c, f: setup(t, { faults: c }) }; })();
+  const requestB = b.f.request();
+  b.c.armed = { label: 'write:pending', nth: 2, partial: true, code: 'ENOSPC' };
+  assert.throws(() => b.f.gate().assess(requestB), /ENOSPC/);
+  assert.throws(() => new ScientificRuntime(b.f.ledger).run({ seed: 72 }), /explicit recovery required/);
+  assert.throws(() => b.f.gate().assess(requestB), /ledger or external checkpoint verification failed|resume request interrupted/);
+  b.f.ledger.recoverDeadWriter(); b.f.ledger.recover();
+  assert.throws(() => b.f.gate().assess(requestB), /resume request interrupted; submit a new resumeId/);
+  assert.deepEqual(unresolvedInterruptions(b.f.ledger.read()), [b.f.operationId], 'an interrupted assessment never counts as clearance');
+  assert.equal(b.f.gate().assess(b.f.request()).status, 'conditions-met');
+});
+
 });

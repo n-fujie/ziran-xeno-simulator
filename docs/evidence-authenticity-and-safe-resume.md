@@ -70,7 +70,7 @@ text. The route is a GET on the existing unauthenticated loopback service and ex
 
 Measured on the 504 comparison receipts regenerated for this change: 36/36 chains verified, 504 cycles audited,
 0 inconsistent, 0 open interruptions, 1,728 entries, 28,285,416 bytes (~56 KB per cycle including events).
-**Known limit, not fixed here:** every append rewrites the whole ledger (plus a pending copy), so cost and the
+**Known limit when this was written (since addressed, opt-in, in [long-term-ledger-and-write-faults.md](long-term-ledger-and-write-faults.md)):** every append rewrites the whole ledger (plus a pending copy), so cost and the
 free space needed per append grow with history size (`requiredFreeBytesForNextAppend` ≈ 2× ledger bytes).
 Rotation/segmentation would change the persisted format and is left as future work with a migration plan.
 Storage-full and permission-denied write faults were reasoned from the write-then-witness-then-rename order but

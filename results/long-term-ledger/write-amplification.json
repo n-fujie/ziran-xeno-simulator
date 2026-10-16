@@ -1,0 +1,141 @@
+{
+  "baseMain": "3e06f35542b3a1c6efbededcec3fd198dc3cb5c6",
+  "node": "v24.14.1",
+  "platform": "darwin (macOS), local run",
+  "workload": "N cycles cycling the seven conditions, methods alternating adaptive/history, seeds 1+(i%50), one ledger",
+  "method": "every file write the ledger performs is counted by an instrumented filesystem layer (pending file + witness); script: scripts/ledger-write-bench.ts",
+  "baselineUnmodifiedMain": {
+    "note": "measured by statting the rewritten file after each append on unmodified main before any change; the 30-cycle figure cross-checks the instrumented script to 0.0003%",
+    "cycles30": {
+      "appends": 114,
+      "bytesWritten": 110239758,
+      "finalBytes": 2009474
+    },
+    "cycles120": {
+      "appends": 450,
+      "bytesWritten": 2082682980,
+      "finalBytes": 9785156,
+      "amplification": 212.8
+    }
+  },
+  "runs": {
+    "c30-plain": {
+      "cycles": 30,
+      "appends": 114,
+      "segmentBytes": null,
+      "sealedSegments": 0,
+      "logicalBytes": 2009483,
+      "bytesWritten": 110239475,
+      "pendingBytesWritten": 110214389,
+      "witnessBytesWritten": 25086,
+      "writeAmplification": 54.86,
+      "maxPendingBytesPerAppend": 2009483,
+      "maxWitnessBytesPerAppend": 221,
+      "lastAppendBytes": 2009704,
+      "machineDependent": {
+        "avgAppendMsFirst10": 18.48,
+        "avgAppendMsLast10": 71.05,
+        "wallMs": 5759
+      }
+    },
+    "c30-s1MiB": {
+      "cycles": 30,
+      "appends": 114,
+      "segmentBytes": 1048576,
+      "sealedSegments": 1,
+      "logicalBytes": 2009483,
+      "bytesWritten": 55747327,
+      "pendingBytesWritten": 55712482,
+      "witnessBytesWritten": 34845,
+      "writeAmplification": 27.74,
+      "maxPendingBytesPerAppend": 1135457,
+      "maxWitnessBytesPerAppend": 438,
+      "lastAppendBytes": 874450,
+      "machineDependent": {
+        "avgAppendMsFirst10": 17.26,
+        "avgAppendMsLast10": 81.82,
+        "wallMs": 6010
+      }
+    },
+    "c120-plain": {
+      "cycles": 120,
+      "appends": 450,
+      "segmentBytes": null,
+      "sealedSegments": 0,
+      "logicalBytes": 9785170,
+      "bytesWritten": 2082689550,
+      "pendingBytesWritten": 2082590208,
+      "witnessBytesWritten": 99342,
+      "writeAmplification": 212.84,
+      "maxPendingBytesPerAppend": 9785170,
+      "maxWitnessBytesPerAppend": 221,
+      "lastAppendBytes": 9785391,
+      "machineDependent": {
+        "avgAppendMsFirst10": 18.52,
+        "avgAppendMsLast10": 284.13,
+        "wallMs": 77376
+      }
+    },
+    "c120-s1MiB": {
+      "cycles": 120,
+      "appends": 450,
+      "segmentBytes": 1048576,
+      "sealedSegments": 8,
+      "logicalBytes": 9785099,
+      "bytesWritten": 226519433,
+      "pendingBytesWritten": 226094339,
+      "witnessBytesWritten": 425094,
+      "writeAmplification": 23.15,
+      "maxPendingBytesPerAppend": 1175781,
+      "maxWitnessBytesPerAppend": 1783,
+      "lastAppendBytes": 915011,
+      "machineDependent": {
+        "avgAppendMsFirst10": 20.09,
+        "avgAppendMsLast10": 191.84,
+        "wallMs": 57889
+      }
+    },
+    "c120-s256KiB": {
+      "cycles": 120,
+      "appends": 450,
+      "segmentBytes": 262144,
+      "sealedSegments": 32,
+      "logicalBytes": 9785133,
+      "bytesWritten": 58060509,
+      "pendingBytesWritten": 56656655,
+      "witnessBytesWritten": 1403854,
+      "writeAmplification": 5.93,
+      "maxPendingBytesPerAppend": 374990,
+      "maxWitnessBytesPerAppend": 6389,
+      "lastAppendBytes": 138395,
+      "machineDependent": {
+        "avgAppendMsFirst10": 17.17,
+        "avgAppendMsLast10": 184.23,
+        "wallMs": 53868
+      }
+    },
+    "c480-s1MiB": {
+      "cycles": 480,
+      "appends": 1782,
+      "segmentBytes": 1048576,
+      "sealedSegments": 37,
+      "logicalBytes": 41253269,
+      "bytesWritten": 911709516,
+      "pendingBytesWritten": 905154852,
+      "witnessBytesWritten": 6554664,
+      "writeAmplification": 22.1,
+      "maxPendingBytesPerAppend": 1175776,
+      "maxWitnessBytesPerAppend": 7352,
+      "lastAppendBytes": 519862,
+      "machineDependent": {
+        "avgAppendMsFirst10": 16.6,
+        "avgAppendMsLast10": 744.8,
+        "wallMs": 847887
+      }
+    }
+  },
+  "caveats": [
+    "byte totals reproducible to ~1% (stored results embed floating-point timings); times are machine-dependent",
+    "append time still grows with history because every append re-reads and re-verifies all history"
+  ]
+}

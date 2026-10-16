@@ -1,30 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { fork, execFileSync } from 'node:child_process';
-import { once } from 'node:events';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { CheckpointHttpStore } from '../src/science/checkpoint-http.ts';
+import { certificate, tlsService } from './fixtures/tls.ts';
 import { Ledger } from '../src/science/store.ts';
 import { ScientificRuntime } from '../src/science/runtime.ts';
 import { evaluateCheckpointIndependence } from '../src/science/checkpoint-independence.ts';
 import type { CheckpointIndependenceDeclaration } from '../src/science/checkpoint-independence.ts';
 
-type Cleanup = { after: (fn: () => void | Promise<void>) => void };
-function certificate(root: string, name: string, san: string) {
-  const cert = join(root, `${name}.pem`), key = join(root, `${name}.key`);
-  execFileSync('openssl', ['req', '-x509', '-newkey', 'ec', '-pkeyopt', 'ec_paramgen_curve:prime256v1', '-nodes', '-keyout', key, '-out', cert, '-days', '1', '-subj', '/CN=checkpoint-contract-test', '-addext', `subjectAltName=${san}`], { stdio: 'ignore' });
-  return { cert, key };
-}
-async function tlsService(t: Cleanup, root: string, files: { cert: string; key: string }) {
-  const child = fork(new URL('./fixtures/checkpoint-service.ts', import.meta.url), { env: { ...process.env, CONTRACT_TLS_CERT: files.cert, CONTRACT_TLS_KEY: files.key }, stdio: ['ignore', 'ignore', 'ignore', 'ipc'] });
-  const exit = once(child, 'exit');
-  t.after(async () => { child.kill(); await exit; });
-  const [{ port }] = await once(child, 'message') as [{ port: number }];
-  const store = new CheckpointHttpStore({ endpoint: `https://127.0.0.1:${port}`, timeoutMs: 5000, credential: () => ({ token: 'contract-only-credential', expiresAt: Date.now() + 60000 }) });
-  return { store, binding: { historyId: 'contract', seriesId: 'series', store } };
-}
 /** The transport deliberately forwards only NODE_EXTRA_CA_CERTS from the parent environment. */
 function withEnvironment<T>(env: Record<string, string | undefined>, action: () => T): T {
   const saved = Object.fromEntries(Object.keys(env).map((k) => [k, process.env[k]]));
@@ -34,7 +18,7 @@ function withEnvironment<T>(env: Record<string, string | undefined>, action: () 
 
 test('actual HTTPS: an untrusted certificate fails closed, even when the parent disables TLS verification', { timeout: 45000 }, async (t) => {
   const root = mkdtempSync(join(tmpdir(), 'checkpoint-tls-')); t.after(() => rmSync(root, { recursive: true, force: true }));
-  const { store } = await tlsService(t, root, certificate(root, 'untrusted', 'IP:127.0.0.1,DNS:localhost'));
+  const { store } = await tlsService(t, certificate(root, 'untrusted', 'IP:127.0.0.1,DNS:localhost'));
   for (const insecure of [undefined, '0']) {
     const error = withEnvironment({ NODE_EXTRA_CA_CERTS: undefined, NODE_TLS_REJECT_UNAUTHORIZED: insecure }, () => { try { store.read('contract', 'series'); } catch (e) { return e as Error; } });
     assert.match(String(error?.message), /^checkpoint transport failed; outcome unknown; explicit recovery required$/, `insecure=${insecure}`);
@@ -45,7 +29,7 @@ test('actual HTTPS: an untrusted certificate fails closed, even when the parent 
 test('actual HTTPS: an operator-trusted certificate carries reads, compare-and-set and a bound runtime end to end', { timeout: 60000 }, async (t) => {
   const root = mkdtempSync(join(tmpdir(), 'checkpoint-tls-')); t.after(() => rmSync(root, { recursive: true, force: true }));
   const files = certificate(root, 'trusted', 'IP:127.0.0.1,DNS:localhost');
-  const { store, binding } = await tlsService(t, root, files);
+  const { store, binding } = await tlsService(t, files);
   withEnvironment({ NODE_EXTRA_CA_CERTS: files.cert }, () => {
     assert.equal(store.read('contract', 'series').count, 0);
     const ledger = new Ledger(join(root, 'ledger'), undefined, binding), runtime = new ScientificRuntime(ledger);
@@ -60,7 +44,7 @@ test('actual HTTPS: an operator-trusted certificate carries reads, compare-and-s
 test('actual HTTPS: a trusted certificate for a different host name is rejected', { timeout: 45000 }, async (t) => {
   const root = mkdtempSync(join(tmpdir(), 'checkpoint-tls-')); t.after(() => rmSync(root, { recursive: true, force: true }));
   const files = certificate(root, 'wrong-host', 'DNS:other.example');
-  const { store } = await tlsService(t, root, files);
+  const { store } = await tlsService(t, files);
   withEnvironment({ NODE_EXTRA_CA_CERTS: files.cert }, () => {
     assert.throws(() => store.read('contract', 'series'), /checkpoint transport failed; outcome unknown/);
   });
