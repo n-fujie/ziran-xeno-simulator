@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { Ledger } from './store.ts';
 import { ScientificRuntime, METHODS } from './runtime.ts';
 import { CONDITIONS } from './protocol.ts';
+import { auditLedger } from './ledger-audit.ts';
 
 let runtime: ScientificRuntime | undefined;
 function getRuntime() {
@@ -45,6 +46,9 @@ export async function scientificRoute(req: IncomingMessage, res: ServerResponse,
     if (path === '/api/science/checkpoint' && req.method === 'GET') {
       getRuntime().ledger.read(); // Do not advertise an unchecked/stale local witness as a verified head.
       send(200, getRuntime().ledger.checkpoint()); return true;
+    }
+    if (path === '/api/science/audit' && req.method === 'GET') {
+      send(200, auditLedger(getRuntime().ledger)); return true; // read-only; reports bounded categories, never raw errors
     }
     if (path === '/api/science/recover' && req.method === 'POST') {
       send(200, getRuntime().recover()); return true;

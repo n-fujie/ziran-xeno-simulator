@@ -1,0 +1,91 @@
+{
+  "baseMain": "276dad4f9d24bacfd12ba6390d140d491320c218",
+  "branch": "feat/evidence-authenticity-resume-gates",
+  "node": "v24.14.1",
+  "sourceSha256": {
+    "src/science/checkpoint-independence.ts": "3d35e159f605f8db331b3bec71848720f43861dc3bc42c9621f4a6d887f03abc",
+    "src/science/measurement-audit.ts": "5a36152a8180dcfdac949f2acd9673f7648371845ef78d81b82af1e68491c8f7",
+    "src/science/ledger-audit.ts": "ea1dd9056d20fde0e9f32e3a7a3e48d6364924987d1286b7417f8b48ba3a584d",
+    "src/science/resume.ts": "4834621d76a1a57619eb8b169ecd564ad8d68f38b826437aed2ecf73db60b844"
+  },
+  "validation": {
+    "tests": 185,
+    "existingTests": 153,
+    "newTests": 32,
+    "newByFile": {
+      "science-evidence-audit": 8,
+      "science-resume-gate": 20,
+      "science-checkpoint-assurance": 4
+    },
+    "comparisonTests": 11,
+    "failures": 0,
+    "skips": 0,
+    "typecheck": "passed",
+    "conformance": 57,
+    "theory": {
+      "positive": 7,
+      "negative": 5,
+      "null": 2
+    },
+    "meta": {
+      "stable": 2,
+      "dependent": 5
+    },
+    "presets": 38,
+    "apiFailures": 0
+  },
+  "scientificResults": {
+    "conditionsChanged": false,
+    "retainedV1": "unchanged",
+    "retainedV2": "unchanged",
+    "comparison504": {
+      "fingerprintsReproduced": 504,
+      "chains": 36,
+      "prepared": 504,
+      "completed": 324,
+      "quarantined": 180,
+      "events": 720,
+      "terminalRecords": 504
+    }
+  },
+  "newAuditsAppliedToRegeneratedReceipts": {
+    "chainsVerified": 36,
+    "chains": 36,
+    "cyclesAudited": 504,
+    "inconsistentCycles": 0,
+    "openInterruptions": 0,
+    "entries": 1728,
+    "bytes": 28285416,
+    "approxBytesPerCycleIncludingEvents": 56122,
+    "note": "Receipts regenerated locally in a temporary directory; retained results were not overwritten."
+  },
+  "externalService": {
+    "configured": false,
+    "provisioned": false,
+    "model": "separate-process loopback HTTP contract server (plaintext) and local TLS contract server with generated certificates",
+    "tlsVerification": "untrusted certificate, TLS-verification-disabled parent environment, trusted certificate, host-name mismatch exercised",
+    "deployedImmutability": "unverified",
+    "independence": "operator declaration only; never verified by the runtime"
+  },
+  "device": {
+    "model": "HMAC-authenticated state probe (existing)",
+    "realHardware": "unverified",
+    "automaticResume": false,
+    "physicalRecoveryVerified": false,
+    "resumeAuthorized": false
+  },
+  "knownLimits": [
+    "each ledger append rewrites the whole ledger; growth and free-space need scale with history size; no rotation or compaction implemented",
+    "storage-full and permission-denied write faults were not fault-injected",
+    "resume gate inputs observedBootId/currentApparatusHash/requestedBy are operator assertions, not authenticated",
+    "Codex environment publication and new-task restoration unverified (settings page required sign-in)",
+    "measurement audit establishes internal consistency of synthetic records only; no device-side evidence, external time evidence or per-measurement resolution exists"
+  ],
+  "strongXenoscience": {
+    "humanEnergyIndependence": "unestablished",
+    "humanReadabilityIndependence": "unestablished",
+    "materialOrganizationalSelfReproductionOfInquiry": "unestablished",
+    "autonomousVariableBoundaryScaleRevision": "unestablished",
+    "joint": "unestablished"
+  }
+}

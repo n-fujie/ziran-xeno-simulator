@@ -23,6 +23,8 @@ export class Ledger {
       catch (e) { if ((e as NodeJS.ErrnoException).code !== 'EEXIST') throw e; }
     }
   }
+  /** True only when an external checkpoint binding was supplied; says nothing about that store's independence. */
+  get externalWitnessed(): boolean { return this.external !== undefined; }
   private path(name: string) { return join(this.directory, name); }
   private syncDirectory() { const fd = openSync(this.directory, 'r'); try { fsyncSync(fd); } finally { closeSync(fd); } }
   private head(raw: string, entries: LedgerEntry[]): ExternalHead {
