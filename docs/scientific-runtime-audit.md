@@ -197,5 +197,7 @@ and publish in environment settings, then start a new task and run the documente
 restart tests are not a replacement for that test. Physical-device recovery and a protected external witness service
 are also unverified/unprovisioned. Strong Xenoscience's four conditions are not established.
 
-Even if GitHub reports a clean merge and passing CI, those external completion conditions are not silently marked
-done. Final whole-request merge approval remains on hold until the required environment restoration is verified.
+These external completion conditions remain unverified. The final scoped PR #1 review treated them as
+follow-up work rather than synthetic-runtime merge blockers; PR #1 was merged as `39b2a47`.
+See [post-merge recovery integration](post-merge-recovery.md) for the subsequent optional external-store interface.
+Neither that interface nor the merge establishes deployed immutable storage or environment restoration.

@@ -43,6 +43,7 @@ export async function scientificRoute(req: IncomingMessage, res: ServerResponse,
       send(200, getRuntime().ledger.read()); return true;
     }
     if (path === '/api/science/checkpoint' && req.method === 'GET') {
+      getRuntime().ledger.read(); // Do not advertise an unchecked/stale local witness as a verified head.
       send(200, getRuntime().ledger.checkpoint()); return true;
     }
     if (path === '/api/science/recover' && req.method === 'POST') {

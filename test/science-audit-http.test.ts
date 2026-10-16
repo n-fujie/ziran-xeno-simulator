@@ -4,12 +4,13 @@ import { createServer } from 'node:net';
 import { request } from 'node:http';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
-async function fixture(t: { after: (fn: () => void | Promise<void>) => void }) {
+async function fixture(t: { after: (fn: () => void | Promise<void>) => void }, inspect?: (root: string) => void) {
   const root = mkdtempSync(join(tmpdir(), 'science-http-audit-'));
+  inspect?.(root);
   const socket = createServer(); socket.listen(0, '127.0.0.1'); await once(socket, 'listening');
   const port = (socket.address() as { port: number }).port; await new Promise<void>((ok) => socket.close(() => ok()));
   const child = spawn(process.execPath, ['src/server.ts'], { cwd: new URL('../', import.meta.url), env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), SCIENCE_DATA_DIR: join(root, 'store') }, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -38,6 +39,17 @@ test('cross-site scientific requests cannot trigger operations; same-origin and 
   assert.deepEqual(await fetch(base + '/api/science/ledger').then((r) => r.json()), []);
   assert.equal((await fetch(base + '/api/science/protocol', { headers: { origin: base } })).status, 200);
   assert.equal((await fetch(base + '/api/presets').then((r) => r.json())).length, 38);
+});
+
+test('checkpoint HTTP export refuses a witness whose ledger was truncated', { timeout: 15000 }, async (t) => {
+  let root = ''; const base = await fixture(t, (value) => { root = value; });
+  assert.equal((await fetch(base + '/api/science/cycles', { method: 'POST', body: '{}' })).status, 201);
+  const before = await fetch(base + '/api/science/checkpoint'); assert.equal(before.status, 200);
+  const witness = readFileSync(join(root, 'store.checkpoint'), 'utf8');
+  writeFileSync(join(root, 'store', 'ledger.json'), '[]');
+  const after = await fetch(base + '/api/science/checkpoint'); assert.equal(after.status, 400);
+  assert.match((await after.json()).error, /checkpoint mismatch/);
+  assert.equal(readFileSync(join(root, 'store.checkpoint'), 'utf8'), witness);
 });
 
 test('lost HTTP response followed by retries executes one operation; conflicting keys are rejected', { timeout: 15000 }, async (t) => {
