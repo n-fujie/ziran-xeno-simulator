@@ -1,0 +1,11 @@
+{
+  "generatedFrom": "3e06f35542b3a1c6efbededcec3fd198dc3cb5c6",
+  "count": 9,
+  "hash": "0cd5842b180c364ac59e3ae7aa29d30ca7e805e3cc1bbcf54a8ad0c32d0d57a6",
+  "kinds": {
+    "prepared": 4,
+    "completed": 3,
+    "event": 1,
+    "quarantined": 1
+  }
+}

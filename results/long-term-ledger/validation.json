@@ -1,0 +1,117 @@
+{
+  "baseMain": "3e06f35542b3a1c6efbededcec3fd198dc3cb5c6",
+  "branch": "feat/segmented-ledger-fault-injection",
+  "node": "v24.14.1",
+  "sourceSha256": {
+    "src/science/store.ts": "80b23ba6dcc0b001938c2ebd5ae4e7b2fecb69132dcd52e60469a29cd39c9dbf",
+    "src/science/profile.ts": "c051f43144da41ab84edb173913878f8896ebb8c8578f2218d2f5eb8804e46ad",
+    "src/science/evidence-chain.ts": "649a6d6aa20002a20eb15255757e1ec02478ed10203386fdcd10a39eac31ff55",
+    "src/science/ledger-audit.ts": "03a9da9959cb8471dd99ca5d2a1fba1e0a833cb18dda16729e687909f0f1ef31"
+  },
+  "validation": {
+    "tests": 290,
+    "existingTests": 185,
+    "newTests": 105,
+    "failures": 0,
+    "skips": 0,
+    "newByFile": {
+      "ledger-segments": 21,
+      "ledger-fault-injection": 31,
+      "ledger-real-faults": 8,
+      "science-safety-profile": 5,
+      "science-evidence-chain": 16,
+      "science-resume-gate(+24: now 44 across two layouts)": 24
+    },
+    "comparisonTests": 11,
+    "typecheck": "passed",
+    "conformance": 57,
+    "theory": {
+      "positive": 7,
+      "negative": 5,
+      "null": 2
+    },
+    "meta": {
+      "stable": 2,
+      "dependent": 5
+    },
+    "presets": 38,
+    "apiFailures": 0
+  },
+  "scientificResults": {
+    "conditionsChanged": false,
+    "retainedV1": "unchanged",
+    "retainedV2": "unchanged",
+    "comparison504SingleFile": {
+      "fingerprintsReproduced": 504,
+      "chains": 36,
+      "prepared": 504,
+      "completed": 324,
+      "quarantined": 180,
+      "events": 720,
+      "terminalRecords": 504
+    },
+    "comparison504Rotating128KiB": {
+      "fingerprintsReproduced": 504,
+      "chains": 36,
+      "sealedSegments": 150,
+      "prepared": 504,
+      "completed": 324,
+      "quarantined": 180,
+      "events": 720,
+      "terminalRecords": 504
+    }
+  },
+  "evidenceChainOn504": {
+    "chainsVerified": "36/36 (both layouts)",
+    "cyclesAudited": 504,
+    "findings": 0,
+    "adoptions": 240,
+    "interventions": 120,
+    "interventionsRemeasured": 120,
+    "historyCycles": 114,
+    "historyChangedCandidates": 72,
+    "adoptedHistoryRegeneratedCandidate": 18,
+    "unresolvedHistoryReferences": 0,
+    "historyVsNoHistoryRetainedOutcome": "identical over 84 runs each: 24 verified adoptions, 12 consistent interventions, 36 quarantined, mean final score 0.429",
+    "performanceAdvantage": "not established"
+  },
+  "writeFaults": {
+    "simulated": "fault injected at each of 8-11 commit steps x 2 layouts; external CAS not-applied / applied-ack-lost / outage; transient read failures; persistent disk failure; every one of 8 ledger writes of a real cycle failed (one-off and persistent, both layouts)",
+    "realProcess": "SIGKILL at 9 (single-file) and 11 (rotating) commit steps; 4 steps against the real HTTP checkpoint service; 4 concurrent processes; live and dead writer lock",
+    "realKernel": "EACCES (ledger dir and witness dir, non-root); EFBIG via RLIMIT_FSIZE with a 102,400-byte torn file",
+    "realVolume": "ENOSPC on a 3 MB macOS disk image, local only, not in CI: invariants held in both runs of the final script (see real-enospc-macos.json)",
+    "notTested": [
+      "power loss / fsync ordering durability",
+      "real fsync, rename and directory-sync failures from a kernel",
+      "network filesystems",
+      "Windows",
+      "real full volume in CI",
+      "any real external service or device"
+    ]
+  },
+  "knownLimits": [
+    "append time still grows with history (every append re-reads and re-verifies all history): 745 ms at 41 MB",
+    "witness lists every sealed segment (~200 B each)",
+    "no pruning or archival of sealed segments",
+    "downgrade after rotation unsupported",
+    "rotation is opt-in; default and HTTP compat profile remain single-file",
+    "ledger is tamper-evident, not access control"
+  ],
+  "externalService": {
+    "configured": false,
+    "realCheckpointService": "none used",
+    "tlsContractService": "local generated certificates"
+  },
+  "device": {
+    "realHardware": "unverified",
+    "resumeAuthorized": false,
+    "physicalRecoveryVerified": false
+  },
+  "strongXenoscience": {
+    "humanEnergyIndependence": "unestablished",
+    "humanReadabilityIndependence": "unestablished",
+    "materialOrganizationalSelfReproductionOfInquiry": "unestablished",
+    "autonomousVariableBoundaryScaleRevision": "unestablished",
+    "joint": "unestablished"
+  }
+}

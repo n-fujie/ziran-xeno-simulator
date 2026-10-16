@@ -4,11 +4,19 @@ import { Ledger } from './store.ts';
 import { ScientificRuntime, METHODS } from './runtime.ts';
 import { CONDITIONS } from './protocol.ts';
 import { auditLedger } from './ledger-audit.ts';
+import { createProfiledRuntime, parseSafetyProfile } from './profile.ts';
+import { checkpointBindingFromEnvironment } from './checkpoint-http.ts';
 
 let runtime: ScientificRuntime | undefined;
 function getRuntime() {
   // Runtime data lives outside the checkout. Never accept a filesystem path from HTTP.
-  return runtime ??= new ScientificRuntime(new Ledger(process.env.SCIENCE_DATA_DIR ?? join('/workspace', '.ziran-science'), process.env.SCIENCE_CHECKPOINT_FILE));
+  // SCIENCE_SAFETY_PROFILE selects 'compat' (default, earlier behaviour) or 'strict' (external checkpoint required,
+  // segment rotation, resume clearance required). An unknown value or an incomplete strict configuration throws:
+  // the service never falls back to weaker protection.
+  if (runtime) return runtime;
+  const profile = parseSafetyProfile(process.env.SCIENCE_SAFETY_PROFILE);
+  const directory = process.env.SCIENCE_DATA_DIR ?? join('/workspace', '.ziran-science');
+  return runtime = createProfiledRuntime(profile, { directory, checkpointFile: process.env.SCIENCE_CHECKPOINT_FILE, external: profile === 'strict' ? checkpointBindingFromEnvironment() : undefined });
 }
 export async function scientificRoute(req: IncomingMessage, res: ServerResponse, path: string): Promise<boolean> {
   if (!path.startsWith('/api/science/')) return false;
@@ -23,7 +31,7 @@ export async function scientificRoute(req: IncomingMessage, res: ServerResponse,
     const origin = req.headers.origin;
     if (req.headers['sec-fetch-site'] === 'cross-site' || (origin && origin !== `http://${req.headers.host}` && origin !== `https://${req.headers.host}`)) { send(403, { error: 'cross-origin scientific request denied' }); return true; }
     if (path === '/api/science/protocol' && req.method === 'GET') {
-      send(200, { methods: METHODS, conditions: CONDITIONS, adapter: 'simulated-engine-only', claimStatus: 'synthetic-world result', physicalAtomicity: false }); return true;
+      send(200, { methods: METHODS, conditions: CONDITIONS, adapter: 'simulated-engine-only', claimStatus: 'synthetic-world result', physicalAtomicity: false, safetyProfile: parseSafetyProfile(process.env.SCIENCE_SAFETY_PROFILE) }); return true;
     }
     if (path === '/api/science/cycles' && req.method === 'POST') {
       const chunks: Buffer[] = []; let bytes = 0;

@@ -347,3 +347,5 @@ recovery. Its matched-condition comparison retains failures and does not establi
 [Evidence authenticity, long-term history audit and fail-closed resume](docs/evidence-authenticity-and-safe-resume.md)
 adds offline measurement-provenance and ledger audits, real TLS verification tests and an idempotent resume gate; all
 verification is simulated or contract-model only.
+[Long-term ledger storage and write-fault behaviour](docs/long-term-ledger-and-write-faults.md) adds opt-in segment rotation
+(write amplification 212.8× → 23.2× on the measured workload), twelve write-fault conditions tested, and explicit safety profiles.

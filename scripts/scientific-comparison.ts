@@ -15,8 +15,10 @@ const args = process.argv.slice(2);
 function flag(name: string) { const i = args.indexOf(name); return i === -1 ? undefined : args[i + 1]; }
 const output = flag('--out');
 const verifyAgainst = flag('--verify-against');
-if (!output) throw Error('usage: node scripts/scientific-comparison.ts --out <file> [--receipts-dir <directory>]');
+if (!output) throw Error('usage: node scripts/scientific-comparison.ts --out <file> [--receipts-dir <directory>] [--verify-against <file>] [--segment-bytes <n>]');
 const retained = flag('--receipts-dir');
+// Optional: store every chain with segment rotation. Scientific fingerprints must not depend on the storage layout.
+const segmentBytes = flag('--segment-bytes') === undefined ? undefined : Number(flag('--segment-bytes'));
 const evidence = retained ? resolve(retained) : mkdtempSync(join(tmpdir(), 'science-comparison-'));
 mkdirSync(evidence, { recursive: true });
 if (readdirSync(evidence).length) throw Error('receipts directory must be empty to avoid contaminating trial history');
@@ -30,7 +32,7 @@ const rows: Row[] = [];
 const sharedPackets = new Map<string, string>();
 try {
   for (const condition of CONDITIONS) for (const budget of [3, 4]) for (const seed of [1, 2, 3]) {
-    const runtimes = METHODS.map((method) => new ScientificRuntime(new Ledger(join(evidence, `${budget}-${seed}-${method}`))));
+    const runtimes = METHODS.map((method) => new ScientificRuntime(new Ledger(join(evidence, `${budget}-${seed}-${method}`), undefined, undefined, segmentBytes === undefined ? {} : { maxSegmentBytes: segmentBytes })));
     // Rotate order to reduce systematic startup/order bias. Each method runs alone on this machine.
     for (const round of [0, 1]) for (let offset = 0; offset < METHODS.length; offset++) {
       const index = (offset + seed + round) % METHODS.length;

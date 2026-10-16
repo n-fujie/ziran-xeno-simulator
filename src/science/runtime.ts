@@ -49,6 +49,8 @@ export class ScientificRuntime {
   readonly ledger: Ledger;
   private requireResumeClearance: boolean;
   constructor(ledger: Ledger, options: RuntimeOptions = {}) { this.ledger = ledger; this.requireResumeClearance = options.requireResumeClearance === true; }
+  /** Whether this instance refuses new work while an interrupted operation lacks resume clearance. */
+  get resumeClearanceRequired(): boolean { return this.requireResumeClearance; }
   recover() { this.ledger.recoverDeadWriter(); return this.ledger.recover(); }
   run(input: unknown, fault?: (point: FaultPoint) => void): CycleResult {
     const request = parseRequest(input);

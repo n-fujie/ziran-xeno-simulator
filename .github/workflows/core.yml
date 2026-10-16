@@ -25,10 +25,14 @@ jobs:
       - run: npm run test:comparison
       - run: node scripts/scientific-comparison.ts --out /tmp/scientific-comparison.json --receipts-dir /tmp/scientific-evidence
       - run: node scripts/scientific-comparison.ts --out /tmp/scientific-comparison-repeat.json --verify-against /tmp/scientific-comparison.json
+      # Storage layout must not change scientific results: the full comparison with segment rotation reproduces retained v2.
+      - run: node scripts/scientific-comparison.ts --out /tmp/scientific-comparison-segmented.json --receipts-dir /tmp/scientific-evidence-segmented --segment-bytes 131072 --verify-against results/scientific-cycle/v2-comparison.json
       - uses: actions/upload-artifact@v4
         with:
           name: scientific-comparison
           path: |
             /tmp/scientific-comparison.json
             /tmp/scientific-comparison-repeat.json
+            /tmp/scientific-comparison-segmented.json
+            /tmp/scientific-evidence-segmented
             /tmp/scientific-evidence
