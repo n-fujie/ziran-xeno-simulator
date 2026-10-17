@@ -10,6 +10,8 @@ import { Ledger } from '../src/science/store.ts';
 
 const base = process.argv[2];
 if (!base) throw Error('usage: node scripts/real-enospc-experiment.ts <directory-on-a-small-volume>');
+// LEDGER_VERIFICATION=section runs the same experiment with the opt-in section-scoped verification.
+const verification = process.env.LEDGER_VERIFICATION === 'section' ? 'section' as const : 'full' as const;
 const pad = (n: number) => 'x'.repeat(n);
 const results: Record<string, unknown>[] = [];
 let failed = false;
@@ -17,7 +19,7 @@ for (const [label, limit] of [['single-file', undefined], ['rotating-200KiB', 20
   const root = join(base, `exp-${label}`); rmSync(root, { recursive: true, force: true }); mkdirSync(root, { recursive: true });
   const dir = join(root, 'ledger');
   const ballast = join(root, 'ballast.bin'); writeFileSync(ballast, Buffer.alloc(500_000)); // freed later to give recovery some headroom
-  const open = () => new Ledger(dir, undefined, undefined, limit === undefined ? {} : { maxSegmentBytes: limit });
+  const open = () => new Ledger(dir, undefined, undefined, { ...(limit === undefined ? {} : { maxSegmentBytes: limit }), verification });
   const ledger = open();
   let acked = 0, code: string | undefined;
   try { for (let i = 0; i < 1000; i++) ledger.exclusive(() => { ledger.append('prepared', `fill-${i}`, { pad: pad(60_000) }); acked++; ledger.append('completed', `fill-${i}`, { ok: i }); acked++; }); }

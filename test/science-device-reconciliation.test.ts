@@ -4,7 +4,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { mkdtempSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { Ledger } from '../src/science/store.ts';
+import { Ledger } from './fixtures/ledger-mode.ts';
 import { ScientificRuntime } from '../src/science/runtime.ts';
 import { DeviceReconciler } from '../src/science/device-reconciliation.ts';
 import type { DeviceSnapshot, DeviceQuery, DeviceExpectation, DeviceStateProbe } from '../src/science/device-reconciliation.ts';

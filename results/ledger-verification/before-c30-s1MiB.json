@@ -1,0 +1,191 @@
+{
+  "environment": {
+    "node": "v24.14.1",
+    "platform": "darwin 25.6.0 arm64",
+    "cpu": "Apple M1",
+    "logicalCpus": 8,
+    "exposeGc": true
+  },
+  "ledger": {
+    "name": "c30-s1MiB",
+    "files": 2,
+    "sealedSegments": 1,
+    "totalBytes": 2009539,
+    "segmentBytes": 1048576,
+    "verification": "default"
+  },
+  "reps": 20,
+  "sections": 10,
+  "stageBreakdownMs": {
+    "diskReadMs": {
+      "n": 7,
+      "min": 3.456,
+      "p50": 3.657,
+      "p95": 9.198,
+      "p99": 9.198,
+      "max": 9.198,
+      "mean": 4.59,
+      "cv": 0.45
+    },
+    "jsonParseMs": {
+      "n": 7,
+      "min": 5.047,
+      "p50": 5.179,
+      "p95": 7.071,
+      "p99": 7.071,
+      "max": 7.071,
+      "mean": 5.47,
+      "cv": 0.132
+    },
+    "segmentBytesDigestMs": {
+      "n": 7,
+      "min": 5.033,
+      "p50": 5.109,
+      "p95": 7.77,
+      "p99": 7.77,
+      "max": 7.77,
+      "mean": 5.577,
+      "cv": 0.179
+    },
+    "perEntryHashValidationMs": {
+      "n": 7,
+      "min": 10.736,
+      "p50": 11.256,
+      "p95": 15.674,
+      "p99": 15.674,
+      "max": 15.674,
+      "mean": 11.963,
+      "cv": 0.146
+    }
+  },
+  "fullVerificationMs": {
+    "n": 20,
+    "min": 24.132,
+    "p50": 25.85,
+    "p95": 28.201,
+    "p99": 29.547,
+    "max": 29.547,
+    "mean": 26.139,
+    "cv": 0.05
+  },
+  "fullVerificationCpuMs": {
+    "n": 20,
+    "min": 24.069,
+    "p50": 25.446,
+    "p95": 28.32,
+    "p99": 30.357,
+    "max": 30.357,
+    "mean": 25.781,
+    "cv": 0.061
+  },
+  "heapDeltaMBAfterRead": {
+    "n": 20,
+    "min": 8.476,
+    "p50": 29.41,
+    "p95": 56.528,
+    "p99": 61.002,
+    "max": 61.002,
+    "mean": 32.462,
+    "cv": 0.478
+  },
+  "appendMs": {
+    "n": 80,
+    "min": 55.986,
+    "p50": 65.213,
+    "p95": 89.61,
+    "p99": 129.974,
+    "max": 129.974,
+    "mean": 68.661,
+    "cv": 0.187
+  },
+  "appendCpuMs": {
+    "n": 80,
+    "min": 43.387,
+    "p50": 46.285,
+    "p95": 67.52,
+    "p99": 89.69,
+    "max": 89.69,
+    "mean": 49.911,
+    "cv": 0.177
+  },
+  "appendFirstInSectionMs": {
+    "n": 10,
+    "min": 57.24,
+    "p50": 66.533,
+    "p95": 129.974,
+    "p99": 129.974,
+    "max": 129.974,
+    "mean": 73.837,
+    "cv": 0.279
+  },
+  "appendLaterInSectionMs": {
+    "n": 70,
+    "min": 55.986,
+    "p50": 64.801,
+    "p95": 89.61,
+    "p99": 126.067,
+    "max": 126.067,
+    "mean": 67.922,
+    "cv": 0.167
+  },
+  "readInSectionMs": {
+    "n": 10,
+    "min": 24.181,
+    "p50": 26.694,
+    "p95": 46.135,
+    "p99": 46.135,
+    "max": 46.135,
+    "mean": 29.864,
+    "cv": 0.265
+  },
+  "cycleSectionMs": {
+    "n": 10,
+    "min": 517.074,
+    "p50": 547.329,
+    "p95": 756.32,
+    "p99": 756.32,
+    "max": 756.32,
+    "mean": 584.618,
+    "cv": 0.14
+  },
+  "ioPerCycleSection": {
+    "bytesRead": 18105432,
+    "bytesReadByTheInitialRead": 2010387,
+    "bytesWritten": 7011209,
+    "fileReads": 36,
+    "bytesReadByEachAppend": [
+      2010387,
+      2010816,
+      2011242,
+      2011668,
+      2012094,
+      2012520,
+      2012946,
+      2013372
+    ],
+    "bytesWrittenByEachAppend": [
+      874908,
+      875334,
+      875760,
+      876186,
+      876612,
+      877038,
+      877464,
+      877894
+    ]
+  },
+  "restartFullVerificationMs": {
+    "n": 5,
+    "min": 28.106,
+    "p50": 29.603,
+    "p95": 31.65,
+    "p99": 31.65,
+    "max": 31.65,
+    "mean": 29.74,
+    "cv": 0.051
+  },
+  "memoryAfterAll": {
+    "heapMB": 9.473213195800781,
+    "rssMB": 141.234375
+  }
+}

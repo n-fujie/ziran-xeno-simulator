@@ -2,7 +2,7 @@
 // append on stdout with a synchronous write, so the parent knows what the child was told was durable.
 // Controlled entirely by environment variables; optional kill step (SIGKILL) at an exact commit label.
 import { writeSync } from 'node:fs';
-import { Ledger } from '../../src/science/store.ts';
+import { Ledger } from './ledger-mode.ts';
 import { CheckpointHttpStore } from '../../src/science/checkpoint-http.ts';
 import { control, faultyFs } from './ledger-faults.ts';
 

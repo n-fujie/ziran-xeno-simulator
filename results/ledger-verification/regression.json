@@ -1,0 +1,27 @@
+{
+  "verifiedAgainst": "results/scientific-cycle/v2-comparison.json",
+  "command": "node scripts/scientific-comparison.ts --out F --receipts-dir D --verify-against results/scientific-cycle/v2-comparison.json [--segment-bytes 131072] [--verification section]",
+  "runs": {
+    "single": {
+      "exit": 0,
+      "seconds": 54,
+      "result": "All 504 scientific fingerprints reproduced exactly"
+    },
+    "segmented": {
+      "exit": 0,
+      "seconds": 48,
+      "result": "All 504 scientific fingerprints reproduced exactly"
+    },
+    "section": {
+      "exit": 0,
+      "seconds": 48,
+      "result": "All 504 scientific fingerprints reproduced exactly"
+    },
+    "segmented-section": {
+      "exit": 0,
+      "seconds": 42,
+      "result": "All 504 scientific fingerprints reproduced exactly"
+    }
+  },
+  "nonDeterministicFieldsOnly": "Between layouts, and against retained v2, the only differing row/summary fields are wall-clock and CPU timings; all other fields (fingerprints, outcomes, counts) are identical."
+}

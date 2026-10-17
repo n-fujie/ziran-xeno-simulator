@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { CheckpointHttpStore, checkpointBindingFromEnvironment } from '../src/science/checkpoint-http.ts';
 import { externalHead } from '../src/science/checkpoint.ts';
-import { Ledger } from '../src/science/store.ts';
+import { Ledger } from './fixtures/ledger-mode.ts';
 import { ScientificRuntime } from '../src/science/runtime.ts';
 
 async function fixture(t: { after: (fn: () => void | Promise<void>) => void }) {

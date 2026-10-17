@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { Ledger } from '../src/science/store.ts';
+import { Ledger } from './fixtures/ledger-mode.ts';
 import type { LedgerEntry } from '../src/science/store.ts';
 import { ScientificRuntime } from '../src/science/runtime.ts';
 import type { CycleResult } from '../src/science/runtime.ts';

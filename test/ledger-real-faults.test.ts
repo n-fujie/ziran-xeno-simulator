@@ -5,7 +5,7 @@ import { once } from 'node:events';
 import { mkdtempSync, rmSync, chmodSync, readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { Ledger } from '../src/science/store.ts';
+import { Ledger } from './fixtures/ledger-mode.ts';
 import { CheckpointHttpStore } from '../src/science/checkpoint-http.ts';
 import { sha256 } from '../src/core/hash.ts';
 
