@@ -97,7 +97,7 @@ report gains `verification: { mode, auditVerifiedWholeHistory: true }` (the audi
 
 ## 4. What each mode guarantees
 
-Observed outcomes for every condition are in section 7 (`test/ledger-tamper-matrix.test.ts`, 35 tests; table printable
+Observed outcomes for every condition are in section 7 (`test/ledger-tamper-matrix.test.ts`, 30 matrix rows plus 6 lock/race/profile tests; table printable
 with `node scripts/ledger-tamper-matrix.ts`). Summary of what is and is not guaranteed:
 
 | | `full` (default) | `section` (opt-in) |
