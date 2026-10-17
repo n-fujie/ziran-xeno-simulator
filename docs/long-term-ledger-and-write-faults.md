@@ -146,7 +146,9 @@ terminal records; the rotated set has 150 sealed segments). CI now repeats the r
 
 ## 11. Known limits (not fixed here)
 
-- **Read/verify cost is still O(total history) per append** (745 ms at 41 MB). A verified-prefix cache keyed on file
+- **Read/verify cost is still O(total history) per append** (745 ms at 41 MB). *Update:* an explicit, opt-in section-scoped
+  verification mode (and removal of a duplicate validation) now exists; see `docs/incremental-ledger-verification.md` for what it
+  keeps and gives up. The default is unchanged. The original trade-off statement follows. A verified-prefix cache keyed on file
   metadata would remove it but would let a modification that preserves size/mtime/inode go unnoticed within a running
   process; that trade-off needs an explicit decision, so it was not made.
 - The witness lists every sealed segment (~200 B each), so its rewrite cost grows slowly with segment count.

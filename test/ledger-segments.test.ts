@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, cpSync, readFileSync, writeFileSync, readdirSync, existsSync, unlinkSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { Ledger } from '../src/science/store.ts';
+import { Ledger } from './fixtures/ledger-mode.ts';
 import { ScientificRuntime, scientificFingerprint } from '../src/science/runtime.ts';
 import { CONDITIONS } from '../src/science/protocol.ts';
 import { sha256 } from '../src/core/hash.ts';

@@ -1,0 +1,453 @@
+{
+  "baseCommit": "34299e94895feb8482d4bbbed0e38dc654e15c4b",
+  "variants": {
+    "before": "main (frozen worktree)",
+    "r1-only": "new code, verification=full",
+    "section": "new code, verification=section"
+  },
+  "method": "copy of each pre-built ledger; 10 cycle-shaped sections (1 read + 8 appends) = 80 appends; 20 full-verification repetitions; node --expose-gc; same machine and files",
+  "reproduce": [
+    "node scripts/ledger-verify-bench.ts build --cycles N [--segment-bytes M] --dir D",
+    "node --expose-gc scripts/ledger-verify-bench.ts measure --dir D [--segment-bytes M] --reps 20 --sections 10 [--verification full|section] --out F"
+  ],
+  "ledgers": {
+    "c30-s1MiB": {
+      "ledger": {
+        "name": "c30-s1MiB",
+        "files": 2,
+        "sealedSegments": 1,
+        "totalBytes": 2009539,
+        "segmentBytes": 1048576,
+        "verification": "section"
+      },
+      "before": {
+        "fullVerificationMsP50": 25.85,
+        "appendMs": {
+          "p50": 65.213,
+          "p95": 89.61,
+          "p99": 129.974,
+          "min": 55.986,
+          "max": 129.974,
+          "cv": 0.187
+        },
+        "cycleSectionMs": {
+          "p50": 547.329,
+          "p95": 756.32,
+          "min": 517.074,
+          "max": 756.32
+        },
+        "bytesReadPerCycle": 18105432,
+        "bytesWrittenPerCycle": 7011209,
+        "appendCpuMsP50": 46.285,
+        "restartMsP50": 29.603
+      },
+      "r1-only": {
+        "fullVerificationMsP50": 25.63,
+        "appendMs": {
+          "p50": 48.965,
+          "p95": 52.965,
+          "p99": 55.941,
+          "min": 46.761,
+          "max": 55.941,
+          "cv": 0.038
+        },
+        "cycleSectionMs": {
+          "p50": 422.647,
+          "p95": 434.025,
+          "min": 415.963,
+          "max": 434.025
+        },
+        "bytesReadPerCycle": 18105432,
+        "bytesWrittenPerCycle": 7011209,
+        "appendCpuMsP50": 34.119,
+        "restartMsP50": 37.807
+      },
+      "section": {
+        "fullVerificationMsP50": 24.652,
+        "appendMs": {
+          "p50": 27.932,
+          "p95": 29.963,
+          "p99": 31.968,
+          "min": 23.734,
+          "max": 31.968,
+          "cv": 0.05
+        },
+        "cycleSectionMs": {
+          "p50": 249.08,
+          "p95": 258.638,
+          "min": 243.08,
+          "max": 258.638
+        },
+        "bytesReadPerCycle": 9018168,
+        "bytesWrittenPerCycle": 7011209,
+        "appendCpuMsP50": 12.772,
+        "restartMsP50": 34.056
+      }
+    },
+    "c120-s256KiB": {
+      "ledger": {
+        "name": "c120-s256KiB",
+        "files": 33,
+        "sealedSegments": 32,
+        "totalBytes": 9785492,
+        "segmentBytes": 262144,
+        "verification": "section"
+      },
+      "before": {
+        "fullVerificationMsP50": 123.674,
+        "appendMs": {
+          "p50": 186.397,
+          "p95": 196.528,
+          "p99": 223.588,
+          "min": 177.997,
+          "max": 223.588,
+          "cv": 0.035
+        },
+        "cycleSectionMs": {
+          "p50": 1610.479,
+          "p95": 1668.234,
+          "min": 1589.436,
+          "max": 1668.234
+        },
+        "bytesReadPerCycle": 88196109,
+        "bytesWrittenPerCycle": 1122537,
+        "appendCpuMsP50": 175.987,
+        "restartMsP50": 132.332
+      },
+      "r1-only": {
+        "fullVerificationMsP50": 119.102,
+        "appendMs": {
+          "p50": 136.493,
+          "p95": 163.898,
+          "p99": 207.586,
+          "min": 126.995,
+          "max": 207.586,
+          "cv": 0.097
+        },
+        "cycleSectionMs": {
+          "p50": 1224.276,
+          "p95": 1403.375,
+          "min": 1192.906,
+          "max": 1403.375
+        },
+        "bytesReadPerCycle": 88196109,
+        "bytesWrittenPerCycle": 1122537,
+        "appendCpuMsP50": 122.729,
+        "restartMsP50": 137.669
+      },
+      "section": {
+        "fullVerificationMsP50": 117.238,
+        "appendMs": {
+          "p50": 17.058,
+          "p95": 20.017,
+          "p99": 21.648,
+          "min": 14.008,
+          "max": 21.648,
+          "cv": 0.08
+        },
+        "cycleSectionMs": {
+          "p50": 259.515,
+          "p95": 265.789,
+          "min": 254.868,
+          "max": 265.789
+        },
+        "bytesReadPerCycle": 10917349,
+        "bytesWrittenPerCycle": 1122537,
+        "appendCpuMsP50": 3.335,
+        "restartMsP50": 143.595
+      }
+    },
+    "c120-s1MiB": {
+      "ledger": {
+        "name": "c120-s1MiB",
+        "files": 9,
+        "sealedSegments": 8,
+        "totalBytes": 9785481,
+        "segmentBytes": 1048576,
+        "verification": "section"
+      },
+      "before": {
+        "fullVerificationMsP50": 121.521,
+        "appendMs": {
+          "p50": 194.799,
+          "p95": 210.882,
+          "p99": 298.191,
+          "min": 187.159,
+          "max": 298.191,
+          "cv": 0.068
+        },
+        "cycleSectionMs": {
+          "p50": 1697.93,
+          "p95": 1798.614,
+          "min": 1657.479,
+          "max": 1798.614
+        },
+        "bytesReadPerCycle": 88113102,
+        "bytesWrittenPerCycle": 7335713,
+        "appendCpuMsP50": 182.774,
+        "restartMsP50": 133.678
+      },
+      "r1-only": {
+        "fullVerificationMsP50": 120.049,
+        "appendMs": {
+          "p50": 142.609,
+          "p95": 157.331,
+          "p99": 187.277,
+          "min": 135.894,
+          "max": 187.277,
+          "cv": 0.059
+        },
+        "cycleSectionMs": {
+          "p50": 1267.707,
+          "p95": 1350.117,
+          "min": 1243.854,
+          "max": 1350.117
+        },
+        "bytesReadPerCycle": 88113102,
+        "bytesWrittenPerCycle": 7335713,
+        "appendCpuMsP50": 127.09,
+        "restartMsP50": 129.031
+      },
+      "section": {
+        "fullVerificationMsP50": 120.606,
+        "appendMs": {
+          "p50": 29.376,
+          "p95": 35.96,
+          "p99": 39.446,
+          "min": 25.857,
+          "max": 39.446,
+          "cv": 0.094
+        },
+        "cycleSectionMs": {
+          "p50": 359.176,
+          "p95": 370.974,
+          "min": 347.135,
+          "max": 370.974
+        },
+        "bytesReadPerCycle": 17121302,
+        "bytesWrittenPerCycle": 7335713,
+        "appendCpuMsP50": 13.197,
+        "restartMsP50": 132.579
+      }
+    },
+    "c120-s4MiB": {
+      "ledger": {
+        "name": "c120-s4MiB",
+        "files": 3,
+        "sealedSegments": 2,
+        "totalBytes": 9785456,
+        "segmentBytes": 4194304,
+        "verification": "section"
+      },
+      "before": {
+        "fullVerificationMsP50": 116.724,
+        "appendMs": {
+          "p50": 193.982,
+          "p95": 215.581,
+          "p99": 262.444,
+          "min": 187.022,
+          "max": 262.444,
+          "cv": 0.06
+        },
+        "cycleSectionMs": {
+          "p50": 1675.257,
+          "p95": 1786.583,
+          "min": 1658.348,
+          "max": 1786.583
+        },
+        "bytesReadPerCycle": 88092177,
+        "bytesWrittenPerCycle": 9808561,
+        "appendCpuMsP50": 183,
+        "restartMsP50": 127.943
+      },
+      "r1-only": {
+        "fullVerificationMsP50": 121.795,
+        "appendMs": {
+          "p50": 150.627,
+          "p95": 218.083,
+          "p99": 250.368,
+          "min": 139.528,
+          "max": 250.368,
+          "cv": 0.161
+        },
+        "cycleSectionMs": {
+          "p50": 1345.576,
+          "p95": 1850.873,
+          "min": 1285.554,
+          "max": 1850.873
+        },
+        "bytesReadPerCycle": 88092177,
+        "bytesWrittenPerCycle": 9808561,
+        "appendCpuMsP50": 135.498,
+        "restartMsP50": 164.592
+      },
+      "section": {
+        "fullVerificationMsP50": 118.29,
+        "appendMs": {
+          "p50": 32.053,
+          "p95": 37.965,
+          "p99": 46.635,
+          "min": 28.952,
+          "max": 46.635,
+          "cv": 0.085
+        },
+        "cycleSectionMs": {
+          "p50": 383.1,
+          "p95": 414.754,
+          "min": 373.428,
+          "max": 414.754
+        },
+        "bytesReadPerCycle": 19591825,
+        "bytesWrittenPerCycle": 9808561,
+        "appendCpuMsP50": 17.123,
+        "restartMsP50": 130.742
+      }
+    },
+    "c120-plain": {
+      "ledger": {
+        "name": "c120-plain",
+        "files": 1,
+        "sealedSegments": 0,
+        "totalBytes": 9785505,
+        "segmentBytes": null,
+        "verification": "section"
+      },
+      "before": {
+        "fullVerificationMsP50": 118.309,
+        "appendMs": {
+          "p50": 259.976,
+          "p95": 418.534,
+          "p99": 473.258,
+          "min": 250.629,
+          "max": 473.258,
+          "cv": 0.194
+        },
+        "cycleSectionMs": {
+          "p50": 2250.074,
+          "p95": 3259.483,
+          "min": 2163.211,
+          "max": 3259.483
+        },
+        "bytesReadPerCycle": 88085472,
+        "bytesWrittenPerCycle": 78301185,
+        "appendCpuMsP50": 246.722,
+        "restartMsP50": 141.924
+      },
+      "r1-only": {
+        "fullVerificationMsP50": 121.533,
+        "appendMs": {
+          "p50": 207.776,
+          "p95": 227.971,
+          "p99": 241.543,
+          "min": 199.41,
+          "max": 241.543,
+          "cv": 0.038
+        },
+        "cycleSectionMs": {
+          "p50": 1801.927,
+          "p95": 1830.848,
+          "min": 1780.558,
+          "max": 1830.848
+        },
+        "bytesReadPerCycle": 88085472,
+        "bytesWrittenPerCycle": 78301185,
+        "appendCpuMsP50": 193.151,
+        "restartMsP50": 132.366
+      },
+      "section": {
+        "fullVerificationMsP50": 122.073,
+        "appendMs": {
+          "p50": 137.051,
+          "p95": 181.113,
+          "p99": 207.781,
+          "min": 126.089,
+          "max": 207.781,
+          "cv": 0.119
+        },
+        "cycleSectionMs": {
+          "p50": 1224.682,
+          "p95": 1540.881,
+          "min": 1188.393,
+          "max": 1540.881
+        },
+        "bytesReadPerCycle": 88083704,
+        "bytesWrittenPerCycle": 78301185,
+        "appendCpuMsP50": 114.69,
+        "restartMsP50": 140.836
+      }
+    },
+    "c480-s1MiB": {
+      "ledger": {
+        "name": "c480-s1MiB",
+        "files": 38,
+        "sealedSegments": 37,
+        "totalBytes": 41253572,
+        "segmentBytes": 1048576,
+        "verification": "section"
+      },
+      "before": {
+        "fullVerificationMsP50": 517.249,
+        "appendMs": {
+          "p50": 756.958,
+          "p95": 926.007,
+          "p99": 1547.014,
+          "min": 722.004,
+          "max": 1547.014,
+          "cv": 0.152
+        },
+        "cycleSectionMs": {
+          "p50": 6681.85,
+          "p95": 7705.687,
+          "min": 6532.955,
+          "max": 7705.687
+        },
+        "bytesReadPerCycle": 371426191,
+        "bytesWrittenPerCycle": 4174437,
+        "appendCpuMsP50": 798.649,
+        "restartMsP50": 544.252
+      },
+      "r1-only": {
+        "fullVerificationMsP50": 518.551,
+        "appendMs": {
+          "p50": 533.484,
+          "p95": 635.755,
+          "p99": 1318.888,
+          "min": 506.609,
+          "max": 1318.888,
+          "cv": 0.189
+        },
+        "cycleSectionMs": {
+          "p50": 4917.299,
+          "p95": 6006.98,
+          "min": 4761.41,
+          "max": 6006.98
+        },
+        "bytesReadPerCycle": 371426191,
+        "bytesWrittenPerCycle": 4174437,
+        "appendCpuMsP50": 573.841,
+        "restartMsP50": 572.509
+      },
+      "section": {
+        "fullVerificationMsP50": 520.931,
+        "appendMs": {
+          "p50": 22.999,
+          "p95": 58.706,
+          "p99": 245.819,
+          "min": 18.679,
+          "max": 245.819,
+          "cv": 0.913
+        },
+        "cycleSectionMs": {
+          "p50": 708.145,
+          "p95": 1858.236,
+          "min": 683.992,
+          "max": 1858.236
+        },
+        "bytesReadPerCycle": 45439247,
+        "bytesWrittenPerCycle": 4174437,
+        "appendCpuMsP50": 8.548,
+        "restartMsP50": 540.19
+      }
+    }
+  }
+}

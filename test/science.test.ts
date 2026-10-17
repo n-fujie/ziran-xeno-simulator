@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { Engine } from '../src/core/engine.ts';
-import { Ledger } from '../src/science/store.ts';
+import { Ledger } from './fixtures/ledger-mode.ts';
 import { ScientificRuntime, scientificFingerprint, parseRequest } from '../src/science/runtime.ts';
 import type { FaultPoint } from '../src/science/runtime.ts';
 import { acquire, configured, generate, measure, relation, instrument } from '../src/science/protocol.ts';

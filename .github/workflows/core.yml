@@ -7,7 +7,7 @@ on:
 jobs:
   core:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,6 +19,10 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+      # The same suites (fault injection, SIGKILL, rotation, resume gate, audits) with every Ledger in section verification mode.
+      - run: npm test
+        env:
+          LEDGER_TEST_VERIFICATION: section
       - run: npm run bench
       - run: npm run check:presets
       - run: npm run check:api
@@ -27,6 +31,7 @@ jobs:
       - run: node scripts/scientific-comparison.ts --out /tmp/scientific-comparison-repeat.json --verify-against /tmp/scientific-comparison.json
       # Storage layout must not change scientific results: the full comparison with segment rotation reproduces retained v2.
       - run: node scripts/scientific-comparison.ts --out /tmp/scientific-comparison-segmented.json --receipts-dir /tmp/scientific-evidence-segmented --segment-bytes 131072 --verify-against results/scientific-cycle/v2-comparison.json
+      - run: node scripts/scientific-comparison.ts --out /tmp/scientific-comparison-section.json --receipts-dir /tmp/scientific-evidence-section --segment-bytes 131072 --verification section --verify-against results/scientific-cycle/v2-comparison.json
       - uses: actions/upload-artifact@v4
         with:
           name: scientific-comparison
@@ -34,5 +39,6 @@ jobs:
             /tmp/scientific-comparison.json
             /tmp/scientific-comparison-repeat.json
             /tmp/scientific-comparison-segmented.json
+            /tmp/scientific-comparison-section.json
             /tmp/scientific-evidence-segmented
             /tmp/scientific-evidence

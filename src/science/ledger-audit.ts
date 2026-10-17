@@ -24,6 +24,8 @@ export interface LedgerAuditReport {
   growth: { status: 'ok' | 'warn'; warnBytes: number; appendRewritesWholeLedger: boolean; activeSegmentBounded: boolean; requiredFreeBytesForNextAppend: number };
   rotation: { enabled: boolean; maxSegmentBytes: number | null; sealedSegments: number; activeBytes: number; sealedBytes: number; unreferencedSegments: string[] };
   capacity: 'ok' | 'low' | 'unknown';
+  /** The opener's verification mode. The audit itself always re-verifies the whole history, whatever the mode. */
+  verification: { mode: 'full' | 'section'; auditVerifiedWholeHistory: true };
   measurementAudit: { inspected: number; inconsistentResults: string[] };
   /** Links from measurement to decision, adoption, intervention, re-measurement and history, checked across all stored cycles. */
   evidenceChain: { inspected: number; brokenOperations: string[]; historyCycles: number; historyChangedCandidates: number; performanceAdvantage: 'not-established-by-the-record-alone' };
@@ -46,6 +48,7 @@ export function auditLedger(ledger: Ledger, options: LedgerAuditOptions = {}): L
   try { const fs = statfsSync(ledger.directory); capacity = fs.bavail * fs.bsize >= required ? 'ok' : 'low'; } catch { /* unknown stays unknown */ }
   const base = {
     externalWitnessed: ledger.externalWitnessed, bytes, capacity,
+    verification: { mode: ledger.verificationMode, auditVerifiedWholeHistory: true as const },
     growth: { status: bytes >= warnBytes ? 'warn' as const : 'ok' as const, warnBytes, appendRewritesWholeLedger: sealedCount === 0 && ledger.segmentLimit === undefined, activeSegmentBounded: ledger.segmentLimit !== undefined, requiredFreeBytesForNextAppend: required },
     rotation: { enabled: ledger.segmentLimit !== undefined, maxSegmentBytes: ledger.segmentLimit ?? null, sealedSegments: sealedCount, activeBytes, sealedBytes, unreferencedSegments: layout?.unreferencedSegments ?? [] },
   };

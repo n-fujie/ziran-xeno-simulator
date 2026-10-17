@@ -1,0 +1,276 @@
+{
+  "node": "v24.14.1",
+  "platform": "darwin",
+  "rows": [
+    {
+      "id": "T01",
+      "title": "same-process content change of a sealed segment (same size)",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T02",
+      "title": "content change of a sealed segment by another process",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T03",
+      "title": "sealed segment swapped with another valid segment",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T04",
+      "title": "same size, different content, mtime NOT restored",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T05",
+      "title": "same size, different content, mtime/atime restored",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T06a",
+      "title": "file replaced by a new inode, times restored",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T06b",
+      "title": "file deleted and re-created (inode may be reused), times restored",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T07",
+      "title": "consistent rollback: an older snapshot of ALL files restored",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "ledger integrity: event outside active operation",
+      "sectionMessage": "ledger integrity: event outside active operation"
+    },
+    {
+      "id": "T07",
+      "title": "consistent rollback: an older snapshot of ALL files restored",
+      "externalAnchor": true,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "external checkpoint mismatch; isolate store",
+      "sectionMessage": "external checkpoint mismatch; isolate store"
+    },
+    {
+      "id": "T08",
+      "title": "witness rolled back to an earlier value",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "ledger integrity: checkpoint mismatch (truncation, rollback or interrupted commit); explicit recovery required",
+      "sectionMessage": "ledger integrity: checkpoint mismatch (truncation, rollback or interrupted commit); explicit recovery required"
+    },
+    {
+      "id": "T09",
+      "title": "witness regenerated to describe tampered files (no external anchor)",
+      "externalAnchor": false,
+      "full": "accepted",
+      "section": "accepted",
+      "fullMessage": "",
+      "sectionMessage": ""
+    },
+    {
+      "id": "T09x",
+      "title": "witness regenerated to describe tampered files (external anchor bound)",
+      "externalAnchor": true,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "external checkpoint mismatch; isolate store",
+      "sectionMessage": "external checkpoint mismatch; isolate store"
+    },
+    {
+      "id": "T10",
+      "title": "tail of the active file deleted",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "ledger integrity: checkpoint mismatch (truncation, rollback or interrupted commit); explicit recovery required",
+      "sectionMessage": "ledger integrity: checkpoint mismatch (truncation, rollback or interrupted commit); explicit recovery required"
+    },
+    {
+      "id": "T11",
+      "title": "hash chain regenerated after editing an old entry (witness updated)",
+      "externalAnchor": false,
+      "full": "accepted",
+      "section": "accepted",
+      "fullMessage": "",
+      "sectionMessage": ""
+    },
+    {
+      "id": "T11x",
+      "title": "hash chain regenerated after editing an old entry (external anchor bound)",
+      "externalAnchor": true,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "external checkpoint mismatch; isolate store",
+      "sectionMessage": "external checkpoint mismatch; isolate store"
+    },
+    {
+      "id": "T12",
+      "title": "decoy \"verified cache\" files planted, sealed segment altered",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T13",
+      "title": "earlier section result replayed: sealed segment altered between two sections of ONE object",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T14",
+      "title": "sealed segment altered, then a fresh object (restart) opens a section",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "T15",
+      "title": "external head moved/rolled back by someone else",
+      "externalAnchor": true,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "external checkpoint mismatch; isolate store",
+      "sectionMessage": "external checkpoint mismatch; isolate store"
+    },
+    {
+      "id": "R01",
+      "title": "history altered before the lock is taken",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "R02",
+      "title": "history altered right after the lock is taken, before the first load",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "R03",
+      "title": "history altered DURING verification, after that segment was already read",
+      "externalAnchor": false,
+      "full": "failed-safe",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "R04",
+      "title": "segment swapped right after verification, before the first append",
+      "externalAnchor": false,
+      "full": "failed-safe",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "R05",
+      "title": "witness changed right before the append",
+      "externalAnchor": false,
+      "full": "failed-safe",
+      "section": "failed-safe",
+      "fullMessage": "ledger integrity: checkpoint mismatch (truncation, rollback or interrupted commit); explicit recovery required",
+      "sectionMessage": "ledger integrity: checkpoint mismatch (truncation, rollback or interrupted commit); explicit recovery required"
+    },
+    {
+      "id": "R06",
+      "title": "sealed segment altered while the pending file is being saved",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "caught-later",
+      "fullMessage": "ledger integrity: sealed segment mismatch",
+      "sectionMessage": "ledger integrity: sealed segment mismatch"
+    },
+    {
+      "id": "R07",
+      "title": "active file altered while the segment is being sealed",
+      "externalAnchor": false,
+      "full": "caught-later",
+      "section": "caught-later",
+      "fullMessage": "Expected ',' or ']' after array element in JSON at position 1094 (line 1 column 1095)",
+      "sectionMessage": "Expected ',' or ']' after array element in JSON at position 1094 (line 1 column 1095)"
+    },
+    {
+      "id": "R08",
+      "title": "witness replaced by a foreign file just before our witness rename",
+      "externalAnchor": false,
+      "full": "accepted",
+      "section": "accepted",
+      "fullMessage": "",
+      "sectionMessage": ""
+    },
+    {
+      "id": "R12a",
+      "title": "writer.lock deleted by a third party mid-section (ownership lost)",
+      "externalAnchor": false,
+      "full": "blocked-in-section",
+      "section": "blocked-in-section",
+      "fullMessage": "ENOENT: no such file or directory, unlink '/var/folders/x6/sshnx9290qn7qzdnrdkrkj4h0000gn/T/ledger-tamper-jA8s9R/l/write",
+      "sectionMessage": "ENOENT: no such file or directory, unlink '/var/folders/x6/sshnx9290qn7qzdnrdkrkj4h0000gn/T/ledger-tamper-sCcrDc/l/write"
+    },
+    {
+      "id": "R12b",
+      "title": "writer.lock replaced by another owner mid-section",
+      "externalAnchor": false,
+      "full": "accepted",
+      "section": "accepted",
+      "fullMessage": "",
+      "sectionMessage": ""
+    },
+    {
+      "id": "R15",
+      "title": "external head advanced by another writer just before our compare-and-set",
+      "externalAnchor": true,
+      "full": "failed-safe",
+      "section": "failed-safe",
+      "fullMessage": "checkpoint update conflict",
+      "sectionMessage": "checkpoint update conflict"
+    }
+  ]
+}

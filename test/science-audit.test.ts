@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, readFileSync, writeFileSync, renameSync, existsSyn
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
-import { Ledger } from '../src/science/store.ts';
+import { Ledger } from './fixtures/ledger-mode.ts';
 import { ScientificRuntime } from '../src/science/runtime.ts';
 import { acquire, configured, generate, independentMeasurement, measure, relation } from '../src/science/protocol.ts';
 

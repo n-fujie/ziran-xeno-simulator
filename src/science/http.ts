@@ -16,7 +16,10 @@ function getRuntime() {
   if (runtime) return runtime;
   const profile = parseSafetyProfile(process.env.SCIENCE_SAFETY_PROFILE);
   const directory = process.env.SCIENCE_DATA_DIR ?? join('/workspace', '.ziran-science');
-  return runtime = createProfiledRuntime(profile, { directory, checkpointFile: process.env.SCIENCE_CHECKPOINT_FILE, external: profile === 'strict' ? checkpointBindingFromEnvironment() : undefined });
+  // SCIENCE_LEDGER_VERIFICATION is a separate opt-in: 'full' (default) or 'section'. Unknown values throw.
+  const mode = process.env.SCIENCE_LEDGER_VERIFICATION;
+  if (mode !== undefined && mode !== '' && mode !== 'full' && mode !== 'section') throw Error('unknown ledger verification mode');
+  return runtime = createProfiledRuntime(profile, { directory, checkpointFile: process.env.SCIENCE_CHECKPOINT_FILE, external: profile === 'strict' ? checkpointBindingFromEnvironment() : undefined, ...(mode === 'section' ? { verification: 'section' as const } : {}) });
 }
 export async function scientificRoute(req: IncomingMessage, res: ServerResponse, path: string): Promise<boolean> {
   if (!path.startsWith('/api/science/')) return false;

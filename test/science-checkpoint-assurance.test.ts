@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { certificate, tlsService } from './fixtures/tls.ts';
-import { Ledger } from '../src/science/store.ts';
+import { Ledger } from './fixtures/ledger-mode.ts';
 import { ScientificRuntime } from '../src/science/runtime.ts';
 import { evaluateCheckpointIndependence } from '../src/science/checkpoint-independence.ts';
 import type { CheckpointIndependenceDeclaration } from '../src/science/checkpoint-independence.ts';

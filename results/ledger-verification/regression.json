@@ -1,0 +1,80 @@
+{
+  "verifiedAgainst": "results/scientific-cycle/v2-comparison.json",
+  "codeCommit": "final hardened code (see PR #6 head)",
+  "command": "node scripts/scientific-comparison.ts --out F --receipts-dir D --verify-against results/scientific-cycle/v2-comparison.json [--segment-bytes 131072] [--verification section]; node scripts/ledger-kind-counts.ts D",
+  "runs": {
+    "single": {
+      "exit": 0,
+      "seconds": 51,
+      "result": "All 504 scientific fingerprints reproduced exactly",
+      "recordCounts": {
+        "chains": 36,
+        "entries": 1728,
+        "kinds": {
+          "prepared": 504,
+          "event": 720,
+          "completed": 324,
+          "quarantined": 180
+        },
+        "sealedSegments": 0
+      }
+    },
+    "segmented": {
+      "exit": 0,
+      "seconds": 50,
+      "result": "All 504 scientific fingerprints reproduced exactly",
+      "recordCounts": {
+        "chains": 36,
+        "entries": 1728,
+        "kinds": {
+          "prepared": 504,
+          "event": 720,
+          "completed": 324,
+          "quarantined": 180
+        },
+        "sealedSegments": 150
+      }
+    },
+    "section": {
+      "exit": 0,
+      "seconds": 52,
+      "result": "All 504 scientific fingerprints reproduced exactly",
+      "recordCounts": {
+        "chains": 36,
+        "entries": 1728,
+        "kinds": {
+          "prepared": 504,
+          "event": 720,
+          "completed": 324,
+          "quarantined": 180
+        },
+        "sealedSegments": 0
+      }
+    },
+    "segmented-section": {
+      "exit": 0,
+      "seconds": 41,
+      "result": "All 504 scientific fingerprints reproduced exactly",
+      "recordCounts": {
+        "chains": 36,
+        "entries": 1728,
+        "kinds": {
+          "prepared": 504,
+          "event": 720,
+          "completed": 324,
+          "quarantined": 180
+        },
+        "sealedSegments": 150
+      }
+    }
+  },
+  "nonDeterministicFieldsOnly": "Outside wall-clock and CPU timing fields, rows, summary and controls of all four reports are identical to the retained v2 report (checked field by field).",
+  "expected": {
+    "chains": 36,
+    "prepared": 504,
+    "event": 720,
+    "completed": 324,
+    "quarantined": 180,
+    "terminal": 504
+  }
+}
