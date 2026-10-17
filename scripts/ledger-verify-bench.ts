@@ -120,8 +120,20 @@ if (command === 'build') {
     }
     sectionRead = readBytes; sectionWritten = writeBytes;
   });
-  result.ioPerCycleSection = { bytesRead: sectionRead, bytesReadByTheInitialRead: readOnly, bytesWritten: sectionWritten, fileReads: reads, bytesReadByEachAppend: perAppendRead, bytesWrittenByEachAppend: perAppendWritten };
+  const counts = (counted as unknown as { verificationCounts?: { full: number; incremental: number } }).verificationCounts;
+  result.ioPerCycleSection = { bytesRead: sectionRead, bytesReadByTheInitialRead: readOnly, bytesWritten: sectionWritten, fileReads: reads, wholeHistoryVerifications: counts?.full ?? 'not-reported-by-this-version', sectionLevelChecks: counts?.incremental ?? 'not-reported-by-this-version', bytesReadByEachAppend: perAppendRead, bytesWrittenByEachAppend: perAppendWritten };
   rmSync(acc.root, { recursive: true, force: true });
+
+  // 4b. Recovery time (explicit recovery verifies everything, then quarantines unfinished work): healthy ledger, and a
+  //     ledger with one unfinished operation, each on a fresh copy.
+  const healthy: number[] = [], unfinished: number[] = [];
+  for (let r = 0; r < Math.max(3, Math.floor(reps / 7)); r++) {
+    const h = copy(); healthy.push(timed(() => new Ledger(h.path, undefined, undefined, ledgerOptions()).recover())[1]); rmSync(h.root, { recursive: true, force: true });
+    const u = copy(); const l = new Ledger(u.path, undefined, undefined, ledgerOptions());
+    l.exclusive(() => l.append('prepared', 'bench-interrupted', { small: true }));
+    unfinished.push(timed(() => new Ledger(u.path, undefined, undefined, ledgerOptions()).recover())[1]); rmSync(u.root, { recursive: true, force: true });
+  }
+  result.recoveryMs = { healthyLedger: stats(healthy), withUnfinishedOperation: stats(unfinished) };
 
   // 5. Restart: a brand-new process verifies the whole history.
   const restart: number[] = [];

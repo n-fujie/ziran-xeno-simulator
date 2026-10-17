@@ -1,0 +1,337 @@
+{
+  "note": "Final code (attribute tripwire + lock token). Histories rebuilt with unmodified main; each variant measured on the same files. Earlier runs on the first PR commit are in the parent directory.",
+  "results": {
+    "c30-s1MiB": {
+      "before (main)": {
+        "appendMs": {
+          "p50": 65.993,
+          "p95": 93.883,
+          "p99": 505.866,
+          "min": 58.032,
+          "max": 505.866,
+          "cv": 0.664
+        },
+        "cycleSectionMs": {
+          "p50": 549.323,
+          "p95": 1210.809,
+          "min": 508.562,
+          "max": 1210.809
+        },
+        "appendCpuMsP50": 48.02,
+        "bytesReadPerCycle": 18105234,
+        "bytesWrittenPerCycle": 7011089,
+        "restartMsP50": 35.612,
+        "recoveryMsP50": {
+          "healthyLedger": 77.468,
+          "withUnfinishedOperation": 141.624
+        },
+        "heapDeltaMBAfterReadP50": 29.41,
+        "wholeHistoryVerificationsPerCycle": "not-reported-by-this-version",
+        "sectionLevelChecksPerCycle": "not-reported-by-this-version"
+      },
+      "R1 only": {
+        "appendMs": {
+          "p50": 51.49,
+          "p95": 69.949,
+          "p99": 130.816,
+          "min": 46.529,
+          "max": 130.816,
+          "cv": 0.204
+        },
+        "cycleSectionMs": {
+          "p50": 460.971,
+          "p95": 577.241,
+          "min": 414.763,
+          "max": 577.241
+        },
+        "appendCpuMsP50": 35.206,
+        "bytesReadPerCycle": 18106194,
+        "bytesWrittenPerCycle": 7011136,
+        "restartMsP50": 32.992,
+        "recoveryMsP50": {
+          "healthyLedger": 82.917,
+          "withUnfinishedOperation": 124.415
+        },
+        "heapDeltaMBAfterReadP50": 29.418,
+        "wholeHistoryVerificationsPerCycle": 9,
+        "sectionLevelChecksPerCycle": 0
+      },
+      "section": {
+        "appendMs": {
+          "p50": 29.327,
+          "p95": 34.039,
+          "p99": 40.34,
+          "min": 23.666,
+          "max": 40.34,
+          "cv": 0.092
+        },
+        "cycleSectionMs": {
+          "p50": 267.947,
+          "p95": 307.068,
+          "min": 247.024,
+          "max": 307.068
+        },
+        "appendCpuMsP50": 13.393,
+        "bytesReadPerCycle": 9018986,
+        "bytesWrittenPerCycle": 7011136,
+        "restartMsP50": 43.934,
+        "recoveryMsP50": {
+          "healthyLedger": 80.593,
+          "withUnfinishedOperation": 109.658
+        },
+        "heapDeltaMBAfterReadP50": 29.421,
+        "wholeHistoryVerificationsPerCycle": 1,
+        "sectionLevelChecksPerCycle": 8
+      }
+    },
+    "c120-s1MiB": {
+      "before (main)": {
+        "appendMs": {
+          "p50": 216.161,
+          "p95": 503.201,
+          "p99": 841.526,
+          "min": 187.918,
+          "max": 841.526,
+          "cv": 0.465
+        },
+        "cycleSectionMs": {
+          "p50": 1878.498,
+          "p95": 3887.095,
+          "min": 1656.577,
+          "max": 3887.095
+        },
+        "appendCpuMsP50": 194.761,
+        "bytesReadPerCycle": 88113633,
+        "bytesWrittenPerCycle": 7335737,
+        "restartMsP50": 140.761,
+        "recoveryMsP50": {
+          "healthyLedger": 358.661,
+          "withUnfinishedOperation": 572.202
+        },
+        "heapDeltaMBAfterReadP50": 69.534,
+        "wholeHistoryVerificationsPerCycle": "not-reported-by-this-version",
+        "sectionLevelChecksPerCycle": "not-reported-by-this-version"
+      },
+      "R1 only": {
+        "appendMs": {
+          "p50": 142.752,
+          "p95": 159.896,
+          "p99": 180.709,
+          "min": 135.954,
+          "max": 180.709,
+          "cv": 0.06
+        },
+        "cycleSectionMs": {
+          "p50": 1283.455,
+          "p95": 1320.345,
+          "min": 1242.415,
+          "max": 1320.345
+        },
+        "appendCpuMsP50": 126.206,
+        "bytesReadPerCycle": 88114593,
+        "bytesWrittenPerCycle": 7335784,
+        "restartMsP50": 131.074,
+        "recoveryMsP50": {
+          "healthyLedger": 366.964,
+          "withUnfinishedOperation": 502.727
+        },
+        "heapDeltaMBAfterReadP50": 69.535,
+        "wholeHistoryVerificationsPerCycle": 9,
+        "sectionLevelChecksPerCycle": 0
+      },
+      "section": {
+        "appendMs": {
+          "p50": 28.002,
+          "p95": 33.428,
+          "p99": 89.037,
+          "min": 22.974,
+          "max": 89.037,
+          "cv": 0.273
+        },
+        "cycleSectionMs": {
+          "p50": 342.232,
+          "p95": 593.649,
+          "min": 335.477,
+          "max": 593.649
+        },
+        "appendCpuMsP50": 13.369,
+        "bytesReadPerCycle": 17122345,
+        "bytesWrittenPerCycle": 7335784,
+        "restartMsP50": 132.837,
+        "recoveryMsP50": {
+          "healthyLedger": 361.466,
+          "withUnfinishedOperation": 394.816
+        },
+        "heapDeltaMBAfterReadP50": 69.542,
+        "wholeHistoryVerificationsPerCycle": 1,
+        "sectionLevelChecksPerCycle": 8
+      }
+    },
+    "c120-plain": {
+      "before (main)": {
+        "appendMs": {
+          "p50": 264.762,
+          "p95": 299.972,
+          "p99": 340.409,
+          "min": 255.996,
+          "max": 340.409,
+          "cv": 0.058
+        },
+        "cycleSectionMs": {
+          "p50": 2280.207,
+          "p95": 2384.075,
+          "min": 2211.893,
+          "max": 2384.075
+        },
+        "appendCpuMsP50": 244.457,
+        "bytesReadPerCycle": 88085580,
+        "bytesWrittenPerCycle": 78301281,
+        "restartMsP50": 130.425,
+        "recoveryMsP50": {
+          "healthyLedger": 371.439,
+          "withUnfinishedOperation": 617.494
+        },
+        "heapDeltaMBAfterReadP50": 136.09,
+        "wholeHistoryVerificationsPerCycle": "not-reported-by-this-version",
+        "sectionLevelChecksPerCycle": "not-reported-by-this-version"
+      },
+      "R1 only": {
+        "appendMs": {
+          "p50": 210.442,
+          "p95": 242.694,
+          "p99": 312.776,
+          "min": 203.057,
+          "max": 312.776,
+          "cv": 0.079
+        },
+        "cycleSectionMs": {
+          "p50": 1825.179,
+          "p95": 2079.623,
+          "min": 1781.151,
+          "max": 2079.623
+        },
+        "appendCpuMsP50": 190.783,
+        "bytesReadPerCycle": 88086540,
+        "bytesWrittenPerCycle": 78301328,
+        "restartMsP50": 137.001,
+        "recoveryMsP50": {
+          "healthyLedger": 362.52,
+          "withUnfinishedOperation": 581.887
+        },
+        "heapDeltaMBAfterReadP50": 136.083,
+        "wholeHistoryVerificationsPerCycle": 9,
+        "sectionLevelChecksPerCycle": 0
+      },
+      "section": {
+        "appendMs": {
+          "p50": 134.914,
+          "p95": 157.899,
+          "p99": 239.878,
+          "min": 126.031,
+          "max": 239.878,
+          "cv": 0.106
+        },
+        "cycleSectionMs": {
+          "p50": 1199.557,
+          "p95": 1343.826,
+          "min": 1159.816,
+          "max": 1343.826
+        },
+        "appendCpuMsP50": 112.137,
+        "bytesReadPerCycle": 88084772,
+        "bytesWrittenPerCycle": 78301328,
+        "restartMsP50": 135.902,
+        "recoveryMsP50": {
+          "healthyLedger": 360.023,
+          "withUnfinishedOperation": 523.285
+        },
+        "heapDeltaMBAfterReadP50": 136.083,
+        "wholeHistoryVerificationsPerCycle": 1,
+        "sectionLevelChecksPerCycle": 8
+      }
+    },
+    "c480-s1MiB": {
+      "before (main)": {
+        "appendMs": {
+          "p50": 757.878,
+          "p95": 859.623,
+          "p99": 1469.166,
+          "min": 726.444,
+          "max": 1469.166,
+          "cv": 0.137
+        },
+        "cycleSectionMs": {
+          "p50": 6655.986,
+          "p95": 7685.649,
+          "min": 6535.562,
+          "max": 7685.649
+        },
+        "appendCpuMsP50": 797.348,
+        "bytesReadPerCycle": 371427469,
+        "bytesWrittenPerCycle": 4174365,
+        "restartMsP50": 556.562,
+        "recoveryMsP50": {
+          "healthyLedger": 1591.558,
+          "withUnfinishedOperation": 2318.199
+        },
+        "heapDeltaMBAfterReadP50": 157.29,
+        "wholeHistoryVerificationsPerCycle": "not-reported-by-this-version",
+        "sectionLevelChecksPerCycle": "not-reported-by-this-version"
+      },
+      "R1 only": {
+        "appendMs": {
+          "p50": 533.476,
+          "p95": 626.706,
+          "p99": 1441.634,
+          "min": 509.015,
+          "max": 1441.634,
+          "cv": 0.191
+        },
+        "cycleSectionMs": {
+          "p50": 4840.322,
+          "p95": 5923.718,
+          "min": 4691.988,
+          "max": 5923.718
+        },
+        "appendCpuMsP50": 575.725,
+        "bytesReadPerCycle": 371428429,
+        "bytesWrittenPerCycle": 4174412,
+        "restartMsP50": 569.353,
+        "recoveryMsP50": {
+          "healthyLedger": 1567.957,
+          "withUnfinishedOperation": 2031.052
+        },
+        "heapDeltaMBAfterReadP50": 157.309,
+        "wholeHistoryVerificationsPerCycle": 9,
+        "sectionLevelChecksPerCycle": 0
+      },
+      "section": {
+        "appendMs": {
+          "p50": 22.992,
+          "p95": 28.263,
+          "p99": 43.013,
+          "min": 20.955,
+          "max": 43.013,
+          "cv": 0.132
+        },
+        "cycleSectionMs": {
+          "p50": 692.821,
+          "p95": 884.453,
+          "min": 678.677,
+          "max": 884.453
+        },
+        "appendCpuMsP50": 8.658,
+        "bytesReadPerCycle": 45440277,
+        "bytesWrittenPerCycle": 4174412,
+        "restartMsP50": 532.996,
+        "recoveryMsP50": {
+          "healthyLedger": 1592.725,
+          "withUnfinishedOperation": 1615.955
+        },
+        "heapDeltaMBAfterReadP50": 100.528,
+        "wholeHistoryVerificationsPerCycle": 1,
+        "sectionLevelChecksPerCycle": 8
+      }
+    }
+  }
+}

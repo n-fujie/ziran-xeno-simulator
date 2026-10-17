@@ -79,18 +79,17 @@ test('nothing carries over between sections: tampering a sealed segment between 
   assert.equal(auditLedger(ledger).integrity, 'failed', 'the audit always verifies the whole history');
 });
 
-test('documented window: a sealed segment altered INSIDE one section is not re-read by that section; full mode catches it at once; both catch it afterwards', (t) => {
+test('a sealed segment altered INSIDE one section: both modes refuse to continue (section mode via the attribute tripwire, which only ever escalates to a full verification)', (t) => {
   for (const mode of ['full', 'section'] as const) {
     const f = make(t, mode);
     const ledger = f.open(); for (let i = 0; i < 6; i++) cycle(ledger, i);
     const first = segmentFiles(f.dir)[0];
     let outcome = 'appended';
     try {
-      ledger.exclusive(() => { ledger.append('prepared', 'window-op', {}); flipByte(join(f.dir, first)); ledger.append('completed', 'window-op', {}); });
+      ledger.exclusive(() => { ledger.append('prepared', 'window-op', {}); Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 30); flipByte(join(f.dir, first)); ledger.append('completed', 'window-op', {}); });
     } catch (e) { outcome = String((e as Error).message); }
-    if (mode === 'full') assert.match(outcome, /sealed segment mismatch/, 'full mode re-reads every sealed segment on every append');
-    else assert.equal(outcome, 'appended', 'section mode relies on the verification made at the start of this section');
-    // Either way the tampering is permanent evidence: nothing blesses it, and the next verification fails.
+    assert.match(outcome, /sealed segment mismatch/, `${mode}: refused at the next append`);
+    // The tampering is permanent evidence: nothing blesses it, and every later verification refuses it.
     assert.throws(() => f.open('full').read(), /sealed segment mismatch/, mode);
     assert.throws(() => f.open('section').read(), /sealed segment mismatch/, mode);
   }

@@ -62,157 +62,246 @@ The default is `'full'`; any other value throws `invalid verification mode`.
 Inside one `exclusive()` critical section:
 
 1. The first load (`read()`, or the first `append` if no read came first) is a **full** verification, exactly as in
-   `'full'` mode: sealed bytes, counts, tips, entry hashes, chain, witness, external head.
-2. That verified state (counts, tip, sealed list, operation states) is kept **in memory only**.
+   `'full'` mode: sealed bytes, counts, tips, entry hashes, chain, witness, external head. Just *before* each sealed
+   segment is read, its file attributes (device, inode, size, mtime, ctime) are recorded.
+2. That verified state (counts, tip, sealed list, operation states, the attributes) is kept **in memory only**.
 3. Each later `append` in the same section does **not** re-read sealed segments. It verifies what can differ between
-   two appends of one writer: (a) the witness still describes exactly the state this section verified or wrote;
-   (b) the active file's bytes still hash to the digest that state commits to (that digest also commits to every sealed
-   segment's digest); (c) the external head, when bound, still equals the head of that state; (d) the new entry.
-4. After a successful commit the kept state becomes the state just written.
+   two appends of one writer: (a) the writer lock is still this section's (token compare); (b) the witness still
+   describes exactly the state this section verified or wrote; (c) the active file's bytes still hash to the digest that
+   state commits to (that digest also commits to every sealed segment's digest); (d) **attribute tripwire:** every
+   sealed segment still has the attributes recorded before it was verified; (e) the external head, when bound, still
+   equals the head of that state; (f) the new entry.
+4. After a successful commit the kept state becomes the state just written. A segment this section just sealed joins
+   it only after its bytes are re-read once and match the digest the witness records.
+
+**Attributes are a tripwire, not evidence.** (d) can only *escalate*: any difference, or any failure to inspect a
+segment, sends the append back to a full verification, which reads and hashes every sealed byte. Unchanged attributes
+prove nothing about content and skip nothing the section had not already verified. An attacker who can make the
+attributes look unchanged (set the clock, act inside one filesystem timestamp tick, or use a filesystem whose
+timestamps are coarse) is not seen by (d); see section 4.
 
 Anything else is a full verification: a witness that is not exactly the kept state, active bytes that differ, any
 exception from any append, any call to `read()`, `recover()`, `layout()`, the audit or the resume gate. The kept state
 is dropped when the section ends, when any load starts and when any append throws (an unconfirmed append is never
 continued from stale state).
 
-`ProfileConfig.verification` and the HTTP environment variable `SCIENCE_LEDGER_VERIFICATION=section` select it for the
-service. Both safety profiles keep `'full'` unless it is chosen explicitly; `strict` does not turn it on. The audit
+**Writer lock (both modes).** The lock file now carries a random token next to the pid. A section removes the lock file
+only if it still holds *its* token (never a lock another owner created), checks that it still holds the lock before each
+append and again right before the first durable change that names the new state, and does not report success if it
+finished without owning the lock. A lock file that was created but could not be filled (a full disk) is removed as
+before. Old lock files without a token still block a second writer and are still recoverable with `recoverDeadWriter()`.
+
+`ProfileConfig.verification` and the HTTP environment variable `SCIENCE_LEDGER_VERIFICATION=section` select the mode for
+the service. Both safety profiles keep `'full'` unless it is chosen explicitly; `strict` does not turn it on. The audit
 report gains `verification: { mode, auditVerifiedWholeHistory: true }` (the audit always verifies the whole history).
 
 ## 4. What each mode guarantees
 
+Observed outcomes for every condition are in section 7 (`test/ledger-tamper-matrix.test.ts`, 35 tests; table printable
+with `node scripts/ledger-tamper-matrix.ts`). Summary of what is and is not guaranteed:
+
 | | `full` (default) | `section` (opt-in) |
 |---|---|---|
-| Whole-history verification (sealed bytes, hash chain, witness, external head) | at every `read()` and at every `append` | at every `read()`, `recover()`, `layout()`, audit, restart and **the start of every section**; **not** again at later appends of the same section |
-| Per-append, what is re-checked | everything above | witness equals the section's verified state; active file bytes equal its committed digest; external head equals the section's head; the new entry |
-| Alteration of a sealed segment *before* a section | detected | detected (at that section's first load) |
+| Whole-history verification (sealed bytes, hash chain, witness, external head) | at every `read()` and at every `append` | at every `read()`, `recover()`, `layout()`, audit, restart and **the start of every section**; **not** at later appends of the same section |
+| Per-append, what is re-checked | everything above | lock token; witness equals the section's verified state; active file bytes equal their committed digest; sealed-segment attributes unchanged since verification; external head equals the section's head; the new entry |
+| Alteration of a sealed segment *before* a section, or *during the section's first load* | detected | detected |
 | Alteration of the active file, witness or external head *between two appends* | detected at the next append | detected at the next append |
-| Alteration of a **sealed** segment *between two appends of one section* | detected at the next append | **not detected by that section's appends**; detected by the next section, `read()`, restart, recovery or audit |
+| Alteration of a **sealed** segment *between two appends of one section* | detected at the next append (re-read and hashed) | detected at the next append **if the attributes changed** (all ordinary writes, replacements and re-creations, including with mtime/atime restored, change ctime); **not** detected by that section if the attacker also hides the change from the attributes. The next section, `read()`, restart, recovery or audit then catches it |
+| Writer lock deleted or replaced mid-section | stopped at the next append (new in this PR) | stopped at the next append (new in this PR) |
 | History written | identical bytes | identical bytes (tested, single-file and rotating) |
 | Unconfirmed append | never success; retry re-verifies | never success; the kept state is dropped, retry re-verifies |
 
-The only guarantee section mode gives up is the middle row: a sealed segment rewritten by something with write access
-to the ledger directory *during* an open section. In `full` mode the same attacker is caught at the next append; in
-section mode the section's decisions come from the history verified at its start and the tampered file is caught at the
-next verification. Writing a **new** valid-looking entry cannot hide it: the new entry's `previous` is the tip verified
-at section start, and the tampered segment will not match its committed digest at the next full verification. A
-section lasts one research cycle (milliseconds to seconds), not a process lifetime; nothing is carried to the next one.
+What section mode gives up is exactly one thing: a sealed segment rewritten *during* an open section by an attacker
+who can also make the file's attributes look unchanged. That requires clock control or acting inside one filesystem
+timestamp tick (on Linux, one kernel tick, 1-10 ms), so it is a much narrower condition than "any write access", but
+it is **not** zero and **no cryptographic argument closes it**. In `full` mode the same attacker is caught at the next
+append. Writing a **new** valid-looking entry cannot hide the change: the new entry's `previous` is the tip verified at
+section start (or written by the section), and the altered segment will not match its committed digest at the next full
+verification. A section lasts one research cycle (milliseconds to seconds), not a process lifetime.
 
-No file attribute (mtime, inode, size) is trusted anywhere. There is no persistent cache, so there is nothing on disk
-to tamper with or replay.
+**Not claimed, in either mode:** protection against an attacker who rewrites the segments, the entry hashes, the chain
+and the witness consistently when **no external checkpoint is bound** (T09/T11): every local check passes, because the
+verifier and the data share one trust domain. Binding an external checkpoint (the `strict` profile requires one) turns
+that into a refusal. The writer lock is advisory: a process that ignores it can still lose or overwrite another
+writer's update unless an external compare-and-set sits behind it (R08 vs R15).
+
+**Production use.** Section mode is offered as an opt-in performance mode for deployments that bind an external
+checkpoint and accept the single residual window above. It should not be presented as a stronger or equal integrity
+guarantee than `full`; `full` remains the default and the only mode with no residual window.
+
+There is no persistent cache, so there is nothing on disk to tamper with or replay.
 
 ## 5. Cache (kept state) invalidation conditions
 
 The kept state exists only inside an `exclusive()` section of one `Ledger` object, only in `section` mode, and is
 discarded on: end of section (normal or exceptional); the start of any full load; any exception from `append`
 (including a fault after the witness became durable); a witness whose count/hash/digest differs from the kept state;
-active-file bytes whose digest differs; an external head that differs (this one throws, it does not fall back).
-`full` mode never keeps anything.
+active-file bytes whose digest differs; any sealed segment whose attributes differ or cannot be inspected (these three
+fall back to a full verification); an external head that differs (this one throws, it does not fall back); a lost
+writer lock (throws). `full` mode never keeps anything.
 
 ## 6. Measured performance
 
-Same workloads, same machine (Apple M1, 8 logical CPUs, macOS 25.6.0, Node v24.14.1, `--expose-gc`), same ledger
-files copied for each run, measured before (`main` at `34299e9`, frozen worktree), with R1 only (`verification: 'full'`
-on the new code) and with section mode. A cycle-shaped section is one `read()` plus eight appends, 10 sections = 80
-appends per cell. Full tables and raw numbers: `results/ledger-verification/`.
+Final code (attribute tripwire and lock token included), re-measured after the hardening on histories rebuilt with
+unmodified `main` (`34299e9`); every variant is measured on the same files. Apple M1, 8 logical CPUs, macOS 25.6.0,
+Node v24.14.1, `--expose-gc`, machine otherwise idle, variants run back to back per ledger. A cycle-shaped section is one
+`read()` plus eight appends; 10 sections = 80 appends per cell; 20 repetitions of a full verification.
+Raw numbers and reproduction commands: `results/ledger-verification/final-code/`. An earlier run on the first PR commit
+(without the tripwire; six ledgers, including 256 KiB and 4 MiB segments) is in `results/ledger-verification/` and agrees
+(480 cycles: append P50 757 → 23.0 ms there as well).
 
-| ledger | variant | append P50 | P95 | P99 | whole cycle section P50 | bytes read / cycle | bytes written / cycle |
-|---|---|---:|---:|---:|---:|---:|---:|
-| 30 cycles, 1 MiB seg | before | 65.2 ms | 89.6 | 130.0 | 547 ms | 18.1 MB | 7.0 MB |
-| | R1 only | 49.0 | 53.0 | 55.9 | 423 | 18.1 | 7.0 |
-| | section | 27.9 | 30.0 | 32.0 | 249 | 9.0 | 7.0 |
-| 120 cycles, 256 KiB seg | before | 186.4 | 196.5 | 223.6 | 1,610 | 88.2 | 1.1 |
-| | R1 only | 136.5 | 163.9 | 207.6 | 1,224 | 88.2 | 1.1 |
-| | section | 17.1 | 20.0 | 21.6 | 260 | 10.9 | 1.1 |
-| 120 cycles, 1 MiB seg | before | 194.8 | 210.9 | 298.2 | 1,698 | 88.1 | 7.3 |
-| | R1 only | 142.6 | 157.3 | 187.3 | 1,268 | 88.1 | 7.3 |
-| | section | 29.4 | 36.0 | 39.4 | 359 | 17.1 | 7.3 |
-| 120 cycles, 4 MiB seg | before | 194.0 | 215.6 | 262.4 | 1,675 | 88.1 | 9.8 |
-| | R1 only | 150.6 | 218.1 | 250.4 | 1,346 | 88.1 | 9.8 |
-| | section | 32.1 | 38.0 | 46.6 | 383 | 19.6 | 9.8 |
-| 120 cycles, no rotation | before | 260.0 | 418.5 | 473.3 | 2,250 | 88.1 | 78.3 |
-| | R1 only | 207.8 | 228.0 | 241.5 | 1,802 | 88.1 | 78.3 |
-| | section | 137.1 | 181.1 | 207.8 | 1,225 | 88.1 | 78.3 |
-| 480 cycles, 1 MiB seg | before | 757.0 | 926.0 | 1,547 | 6,682 | 371.4 | 4.2 |
-| | R1 only | 533.5 | 635.8 | 1,319 | 4,917 | 371.4 | 4.2 |
-| | section | 23.0 | 58.7 | 245.8 | 708 | 45.4 | 4.2 |
+| ledger | variant | append P50 | P95 | P99 | cycle section P50 | CPU / append P50 | MB read / cycle | whole-history verifications / cycle |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| 30 cycles, 1 MiB seg (2.0 MB) | before (main) | 66.0 ms | 93.9 | 505.9 | 549 ms | 48.0 ms | 18.1 | 9 (derived: 1 read + 8 appends) |
+|  | R1 only | 51.5 ms | 69.9 | 130.8 | 461 ms | 35.2 ms | 18.1 | 9 |
+|  | section | 29.3 ms | 34.0 | 40.3 | 268 ms | 13.4 ms | 9.0 | 1 (+8 section checks) |
+| 120 cycles, 1 MiB seg (9.8 MB) | before (main) | 216.2 ms | 503.2 | 841.5 | 1878 ms | 194.8 ms | 88.1 | 9 (derived: 1 read + 8 appends) |
+|  | R1 only | 142.8 ms | 159.9 | 180.7 | 1283 ms | 126.2 ms | 88.1 | 9 |
+|  | section | 28.0 ms | 33.4 | 89.0 | 342 ms | 13.4 ms | 17.1 | 1 (+8 section checks) |
+| 120 cycles, no rotation (9.8 MB) | before (main) | 264.8 ms | 300.0 | 340.4 | 2280 ms | 244.5 ms | 88.1 | 9 (derived: 1 read + 8 appends) |
+|  | R1 only | 210.4 ms | 242.7 | 312.8 | 1825 ms | 190.8 ms | 88.1 | 9 |
+|  | section | 134.9 ms | 157.9 | 239.9 | 1200 ms | 112.1 ms | 88.1 | 1 (+8 section checks) |
+| 480 cycles, 1 MiB seg (41 MB) | before (main) | 757.9 ms | 859.6 | 1469.2 | 6656 ms | 797.3 ms | 371.4 | 9 (derived: 1 read + 8 appends) |
+|  | R1 only | 533.5 ms | 626.7 | 1441.6 | 4840 ms | 575.7 ms | 371.4 | 9 |
+|  | section | 23.0 ms | 28.3 | 43.0 | 693 ms | 8.7 ms | 45.4 | 1 (+8 section checks) |
 
-Reading the table honestly:
+Reading it honestly:
 
-- R1 alone removes the duplicate validation: roughly -20% to -30% per append and per cycle, no change in bytes read.
-- Section mode on a rotated ledger makes the append cost track the **active segment**, not the history: at 480 cycles
-  (41 MB) an append is P50 23 ms instead of 757 ms (33×), a whole cycle's ledger work 0.71 s instead of 6.7 s (9.4×),
-  bytes read per cycle 45 MB instead of 371 MB. The remaining per-cycle cost is the one full verification at the start
-  of the section (P50 535 ms at 480 cycles). **Cost per section, per restart and per audit is still linear in history.**
+- R1 alone (full mode, same guarantee as before): -20% to -30% per append and per cycle; bytes read unchanged.
+- Section mode on a rotated ledger makes the append cost follow the **active segment**, not the history: at 41 MB an
+  append is P50 23.0 ms instead of 757.9 ms (33x) and a whole cycle's ledger work 0.69 s instead of 6.66 s (9.6x); bytes
+  read per cycle 45 MB instead of 371 MB; CPU per append 8.7 ms instead of 797 ms; whole-history verifications per cycle
+  9 → 1. The remaining per-cycle cost is the one full verification at the start of the section (about 0.5 s at 41 MB).
+  **Cost per section, per restart, per audit and per recovery is still linear in history** (restart P50 533 ms at 41 MB in
+  every variant; recovery of a healthy 41 MB ledger about 1.6 s in every variant, because recovery verifies repeatedly by
+  design and always in full).
+- The attribute tripwire adds one `stat` per sealed segment per append. It is not visible in the measurements (append P50
+  23.0 ms with and without it at 37 sealed segments); with very many segments it grows linearly in their number.
 - Not rotated (`c120-plain`), the active file is the whole history, so every append still rewrites and re-hashes it
-  (78 MB written per cycle); section mode helps there (-47% per append) but does not change the growth shape.
-  Rotation remains the way to bound it.
-- Distributions do not overlap between before and section in any cell (the slowest section-mode sample is faster than
-  the fastest sample before), so the improvement is not noise. The 480-cycle section-mode P99 (246 ms) and CV (0.9)
-  come from a few outliers (one-off ~250 ms samples, likely garbage collection or a slow `fsync`); P50 and P95 are
-  stable. These are single-machine, single-filesystem measurements on an SSD with caching; a cold cache, a network
-  filesystem or a spinning disk would change absolute figures.
-- Restart (a fresh process reading the history) is unchanged by design: P50 540 ms at 480 cycles in all variants.
+  (78 MB written per cycle); section mode helps (-49% per append) but does not change the growth shape.
+- Before/after distributions do not overlap in any cell (the slowest section-mode append and the slowest section-mode
+  cycle are faster than the fastest "before" sample). Section-mode CV 0.09-0.27; a few outlier samples (P99 up to 89 ms at
+  120 cycles) are visible, so P99 is the least stable figure.
+- Single machine, warm cache, SSD. A cold cache, a network filesystem or a spinning disk would change absolute figures.
 
-## 7. Fault injection and attack conditions
+## 7. Fault injection, tamper and race conditions
 
-Kinds: **simulated** (error injected at one exact filesystem step), **real process** (separate OS process killed with
-`SIGKILL` / contention), **real kernel** (the OS returned the error), **real volume** (genuinely full filesystem; local
-only). Every existing fault suite also runs with `LEDGER_TEST_VERIFICATION=section` (CI does both); new tests are in
-`test/ledger-section-verification.test.ts`.
+Kinds: **simulated** (an error injected, or a file edited, at one exact filesystem step by the test), **real process**
+(a separate OS process killed with `SIGKILL`, or rewriting a file; contention), **real kernel** (the OS returned the
+error), **real volume** (a genuinely full filesystem; local only). Every existing fault suite also runs with
+`LEDGER_TEST_VERIFICATION=section` (CI does both).
+
+### 7.1 Tamper and race matrix (`test/ledger-tamper-matrix.test.ts`, `scripts/ledger-tamper-matrix.ts`)
+
+Each row builds a rotated ledger with ten cycles (several sealed segments), opens one exclusive section, performs the
+attack at the stated point, and records what happened. Outcomes: **blocked-in-section** (a later append of the same
+section refused to continue), **failed-safe** (the append in progress failed; nothing was blessed), **caught-later**
+(the section went on; the next full verification refuses the history), **accepted** (every later verification accepts
+the result). Attacks T02 and the file edits run in separate OS processes or directly on the files; times are restored
+with `utimes` where the row says so. The "before" column is section mode as submitted in the first commit of this PR
+(`594aca9`), recorded by the same matrix (`results/ledger-verification/matrix-before-hardening.json`).
+
+| ID | Condition | External anchor | `full` | `section` before this PR's hardening | `section` now |
+|---|---|---|---|---|---|
+| T01 | same-process content change of a sealed segment (same size) | no | blocked-in-section | caught-later | blocked-in-section |
+| T02 | content change of a sealed segment by another process | no | blocked-in-section | caught-later | blocked-in-section |
+| T03 | sealed segment swapped with another valid segment | no | blocked-in-section | caught-later | blocked-in-section |
+| T04 | same size, different content, mtime NOT restored | no | blocked-in-section | caught-later | blocked-in-section |
+| T05 | same size, different content, mtime/atime restored | no | blocked-in-section | caught-later | blocked-in-section |
+| T06a | file replaced by a new inode, times restored | no | blocked-in-section | caught-later | blocked-in-section |
+| T06b | file deleted and re-created (inode may be reused), times restored | no | blocked-in-section | caught-later | blocked-in-section |
+| T07 | consistent rollback: an older snapshot of ALL files restored | no | blocked-in-section | blocked-in-section | blocked-in-section |
+| T07 | consistent rollback: an older snapshot of ALL files restored | yes | blocked-in-section | blocked-in-section | blocked-in-section |
+| T08 | witness rolled back to an earlier value | no | blocked-in-section | blocked-in-section | blocked-in-section |
+| T09 | witness regenerated to describe tampered files (no external anchor) | no | accepted | accepted | accepted |
+| T09x | witness regenerated to describe tampered files (external anchor bound) | yes | blocked-in-section | blocked-in-section | blocked-in-section |
+| T10 | tail of the active file deleted | no | blocked-in-section | blocked-in-section | blocked-in-section |
+| T11 | hash chain regenerated after editing an old entry (witness updated) | no | accepted | accepted | accepted |
+| T11x | hash chain regenerated after editing an old entry (external anchor bound) | yes | blocked-in-section | blocked-in-section | blocked-in-section |
+| T12 | decoy "verified cache" files planted, sealed segment altered | no | blocked-in-section | caught-later | blocked-in-section |
+| T13 | earlier section result replayed: sealed segment altered between two sections of ONE object | no | blocked-in-section | blocked-in-section | blocked-in-section |
+| T14 | sealed segment altered, then a fresh object (restart) opens a section | no | blocked-in-section | blocked-in-section | blocked-in-section |
+| T15 | external head moved/rolled back by someone else | yes | blocked-in-section | blocked-in-section | blocked-in-section |
+| R01 | history altered before the lock is taken | no | blocked-in-section | blocked-in-section | blocked-in-section |
+| R02 | history altered right after the lock is taken, before the first load | no | blocked-in-section | blocked-in-section | blocked-in-section |
+| R03 | history altered DURING verification, after that segment was already read | no | failed-safe | caught-later | failed-safe |
+| R04 | segment swapped right after verification, before the first append | no | failed-safe | caught-later | failed-safe |
+| R05 | witness changed right before the append | no | failed-safe | failed-safe | failed-safe |
+| R06 | sealed segment altered while the pending file is being saved | no | blocked-in-section | caught-later | blocked-in-section |
+| R07 | active file altered while the segment is being sealed | no | caught-later | caught-later | blocked-in-section |
+| R08 | witness replaced by a foreign file just before our witness rename | no | accepted | accepted | accepted |
+| R12a | writer.lock deleted by a third party mid-section (ownership lost) | no | blocked-in-section | blocked-in-section | blocked-in-section |
+| R12b | writer.lock replaced by another owner mid-section | no | blocked-in-section | accepted | blocked-in-section |
+| R15 | external head advanced by another writer just before our compare-and-set | yes | failed-safe | failed-safe | failed-safe |
+
+Reading it:
+
+- Before the hardening, section mode did **not** stop in-section sealed-segment changes (T01-T06b, T12, R04, R06; R03
+  after a verification-time change; R07 after a seal-time change). It caught them at the next verification. That was
+  the documented window; the new attribute tripwire closes it for every attack that changes the file's attributes.
+  `T05`, `T06a`, `T06b` restore mtime/atime and re-create the inode: ctime still changes and the tripwire fires.
+- The remaining `accepted` rows are the same in both modes and are **not passes**: T09/T11 (a consistent forgery of
+  files and witness with no independent anchor; refused as soon as an external anchor is bound, T09x/T11x) and R08 (a
+  foreign witness replaced by this writer's own atomic witness rename; the lock is advisory).
+- The attribute tripwire is exercised with attributes it cannot see (`signatureSync` stubbed constant): section mode then
+  accepts an in-section sealed-segment change and only the next full verification refuses it, while `full` mode refuses
+  it at once. That is the residual window, tested, not assumed away.
+- Two defects were found and fixed by this matrix: `exclusive()` unlinked `writer.lock` unconditionally (it could remove
+  another owner's lock, R12b), and a lock lost mid-section was not noticed by appends (R12a was caught only by the
+  accident of the final unlink failing).
+
+### 7.2 Other conditions
 
 | Condition | Kind | Result |
 |---|---|---|
-| Sealed segment altered before a section | simulated (file edit) | caught at that section's first load; audit reports `failed` |
-| Sealed segment altered **during** a section | simulated | not caught by that section's appends (documented window, section 4); caught by next verification; `full` mode catches it at once; tests assert both |
-| Segment swap, segment removal | simulated | caught by the next section |
-| Active file extended, replaced by older copy (tail deletion / rollback) mid-section | simulated | caught at the next append |
-| Witness rolled back, witness digest forged mid-section | simulated | caught at the next append |
-| External head rolled back / replaced mid-section | simulated | append throws `external checkpoint mismatch`; the state is not blessed |
-| Consistent rollback of segments + witness + active file | simulated (existing) | rejected by the external head |
-| Cache tampering / stale cache replay | not applicable | no persistent cache exists; the in-memory state does not outlive its section (tested: tampering between two sections of the same object is caught) |
-| Concurrent append / verify | simulated + real process | second writer refused (`EEXIST`) while a section is open; a reader sees only complete verified prefixes; four-process contention passes in section mode |
-| Partial write, ENOSPC, EIO at every commit step; fsync, rename, link, read failures | simulated | each passes in both modes; failing append never reported as success; kept state dropped, retry re-verifies |
-| `SIGKILL` at every commit step, incl. against the HTTP checkpoint service | real process | acknowledged appends durable, recovery defined, in both modes |
+| Writer lock replaced / deleted mid-section | simulated | next append stops; foreign lock is left in place; a section that lost its lock does not report success |
+| Legacy lock file without a token; dead owner; live owner | simulated | still blocks a second writer; dead owner's lock removed by `recoverDeadWriter()`; live owner refused |
+| Recovery or a second writer while a section is open | simulated | `EEXIST` |
+| Reader polling while a section-mode writer commits (60 cycles, rotating) | real process | only complete verified prefixes of increasing length; refused reads are integrity refusals; creation-time empty witness is a refusal, never wrong data |
+| Four-process contention, `SIGKILL` at every commit step (also against the HTTP checkpoint service) | real process | passes in both modes |
+| Partial write, ENOSPC / EIO at every commit step; fsync, rename, link, read failures; disk that stays full; lock file that cannot be filled | simulated | pass in both modes; a failing append is never reported as success; the kept state is dropped; retry re-verifies |
 | `EACCES`, `EFBIG` (genuine torn write) | real kernel | pass in both modes |
+| Full volume `ENOSPC` | real volume (local, not CI) | `results/ledger-verification/real-enospc-section.json` |
 | Incomplete rotation (kill / fault between witness, seal, rename) | simulated + real process | recovery completes only the exact witnessed file, in both modes |
-| Full volume `ENOSPC` | real volume (local, not CI) | see `results/ledger-verification/real-enospc-section.json` |
-| Power loss, `fsync` that lies, storage controller faults | **not tested** | not covered |
+| Resume gate with a tampered sealed segment, section mode | simulated | new work refused at the first load of the section |
+| Cache tampering, stale-cache replay, cache after restart | n/a | no persistent cache exists; decoy cache files are ignored (T12); a new object or process always starts with a full verification (T13, T14) |
+| Power loss, lying `fsync`, controller faults | **not tested** | not covered |
 
-## 8. Scientific regression
+## 8. Scientific regression and safety are checked separately
 
-`node scripts/scientific-comparison.ts ... --verify-against results/scientific-cycle/v2-comparison.json` over all
-504 cycles (36 chains = 2 caps × 3 seeds × 6 methods), once per storage layout: single file, segmented (131,072 B),
-section, segmented + section. Result: section 9. Fingerprints, counts, the 36 chains and every retained
-negative result are unchanged and are not re-claimed here.
+Scientific reproducibility: `node scripts/scientific-comparison.ts ... --verify-against results/scientific-cycle/v2-comparison.json`
+over all 504 cycles (36 chains = 2 caps x 3 seeds x 6 methods), once per storage layout: single file, segmented
+(131,072 B), section, segmented + section. This says nothing about integrity safety: matching fingerprints do not show
+that a tampered history would be refused; that is section 7. Conversely, section 7 says nothing about the science.
 
-## 9. Results
+## 9. Results (final code)
 
 | Check | Result |
 |---|---|
 | `npm run typecheck` | clean |
-| `npm test` (default, `verification: 'full'` everywhere) | 303 / 303 pass (290 existing + 13 new) |
-| `LEDGER_TEST_VERIFICATION=section npm test` (the same 303 tests with every `Ledger` opened in section mode, including the real `SIGKILL`, `EACCES`, `EFBIG` and four-process tests) | 303 / 303 pass |
+| `npm test` (default mode) | 339 / 339 pass (290 from before this PR + 13 section-mode + 36 tamper/race matrix), 0 skipped |
+| `LEDGER_TEST_VERIFICATION=section npm test` (the same 339 with every `Ledger` in section mode, including real `SIGKILL`, `EACCES`, `EFBIG`, four-process and TLS tests) | 339 / 339 pass, 0 skipped |
 | `npm run test:comparison` | 11 / 11 pass |
-| `npm run bench` | 57 conformance checks, 0 failed; 14 theory benchmarks: 7 positive, 5 negative, 2 null; 7 meta-boundedness: 2 stable, 5 meta-dependent |
-| `npm run check:presets` / `check:api` | 38 presets, 0 failed / 38 presets listed, 0 endpoint checks failed |
-| 504-cycle comparison vs retained v2: single file | all 504 fingerprints reproduced exactly |
-| ... segmented (131,072 B) | all 504 reproduced exactly |
-| ... section | all 504 reproduced exactly |
-| ... segmented + section | all 504 reproduced exactly |
-| Real full volume (`ENOSPC` from a 3 MB disk image), section mode, single file and rotating | all invariants held; nothing lost, torn file never trusted, recovery after freeing space succeeded |
+| `npm run bench` | 57 conformance checks, 0 failed; 14 theory: 7 positive / 5 negative / 2 null; 7 meta-boundedness: 2 stable, 5 meta-dependent |
+| `check:presets` / `check:api` | 38 presets, 0 failed / 0 endpoint checks failed |
+| 504 fingerprints vs retained v2: single / segmented / section / segmented + section | all reproduced exactly, in all four |
+| Record structure in all four layouts (independent count over the stored ledgers) | 36 chains; prepared 504, event 720, completed 324, quarantined 180 (terminal 504); 1,728 entries; 150 sealed segments when segmented |
+| Real full volume (`ENOSPC` from a 3 MB disk image), `full` and `section`, single file and rotating | all invariants held in both; recovery while the volume is still full may itself fail with `ENOSPC` and then stays stopped; after space is freed recovery and a new append succeed |
 
-Between layouts and against retained v2, the only fields that differ in the comparison reports are wall-clock and CPU
-timings (non-deterministic); fingerprints, outcomes and counts are identical (`results/ledger-verification/regression.json`).
-The wall time of the four comparison runs (54, 48, 48 and 42 s) was not measured under controlled conditions and is not
-used as performance evidence.
+Outside wall-clock and CPU timings, the rows, summary and controls of all four comparison reports are identical to the
+retained v2 report. Wall time of the four runs (41-52 s) was not controlled and is not performance evidence.
+Details: `results/ledger-verification/regression.json`.
 
 ## 10. Unfinished, and what is not claimed
 
 - Verification per section, per restart and per audit is still O(history). A trusted anchor that avoids reading sealed
   bytes does not exist in this design; none was invented.
 - Unrotated ledgers still rewrite the whole file per append.
-- Section mode is not the default, and `strict` does not select it. Choosing it accepts the window in section 4.
+- Section mode is not the default, and `strict` does not select it. Choosing it accepts the narrow residual window in
+  section 4 (an in-section sealed-segment change that also hides from file attributes). It is not offered as an integrity
+  guarantee equal to `full`.
+- The attribute tripwire depends on filesystem timestamp resolution; on a filesystem with coarse timestamps it is weaker.
+- The advisory writer lock cannot stop a process that ignores it; only an external compare-and-set closes lost updates.
 - `resumeAuthorized` and `physicalRecoveryVerified` remain literal `false`; the resume gate is unchanged and always
   fully verifies.
 - Retained negative results are unchanged: history changed the candidate set in 72 of 114 history-using cycles, yet

@@ -1,0 +1,215 @@
+{
+  "environment": {
+    "node": "v24.14.1",
+    "platform": "darwin 25.6.0 arm64",
+    "cpu": "Apple M1",
+    "logicalCpus": 8,
+    "exposeGc": true
+  },
+  "ledger": {
+    "name": "c30-s1MiB",
+    "files": 2,
+    "sealedSegments": 1,
+    "totalBytes": 2009517,
+    "segmentBytes": 1048576,
+    "verification": "section"
+  },
+  "reps": 20,
+  "sections": 10,
+  "stageBreakdownMs": {
+    "diskReadMs": {
+      "n": 7,
+      "min": 3.56,
+      "p50": 3.702,
+      "p95": 3.901,
+      "p99": 3.901,
+      "max": 3.901,
+      "mean": 3.692,
+      "cv": 0.03
+    },
+    "jsonParseMs": {
+      "n": 7,
+      "min": 4.843,
+      "p50": 5.088,
+      "p95": 5.309,
+      "p99": 5.309,
+      "max": 5.309,
+      "mean": 5.103,
+      "cv": 0.03
+    },
+    "segmentBytesDigestMs": {
+      "n": 7,
+      "min": 5.052,
+      "p50": 5.117,
+      "p95": 5.631,
+      "p99": 5.631,
+      "max": 5.631,
+      "mean": 5.198,
+      "cv": 0.04
+    },
+    "perEntryHashValidationMs": {
+      "n": 7,
+      "min": 10.603,
+      "p50": 10.832,
+      "p95": 12.008,
+      "p99": 12.008,
+      "max": 12.008,
+      "mean": 11.05,
+      "cv": 0.049
+    }
+  },
+  "fullVerificationMs": {
+    "n": 20,
+    "min": 24.161,
+    "p50": 25.006,
+    "p95": 27.7,
+    "p99": 28.068,
+    "max": 28.068,
+    "mean": 25.332,
+    "cv": 0.042
+  },
+  "fullVerificationCpuMs": {
+    "n": 20,
+    "min": 24.073,
+    "p50": 24.858,
+    "p95": 28.648,
+    "p99": 29.696,
+    "max": 29.696,
+    "mean": 25.526,
+    "cv": 0.062
+  },
+  "heapDeltaMBAfterRead": {
+    "n": 20,
+    "min": 8.277,
+    "p50": 29.421,
+    "p95": 56.549,
+    "p99": 61.023,
+    "max": 61.023,
+    "mean": 32.465,
+    "cv": 0.479
+  },
+  "appendMs": {
+    "n": 80,
+    "min": 23.666,
+    "p50": 29.327,
+    "p95": 34.039,
+    "p99": 40.34,
+    "max": 40.34,
+    "mean": 29.745,
+    "cv": 0.092
+  },
+  "appendCpuMs": {
+    "n": 80,
+    "min": 12.781,
+    "p50": 13.393,
+    "p95": 16.663,
+    "p99": 20.395,
+    "max": 20.395,
+    "mean": 13.983,
+    "cv": 0.104
+  },
+  "appendFirstInSectionMs": {
+    "n": 10,
+    "min": 27.317,
+    "p50": 29.327,
+    "p95": 35.274,
+    "p99": 35.274,
+    "max": 35.274,
+    "mean": 30.187,
+    "cv": 0.074
+  },
+  "appendLaterInSectionMs": {
+    "n": 70,
+    "min": 23.666,
+    "p50": 29.084,
+    "p95": 34.039,
+    "p99": 40.34,
+    "max": 40.34,
+    "mean": 29.682,
+    "cv": 0.095
+  },
+  "readInSectionMs": {
+    "n": 10,
+    "min": 24.612,
+    "p50": 25.827,
+    "p95": 28.734,
+    "p99": 28.734,
+    "max": 28.734,
+    "mean": 26.36,
+    "cv": 0.05
+  },
+  "cycleSectionMs": {
+    "n": 10,
+    "min": 247.024,
+    "p50": 267.947,
+    "p95": 307.068,
+    "p99": 307.068,
+    "max": 307.068,
+    "mean": 268.813,
+    "cv": 0.061
+  },
+  "ioPerCycleSection": {
+    "bytesRead": 9018986,
+    "bytesReadByTheInitialRead": 2010365,
+    "bytesWritten": 7011136,
+    "fileReads": 37,
+    "wholeHistoryVerifications": 1,
+    "sectionLevelChecks": 8,
+    "bytesReadByEachAppend": [
+      874584,
+      875013,
+      875439,
+      875865,
+      876291,
+      876717,
+      877143,
+      877569
+    ],
+    "bytesWrittenByEachAppend": [
+      874893,
+      875319,
+      875745,
+      876171,
+      876597,
+      877023,
+      877449,
+      877879
+    ]
+  },
+  "recoveryMs": {
+    "healthyLedger": {
+      "n": 3,
+      "min": 78.568,
+      "p50": 80.593,
+      "p95": 82.053,
+      "p99": 82.053,
+      "max": 82.053,
+      "mean": 80.404,
+      "cv": 0.022
+    },
+    "withUnfinishedOperation": {
+      "n": 3,
+      "min": 109.135,
+      "p50": 109.658,
+      "p95": 110.808,
+      "p99": 110.808,
+      "max": 110.808,
+      "mean": 109.867,
+      "cv": 0.008
+    }
+  },
+  "restartFullVerificationMs": {
+    "n": 5,
+    "min": 32.8,
+    "p50": 43.934,
+    "p95": 58.917,
+    "p99": 58.917,
+    "max": 58.917,
+    "mean": 46.479,
+    "cv": 0.25
+  },
+  "memoryAfterAll": {
+    "heapMB": 9.582740783691406,
+    "rssMB": 102.125
+  }
+}

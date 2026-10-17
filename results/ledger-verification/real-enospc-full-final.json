@@ -1,0 +1,41 @@
+{
+  "volume": "real small volume; ENOSPC returned by the operating system",
+  "experiments": [
+    {
+      "layout": "single-file",
+      "kernelError": "ENOSPC",
+      "acknowledgedAppends": 40,
+      "visibleAfterFailure": 40,
+      "integrityAfterFailure": "verified",
+      "tornPendingFilesLeft": [
+        0
+      ],
+      "recoveryWhileVolumeFull": "ok",
+      "strayPendingWhileFull": 0,
+      "recoveryAfterSpaceFreed": "ok",
+      "strayPendingAfterRecovery": 0,
+      "appendAfterSpaceFreed": "succeeded",
+      "sealedSegments": 0,
+      "finalIntegrity": "verified",
+      "invariantsHeld": true
+    },
+    {
+      "layout": "rotating-200KiB",
+      "kernelError": "ENOSPC",
+      "acknowledgedAppends": 35,
+      "visibleAfterFailure": 35,
+      "integrityAfterFailure": "verified",
+      "tornPendingFilesLeft": [
+        0
+      ],
+      "recoveryWhileVolumeFull": "failed (ENOSPC)",
+      "strayPendingWhileFull": 2,
+      "recoveryAfterSpaceFreed": "ok",
+      "strayPendingAfterRecovery": 0,
+      "appendAfterSpaceFreed": "succeeded",
+      "sealedSegments": 4,
+      "finalIntegrity": "verified",
+      "invariantsHeld": true
+    }
+  ]
+}

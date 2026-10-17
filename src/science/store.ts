@@ -11,9 +11,12 @@
 // Verification. By default every load re-verifies the whole history (`verification: 'full'`). The opt-in
 // `verification: 'section'` verifies the whole history ONCE at the start of an exclusive section and, for later appends
 // inside that same section, re-verifies only what can change there: the witness, the active file's byte digest, the
-// external head, and the new entry. Nothing is cached across sections, processes or restarts, and no file attribute
-// (mtime, inode, size) is ever trusted. See docs/incremental-ledger-verification.md for the exact guarantee.
-import { openSync, closeSync, writeFileSync, readFileSync, fsyncSync, renameSync, linkSync, mkdirSync, unlinkSync, existsSync, readdirSync } from 'node:fs';
+// external head, and the new entry. Nothing is cached across sections, processes or restarts. File attributes
+// (device, inode, size, mtime, ctime) are NEVER evidence that a sealed segment is intact; they are only a tripwire:
+// a sealed segment whose attributes differ from the ones recorded just before it was verified sends the append back to
+// a full verification. Unchanged attributes prove nothing and skip nothing the section had not already verified.
+// See docs/incremental-ledger-verification.md for the exact guarantee.
+import { openSync, closeSync, writeFileSync, readFileSync, fsyncSync, renameSync, linkSync, mkdirSync, unlinkSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve, basename, dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { sha256 } from '../core/hash.ts';
@@ -38,6 +41,8 @@ export interface LedgerFs {
   mkdirSync(path: string, mode: number): void;
   existsSync(path: string): boolean;
   readdirSync(path: string): string[];
+  /** Opaque attribute signature of a file (device, inode, size, mtime, ctime). A tripwire only, never proof of content. */
+  signatureSync(path: string): string;
 }
 export const nodeLedgerFs: LedgerFs = {
   openSync: (path, flags, mode) => openSync(path, flags, mode),
@@ -51,6 +56,7 @@ export const nodeLedgerFs: LedgerFs = {
   mkdirSync: (path, mode) => { mkdirSync(path, { recursive: true, mode }); },
   existsSync: (path) => existsSync(path),
   readdirSync: (path) => readdirSync(path),
+  signatureSync: (path) => { const st = statSync(path, { bigint: true }); return `${st.dev}:${st.ino}:${st.size}:${st.mtimeNs}:${st.ctimeNs}`; },
 };
 export type VerificationMode = 'full' | 'section';
 export interface LedgerOptions {
@@ -61,7 +67,7 @@ export interface LedgerOptions {
   fs?: LedgerFs;
 }
 /** `entries` is present only after a full load; a section's retained state keeps just what appends need. */
-interface LedgerState { sealed: SealedSegment[]; activeRaw: string; activeEntries: LedgerEntry[]; count: number; tip: string; digest: string; ops: Map<string, boolean>; entries?: LedgerEntry[] }
+interface LedgerState { sealed: SealedSegment[]; activeRaw: string; activeEntries: LedgerEntry[]; count: number; tip: string; digest: string; ops: Map<string, boolean>; entries?: LedgerEntry[]; sigs?: string[] }
 type FullState = LedgerState & { entries: LedgerEntry[] };
 const ENTRY_KINDS = ['prepared', 'event', 'completed', 'quarantined'];
 
@@ -81,6 +87,7 @@ export class Ledger {
   /** Present only while inside exclusive(): the state this section fully verified or wrote itself. */
   private section: { verified?: LedgerState } | undefined;
   private counters = { full: 0, incremental: 0 };
+  private lockToken: string | undefined;
   constructor(directory: string, checkpointPath = `${resolve(directory)}.checkpoint`, external?: ExternalCheckpointBinding, options: LedgerOptions = {}) {
     if (external) { externalHead(external); this.external = { ...external }; }
     const limit = options.maxSegmentBytes;
@@ -140,9 +147,11 @@ export class Ledger {
   /** Read and verify sealed segments (exact bytes, count, tip) plus the active file, then the whole chain.
    * `unlinkedLast` supplies the bytes of a segment whose hard link has not been created yet (recovery only). */
   private loadState(sealed: SealedSegment[], activeRaw: string, unlinkedLast?: string): FullState {
-    const all: LedgerEntry[] = [];
+    const all: LedgerEntry[] = [], sigs: string[] = [], track = this.verification === 'section'; // attributes only matter to section mode
     for (const [index, segment] of sealed.entries()) {
       const target = this.path(segment.file);
+      // Attributes are recorded BEFORE the bytes are read, so a change made after our read always differs from them.
+      if (track) sigs.push(this.fs.existsSync(target) ? this.fs.signatureSync(target) : '');
       const raw = this.fs.existsSync(target) ? this.fs.readFileSync(target) : index === sealed.length - 1 && unlinkedLast !== undefined ? unlinkedLast : undefined;
       if (raw === undefined) throw Error('ledger integrity: sealed segment missing');
       const entries = this.parse(raw);
@@ -152,7 +161,7 @@ export class Ledger {
     const active = this.parse(activeRaw);
     all.push(...active);
     const ops = this.validate(all);
-    return { sealed, activeRaw, activeEntries: active, count: all.length, tip: all.at(-1)?.hash ?? '', digest: this.stateDigest(sealed, activeRaw), ops, entries: all };
+    return { sealed, activeRaw, activeEntries: active, count: all.length, tip: all.at(-1)?.hash ?? '', digest: this.stateDigest(sealed, activeRaw), ops, entries: all, ...(track ? { sigs } : {}) };
   }
   private activeRaw(): string { return this.fs.existsSync(this.path('ledger.json')) ? this.fs.readFileSync(this.path('ledger.json')) : '[]'; }
   checkpoint(): Checkpoint {
@@ -193,6 +202,10 @@ export class Ledger {
     if (this.verification === 'section' && this.section) { const { entries: _all, ...kept } = state; this.section.verified = kept; }
     return state;
   }
+  private sealedAttributesUnchanged(v: LedgerState): boolean {
+    if (!v.sigs || v.sigs.length !== v.sealed.length) return false;
+    try { return v.sealed.every((segment, i) => v.sigs![i] !== '' && this.fs.signatureSync(this.path(segment.file)) === v.sigs![i]); } catch { return false; }
+  }
   /** Forget what this section verified. Called on every load and on every failure: after any doubt, start over. */
   private dropSection() { if (this.section) this.section.verified = undefined; }
   /** Section mode, second and later appends of one exclusive section: what this section verified or wrote, checked
@@ -204,6 +217,9 @@ export class Ledger {
     // The witness must still describe exactly the state this section verified or wrote, and the active file's bytes
     // must still hash to what that state commits to (the combined digest also commits to every sealed digest).
     if (checkpoint.count !== v.count || checkpoint.hash !== v.tip || checkpoint.digest !== v.digest || this.stateDigest(v.sealed, raw) !== v.digest) return this.load();
+    // Tripwire (not proof): any sealed segment whose attributes changed since just before it was verified, or that cannot
+    // be inspected, sends this append back to a full verification, which reads and hashes every sealed byte.
+    if (!this.sealedAttributesUnchanged(v)) return this.load();
     if (this.external && !sameHead(this.external.store.read(this.external.historyId, this.external.seriesId), this.head(v))) throw Error('external checkpoint mismatch; isolate store');
     this.counters.incremental++;
     return { ...v, activeRaw: raw };
@@ -220,9 +236,29 @@ export class Ledger {
     };
   }
   exclusive<T>(action: () => T): T {
-    const lock = this.fs.openSync(this.path('writer.lock'), 'wx', 0o600);
-    try { this.fs.writeFileSync(lock, JSON.stringify({ pid: process.pid })); this.fs.fsyncSync(lock); this.writing = true; this.section = {}; return action(); }
-    finally { this.section = undefined; this.writing = false; this.fs.closeSync(lock); this.fs.unlinkSync(this.path('writer.lock')); }
+    const lock = this.fs.openSync(this.path('writer.lock'), 'wx', 0o600), token = randomUUID();
+    let result: T, populated = false;
+    try { this.fs.writeFileSync(lock, JSON.stringify({ pid: process.pid, token })); this.fs.fsyncSync(lock); populated = true; this.writing = true; this.section = {}; this.lockToken = token; result = action(); }
+    catch (error) { this.release(lock, token, populated, false); throw error; }
+    this.release(lock, token, populated, true);
+    return result;
+  }
+  /** Leave the section. The lock file is removed only if it is still THIS section's (same token): a lock that was
+   * deleted or replaced by someone else is never unlinked here, and a section that finishes without owning its lock
+   * does not report success (an error that is already propagating is not masked). */
+  private release(lock: number, token: string, populated: boolean, report: boolean) {
+    this.section = undefined; this.writing = false; this.lockToken = undefined;
+    this.fs.closeSync(lock);
+    // A lock file this call created but could not fill (a full disk, say) carries no token yet is still ours to remove.
+    const owned = populated ? this.holdsLock(token) : true;
+    if (owned) this.fs.unlinkSync(this.path('writer.lock'));
+    else if (report) throw Error('ledger integrity: writer lock lost during the section; appends made in it need explicit verification');
+  }
+  private holdsLock(token: string): boolean {
+    try { return this.fs.existsSync(this.path('writer.lock')) && JSON.parse(this.fs.readFileSync(this.path('writer.lock'))).token === token; } catch { return false; }
+  }
+  private assertLockHeld() {
+    if (this.lockToken === undefined || !this.holdsLock(this.lockToken)) throw Error('ledger integrity: writer lock lost; stopping before any further write');
   }
   recoverDeadWriter(): void {
     // Serialize stale-lock inspection/removal so two recovery attempts cannot remove a new writer's lock.
@@ -257,6 +293,7 @@ export class Ledger {
     try { return this.appendVerified(kind, operation, data); } catch (error) { this.dropSection(); throw error; }
   }
   private appendVerified(kind: LedgerEntry['kind'], operation: string, data: unknown): LedgerEntry {
+    this.assertLockHeld();
     const state = this.loadForAppend();
     const payload = { sequence: state.count, previous: state.tip, kind, operation, data };
     const entry = { ...payload, hash: sha256(JSON.stringify(payload)) };
@@ -268,12 +305,13 @@ export class Ledger {
     const sealed = rotate ? [...state.sealed, { file: segmentName(state.sealed.length + 1), count: state.activeEntries.length, hash: state.tip, digest: sha256(state.activeRaw) }] : state.sealed;
     const active = rotate ? [entry] : [...state.activeEntries, entry];
     const raw = JSON.stringify(active);
-    const next: LedgerState = { sealed, activeRaw: raw, activeEntries: active, count: state.count + 1, tip: entry.hash, digest: this.stateDigest(sealed, raw), ops: state.ops };
+    const next: LedgerState = { sealed, activeRaw: raw, activeEntries: active, count: state.count + 1, tip: entry.hash, digest: this.stateDigest(sealed, raw), ops: state.ops, ...(state.sigs ? { sigs: state.sigs } : {}) };
     const pending = `.pending-${randomUUID()}`, temp = this.path(pending);
     const fd = this.fs.openSync(temp, 'wx', 0o600);
     try { this.fs.writeFileSync(fd, raw); this.fs.fsyncSync(fd); } finally { this.fs.closeSync(fd); }
     this.syncDirectory();
     // Witness first: after a crash it either matches the ledger or identifies the exact durable pending file.
+    this.assertLockHeld(); // last check before the first durable change that names the new state
     const witnessTemp = `${this.checkpointPath}.${randomUUID()}.tmp`;
     const witness = this.fs.openSync(witnessTemp, 'wx', 0o600);
     try { this.fs.writeFileSync(witness, JSON.stringify({ count: next.count, hash: entry.hash, digest: next.digest, pending, ...(sealed.length ? { sealed } : {}), ...(rotate ? { rotates: true } : {}) })); this.fs.fsyncSync(witness); } finally { this.fs.closeSync(witness); }
@@ -284,7 +322,16 @@ export class Ledger {
     if (rotate) this.seal(sealed.at(-1)!);
     this.fs.renameSync(temp, this.path('ledger.json')); this.syncDirectory();
     // Committed and confirmed in order: the next append of this section starts from the state this one wrote.
-    if (this.verification === 'section' && this.section) this.section.verified = next;
+    if (this.verification === 'section' && this.section) {
+      if (rotate) {
+        // A segment this section just sealed joins the kept state only after its bytes are re-read and match the digest
+        // the witness records; its attributes are recorded before that read.
+        const file = this.path(sealed.at(-1)!.file), signature = this.fs.signatureSync(file);
+        if (sha256(this.fs.readFileSync(file)) !== sealed.at(-1)!.digest) throw Error('ledger integrity: sealed segment mismatch');
+        next.sigs = [...(state.sigs ?? []), signature];
+      }
+      this.section.verified = next;
+    }
     return entry;
   }
   // Offline migration only: caller must obtain this exact head from a separately trusted record.
